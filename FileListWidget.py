@@ -14,6 +14,7 @@ class FileList(QtGui.QListWidget):
             # of the data. That seems super weird.
             item.setData(QtCore.Qt.UserRole, dir_path)
             self.addItem(item)
+        self.setCurrentRow(0)
 
     def load_sweeps_in_dir(self):
         for dirpath, dirnames, fnames in os.walk(self.dir_path, followlinks=False):
