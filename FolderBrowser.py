@@ -64,24 +64,26 @@ class FolderBrowser(QtGui.QWidget):
         grid.setSpacing(10)
         self.setLayout(grid)
 
+        n_rows_canvas = 3
+        n_cols_canvas = 3
         canvas = MyNewMplCanvas(fig)
+        grid.addWidget(canvas, 0, 0, n_rows_canvas, n_cols_canvas)
+
+        comboBox1 = QtGui.QComboBox(self)
+        comboBox1.addItems(['wejoif','wjeofij'])
+        grid.addWidget(comboBox1, n_rows_canvas, 0, 1, 1)
+
+        comboBox2 = QtGui.QComboBox(self)
+        comboBox2.addItems(['xvmnb','xvbzxcnm'])
+        grid.addWidget(comboBox2, n_rows_canvas, 1, 1, 2)
+
         self.navi_toolbar = NavigationToolbar(canvas, self)
+        grid.addWidget(self.navi_toolbar, n_rows_canvas+1, 0, 1, n_cols_canvas)
+
         self.file_list = FileList(self.dir_path)
         self.file_list.itemClicked.connect(canvas.load_and_plot_data)
+        grid.addWidget(self.file_list, n_rows_canvas+2, 0, 2, n_cols_canvas)
         canvas.load_and_plot_data(self.file_list.currentItem())
-        # Creates navigation toolbar for our plot canvas.
-        comboBox = QtGui.QComboBox(self)
-        comboBox.addItems(['wejoif','wjeofij'])
-
-        # grid.addWidget(self.navi_toolbar, 0, 0, 2, 1)
-        # grid.addWidget(canvas, 1, 0, 2, 4)
-        # grid.addWidget(comboBox, 2, 0, 1, 1)
-        # grid.addWidget(self.file_list, 3, 0, 2, 3)
-
-        grid.addWidget(self.navi_toolbar)
-        grid.addWidget(canvas)
-        grid.addWidget(comboBox)
-        grid.addWidget(self.file_list)
 
 
 qApp = QtGui.QApplication(sys.argv)
