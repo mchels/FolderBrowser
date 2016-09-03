@@ -25,29 +25,47 @@ class MyNewMplCanvas(FigureCanvas):
         self.fig = fig
         FigureCanvas.__init__(self, fig)
         self.axes = fig.get_axes()
-
-        self.load_and_plot_data()
+        self.sel_col_names = ['', '', '']
 
         FigureCanvas.setSizePolicy(self,
                                    QtGui.QSizePolicy.Expanding,
                                    QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
+    # Distinguish between updating the plot and changing the sweep and redrawing it completely!
     def load_and_plot_data(self, file_list_item=None):
-        if file_list_item is None:
+        # if file_list_item is None:
             # raise RuntimeError('file_list_item is None')
-            return
-        sweep_path = file_list_item.data(QtCore.Qt.UserRole)
-        self.sweep = Sweep(sweep_path)
-        sweep_names = self.sweep.data.dtype.names
-        x_data = self.sweep.data[sweep_names[0]]
-        y_data = self.sweep.data[sweep_names[1]]
+            # return
+        if file_list_item is not None:
+            sweep_path = file_list_item.data(QtCore.Qt.UserRole)
+            self.sweep = Sweep(sweep_path)
+        if self.sweep.dimension != 1:
+            err_str = 'Dimension {} not yet supported'.format(sweep.dimension)
+            raise RuntimeError(err_str)
+        self.col_names = self.sweep.data.dtype.names
+        for i, col in enumerate(self.sel_col_names):
+            if not col:
+                for new_col in self.col_names:
+                    if new_col not in self.sel_col_names:
+                        self.sel_col_names[i] = new_col
+        x_data = self.sweep.data[self.sel_col_names[0]]
+        y_data = self.sweep.data[self.sel_col_names[1]]
         for ax in self.axes:
             ax.cla()
             ax.plot(x_data, y_data)
             ax.relim()
             ax.autoscale_view(True, True, True)
+        fig.tight_layout()
         self.fig.canvas.draw()
+        
+    def change_sel_col_num0(self, new_num):
+        self.sel_col_names[0] = self.col_names[new_num]
+        self.load_and_plot_data()
+
+    def change_sel_col_num1(self, new_num):
+        self.sel_col_names[1] = self.col_names[new_num]
+        self.load_and_plot_data()
 
 
 class FolderBrowser(QtGui.QWidget):
@@ -68,14 +86,6 @@ class FolderBrowser(QtGui.QWidget):
         canvas = MyNewMplCanvas(fig)
         grid.addWidget(canvas, 0, 0, n_rows_canvas, n_cols_canvas)
 
-        comboBox1 = QtGui.QComboBox(self)
-        comboBox1.addItems(['wejoif','wjeofij'])
-        grid.addWidget(comboBox1, n_rows_canvas, 0, 1, 1)
-
-        comboBox2 = QtGui.QComboBox(self)
-        comboBox2.addItems(['xvmnb','xvbzxcnm'])
-        grid.addWidget(comboBox2, n_rows_canvas, 1, 1, 2)
-
         self.navi_toolbar = NavigationToolbar(canvas, self)
         grid.addWidget(self.navi_toolbar, n_rows_canvas+1, 0, 1, n_cols_canvas)
 
@@ -83,6 +93,19 @@ class FolderBrowser(QtGui.QWidget):
         self.file_list.itemClicked.connect(canvas.load_and_plot_data)
         grid.addWidget(self.file_list, n_rows_canvas+2, 0, 2, n_cols_canvas)
         canvas.load_and_plot_data(self.file_list.currentItem())
+
+        comboBox0 = QtGui.QComboBox(self)
+        comboBox0.addItems(canvas.col_names)
+        comboBox0.setCurrentIndex(0)
+        comboBox0.currentIndexChanged.connect(canvas.change_sel_col_num0)
+        grid.addWidget(comboBox0, n_rows_canvas, 0, 1, 1)
+        
+        
+        comboBox1 = QtGui.QComboBox(self)
+        comboBox1.addItems(canvas.col_names)
+        comboBox1.setCurrentIndex(1)
+        comboBox1.currentIndexChanged.connect(canvas.change_sel_col_num1)
+        grid.addWidget(comboBox1, n_rows_canvas, 1, 1, 2)
 
 
 qApp = QtGui.QApplication(sys.argv)
