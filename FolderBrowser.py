@@ -51,7 +51,7 @@ class MyNewMplCanvas(FigureCanvas):
         self.fig.canvas.draw()
 
 
-class FolderBrowser(QtGui.QMainWindow):
+class FolderBrowser(QtGui.QWidget):
     def __init__(self, fig, dir_path):
         self.fig = fig
         self.axes = fig.get_axes()
@@ -60,36 +60,28 @@ class FolderBrowser(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
 
-        self.file_menu = QtGui.QMenu('&File', self)
-        self.file_menu.addAction('&Quit', self.fileQuit,
-                                 QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
-        self.menuBar().addMenu(self.file_menu)
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(10)
+        self.setLayout(grid)
 
-        self.main_widget = QtGui.QWidget(self)
-        grid = QtGui.QVBoxLayout(self.main_widget)
-
-        canvas = MyNewMplCanvas(fig, parent=self.main_widget)
+        canvas = MyNewMplCanvas(fig)
         self.navi_toolbar = NavigationToolbar(canvas, self)
         self.file_list = FileList(self.dir_path)
         self.file_list.itemClicked.connect(canvas.load_and_plot_data)
+        canvas.load_and_plot_data(self.file_list.currentItem())
         # Creates navigation toolbar for our plot canvas.
         comboBox = QtGui.QComboBox(self)
         comboBox.addItems(['wejoif','wjeofij'])
 
+        # grid.addWidget(self.navi_toolbar, 0, 0, 2, 1)
+        # grid.addWidget(canvas, 1, 0, 2, 4)
+        # grid.addWidget(comboBox, 2, 0, 1, 1)
+        # grid.addWidget(self.file_list, 3, 0, 2, 3)
+
+        grid.addWidget(self.navi_toolbar)
         grid.addWidget(canvas)
         grid.addWidget(comboBox)
-        grid.addWidget(self.navi_toolbar)
         grid.addWidget(self.file_list)
-
-        self.main_widget.setFocus()
-        self.setCentralWidget(self.main_widget)
-
-
-    def fileQuit(self):
-        self.close()
-
-    def closeEvent(self, ce):
-        self.fileQuit()
 
 
 qApp = QtGui.QApplication(sys.argv)
