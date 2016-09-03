@@ -21,10 +21,9 @@ import matplotlib.pyplot as plt
 
 class MyNewMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self, fig, parent=None):
+    def __init__(self, fig):
         self.fig = fig
         FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
         self.axes = fig.get_axes()
 
         self.load_and_plot_data()
