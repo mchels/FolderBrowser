@@ -90,38 +90,45 @@ class MplLayout(QtGui.QWidget):
 
 
 class FolderBrowser(QtGui.QMainWindow):
-    def __init__(self, dir_path, window_title='FolderBrowser'):
+    def __init__(self, n_figs, dir_path, window_title='FolderBrowser'):
         self.dir_path = dir_path
         QtGui.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle(window_title)
-
         self.file_list = FileList(self.dir_path)
-        # As soon as file list is initialized we can load the sweep it has
-        # selected.
-        self.mpllayout = MplLayout()
-        file_list_item = self.file_list.currentItem()
+        self.mpl_layouts = [None] * n_figs
+        for i in range(n_figs):
+            self.mpl_layouts[i] = MplLayout()
         self.file_list.itemClicked.connect(self.delegate_new_sweep)
+        self.dock_widgets = [None] * (n_figs+1)
+        for i, mpl_layout in enumerate(self.mpl_layouts):
+            widget_title = 'Plot {}'.format(i)
+            dock_widget = QtGui.QDockWidget(widget_title, self)
+            dock_widget.setWidget(mpl_layout)
+            self.addDockWidget(QtCore.Qt.TopDockWidgetArea, dock_widget)
+            self.dock_widgets[i] = dock_widget
+        dock_widget = QtGui.QDockWidget('Browser', self)
+        dock_widget.setWidget(self.file_list)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
+        self.dock_widgets[-1] = dock_widget
+        # Set central widget to the first mpl_layout.
+        self.setCentralWidget(self.dock_widgets[0])
+        file_list_item = self.file_list.currentItem()
         self.delegate_new_sweep(file_list_item)
 
-        self.dock_widget1 = QtGui.QDockWidget('Plot 1', self)
-        self.dock_widget1.setWidget(self.mpllayout)
-        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.dock_widget1)
-        self.dock_widget3 = QtGui.QDockWidget('Browser', self)
-        self.dock_widget3.setWidget(self.file_list)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dock_widget3)
-
-        self.setCentralWidget(self.dock_widget1)
         
     def delegate_new_sweep(self, file_list_item):
+        # todo loop over mpl layouts
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
-        self.mpllayout.reset_and_plot(self.sweep)
+        for mpl_layout in self.mpl_layouts:
+            mpl_layout.reset_and_plot(self.sweep)
 
 
+n_figs = 2
 data_path = 'C:/Dropbox/PhD/sandbox_phd/load_in_jupyter/data'
 qApp = QtGui.QApplication(sys.argv)
-aw = FolderBrowser(data_path)
+aw = FolderBrowser(n_figs, data_path)
 aw.show()
 sys.exit(qApp.exec_())
 #qApp.exec_()
