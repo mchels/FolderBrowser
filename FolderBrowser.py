@@ -58,7 +58,7 @@ class MyNewMplCanvas(FigureCanvas):
             ax.autoscale_view(True, True, True)
         fig.tight_layout()
         self.fig.canvas.draw()
-        
+
     def change_sel_col_num0(self, new_num):
         self.sel_col_names[0] = self.col_names[new_num]
         self.load_and_plot_data()
@@ -68,7 +68,7 @@ class MyNewMplCanvas(FigureCanvas):
         self.load_and_plot_data()
 
 
-class FolderBrowser(QtGui.QWidget):
+class FolderBrowser(QtGui.QMainWindow):
     def __init__(self, fig, dir_path):
         self.fig = fig
         self.axes = fig.get_axes()
@@ -77,35 +77,43 @@ class FolderBrowser(QtGui.QWidget):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("application main window")
 
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
-        self.setLayout(grid)
+        sub_layout = QtGui.QGridLayout()
 
         n_rows_canvas = 3
         n_cols_canvas = 3
         canvas = MyNewMplCanvas(fig)
-        grid.addWidget(canvas, 0, 0, n_rows_canvas, n_cols_canvas)
-
-        self.navi_toolbar = NavigationToolbar(canvas, self)
-        grid.addWidget(self.navi_toolbar, n_rows_canvas+1, 0, 1, n_cols_canvas)
+        MPL_widget = QtGui.QWidget()
+        sub_layout.addWidget(canvas, 1, 0, n_rows_canvas, n_cols_canvas)
 
         self.file_list = FileList(self.dir_path)
         self.file_list.itemClicked.connect(canvas.load_and_plot_data)
-        grid.addWidget(self.file_list, n_rows_canvas+2, 0, 2, n_cols_canvas)
         canvas.load_and_plot_data(self.file_list.currentItem())
 
-        comboBox0 = QtGui.QComboBox(self)
-        comboBox0.addItems(canvas.col_names)
-        comboBox0.setCurrentIndex(0)
-        comboBox0.currentIndexChanged.connect(canvas.change_sel_col_num0)
-        grid.addWidget(comboBox0, n_rows_canvas, 0, 1, 1)
-        
-        
-        comboBox1 = QtGui.QComboBox(self)
-        comboBox1.addItems(canvas.col_names)
-        comboBox1.setCurrentIndex(1)
-        comboBox1.currentIndexChanged.connect(canvas.change_sel_col_num1)
-        grid.addWidget(comboBox1, n_rows_canvas, 1, 1, 2)
+        comboBoxes = [None] * 3
+        for i in (0, 1, 2):
+            comboBoxes[i] = QtGui.QComboBox(self)
+            comboBoxes[i].addItems(canvas.col_names)
+            comboBoxes[i].setCurrentIndex(i)
+            if i==0:
+                comboBoxes[i].currentIndexChanged.connect(canvas.change_sel_col_num0)
+            elif i==1:
+                comboBoxes[i].currentIndexChanged.connect(canvas.change_sel_col_num1)
+            elif i==2:
+                comboBoxes[i].currentIndexChanged.connect(canvas.change_sel_col_num1)
+            sub_layout.addWidget(comboBoxes[i], n_rows_canvas+1, i, 1, 1)
+
+        self.navi_toolbar = NavigationToolbar(canvas, self)
+        sub_layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
+
+        MPL_widget.setLayout(sub_layout)
+        self.dock_widget1 = QtGui.QDockWidget('Plot 1', self)
+        self.dock_widget1.setWidget(MPL_widget)
+        self.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.dock_widget1)
+        self.dock_widget3 = QtGui.QDockWidget('Browser', self)
+        self.dock_widget3.setWidget(self.file_list)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dock_widget3)
+
+        self.setCentralWidget(self.dock_widget1)
 
 
 qApp = QtGui.QApplication(sys.argv)
