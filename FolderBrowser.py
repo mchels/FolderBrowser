@@ -8,36 +8,24 @@ if use_pyside:
 else:
     from PyQt4 import QtGui, QtCore
 
-#fjoweifjwe
 from FileListWidget import FileList
 sys.path.append('C:/git_repos')
 from data_loader.sweep import Sweep
 
 import numpy as np
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qt4 import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
-
-
-class MyNewMplCanvas(FigureCanvas):
-    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self, fig):
-        self.fig = fig
-        FigureCanvas.__init__(self, fig)
-        self.axes = fig.get_axes()
-        FigureCanvas.setSizePolicy(self,
-                                   QtGui.QSizePolicy.Expanding,
-                                   QtGui.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
 
 
 class MplLayout(QtGui.QWidget):
     """
     Contains canvas, toolbar and three comboboxes.
     """
-    def __init__(self, fig):
+    def __init__(self):
         super(MplLayout, self).__init__()
-        self.fig_canvas = MyNewMplCanvas(fig)
+        fig, _ = plt.subplots()
+        self.fig_canvas = FigureCanvasQTAgg(fig)
         layout = QtGui.QGridLayout()
         self.sel_col_idx = [0, 1, 2]
         self.sel_col_names = ['', '', '']
@@ -92,19 +80,17 @@ class MplLayout(QtGui.QWidget):
     def update_plot(self):
         x_data = self.sweep.data[self.sel_col_names[0]]
         y_data = self.sweep.data[self.sel_col_names[1]]
-        for ax in self.fig_canvas.axes:
+        for ax in self.fig_canvas.figure.get_axes():
             ax.cla()
             ax.plot(x_data, y_data)
             ax.relim()
             ax.autoscale_view(True, True, True)
-        fig.tight_layout()
-        self.fig_canvas.fig.canvas.draw()
+        self.fig_canvas.figure.tight_layout()
+        self.fig_canvas.figure.canvas.draw()
 
 
 class FolderBrowser(QtGui.QMainWindow):
-    def __init__(self, fig, dir_path, window_title='FolderBrowser'):
-        self.fig = fig
-        self.axes = fig.get_axes()
+    def __init__(self, dir_path, window_title='FolderBrowser'):
         self.dir_path = dir_path
         QtGui.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -113,7 +99,7 @@ class FolderBrowser(QtGui.QMainWindow):
         self.file_list = FileList(self.dir_path)
         # As soon as file list is initialized we can load the sweep it has
         # selected.
-        self.mpllayout = MplLayout(fig)
+        self.mpllayout = MplLayout()
         file_list_item = self.file_list.currentItem()
         self.file_list.itemClicked.connect(self.delegate_new_sweep)
         self.delegate_new_sweep(file_list_item)
@@ -133,11 +119,9 @@ class FolderBrowser(QtGui.QMainWindow):
         self.mpllayout.reset_and_plot(self.sweep)
 
 
-qApp = QtGui.QApplication(sys.argv)
-
 data_path = 'C:/Dropbox/PhD/sandbox_phd/load_in_jupyter/data'
-fig, _ = plt.subplots()
-aw = FolderBrowser(fig, data_path)
+qApp = QtGui.QApplication(sys.argv)
+aw = FolderBrowser(data_path)
 aw.show()
 sys.exit(qApp.exec_())
 #qApp.exec_()
