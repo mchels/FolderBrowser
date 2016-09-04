@@ -25,47 +25,80 @@ class MyNewMplCanvas(FigureCanvas):
         self.fig = fig
         FigureCanvas.__init__(self, fig)
         self.axes = fig.get_axes()
-        self.sel_col_names = ['', '', '']
-
         FigureCanvas.setSizePolicy(self,
                                    QtGui.QSizePolicy.Expanding,
                                    QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
-    # Distinguish between updating the plot and changing the sweep and redrawing it completely!
-    def load_and_plot_data(self, file_list_item=None):
-        # if file_list_item is None:
-            # raise RuntimeError('file_list_item is None')
-            # return
-        if file_list_item is not None:
-            sweep_path = file_list_item.data(QtCore.Qt.UserRole)
-            self.sweep = Sweep(sweep_path)
-        if self.sweep.dimension != 1:
-            err_str = 'Dimension {} not yet supported'.format(sweep.dimension)
-            raise RuntimeError(err_str)
-        self.col_names = self.sweep.data.dtype.names
+
+class MplLayout(QtGui.QWidget):
+    """
+    Contains canvas, toolbar and three comboboxes.
+    """
+    def __init__(self, fig):
+        super(MplLayout, self).__init__()
+        self.fig_canvas = MyNewMplCanvas(fig)
+        layout = QtGui.QGridLayout()
+        self.sel_col_idx = [0, 1, 2]
+        self.sel_col_names = ['', '', '']
+        n_rows_canvas = 3
+        n_cols_canvas = 3
+        self.comboBoxes = [None] * 3
+        for i in (0, 1, 2):
+            self.comboBoxes[i] = QtGui.QComboBox(self)
+            self.comboBoxes[i].activated.connect(self.update_sel_cols)
+            layout.addWidget(self.comboBoxes[i], n_rows_canvas+1, i, 1, 1)
+        layout.addWidget(self.fig_canvas, 1, 0, n_rows_canvas, n_cols_canvas)
+        self.navi_toolbar = NavigationToolbar(self.fig_canvas, self)
+        layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
+        self.setLayout(layout)
+
+    def reset_comboboxes(self):
+        for i in (0, 1, 2):
+            self.comboBoxes[i].clear()
+            self.comboBoxes[i].addItems(self.sweep.data.dtype.names)
+            self.comboBoxes[i].setCurrentIndex(self.sel_col_idx[i])
+        self.update_sel_col_names()
+
+    def update_sel_cols(self, new_num):
+        self.update_sel_col_idxs()
+        self.update_sel_col_names()
+        self.update_plot()
+
+    def update_sel_col_idxs(self):
+        for i, comboBox in enumerate(self.comboBoxes):
+            self.sel_col_idx[i] = comboBox.currentIndex()
+
+    def update_sel_col_names(self):
+        """
+        This function does not support pseudocolumns yet. It only searches
+        in the raw data columns for the column name corresponding an index.
+        """
+        for i, idx in enumerate(self.sel_col_idx):
+            self.sel_col_names[i] = self.sweep.data.dtype.names[idx]
+
+    def reset_and_plot(self, sweep=None):
+        if sweep is not None:
+            self.sweep = sweep
+        self.reset_comboboxes()
+        # TODO Clear figure at some point here.
         for i, col in enumerate(self.sel_col_names):
             if not col:
-                for new_col in self.col_names:
+                for new_col in self.sweep.data.dtype.names:
                     if new_col not in self.sel_col_names:
                         self.sel_col_names[i] = new_col
+        self.update_plot()
+
+    def update_plot(self):
         x_data = self.sweep.data[self.sel_col_names[0]]
         y_data = self.sweep.data[self.sel_col_names[1]]
-        for ax in self.axes:
+        for ax in self.fig_canvas.axes:
             ax.cla()
             ax.plot(x_data, y_data)
             ax.relim()
             ax.autoscale_view(True, True, True)
         fig.tight_layout()
-        self.fig.canvas.draw()
-
-    def change_sel_col_num0(self, new_num):
-        self.sel_col_names[0] = self.col_names[new_num]
-        self.load_and_plot_data()
-
-    def change_sel_col_num1(self, new_num):
-        self.sel_col_names[1] = self.col_names[new_num]
-        self.load_and_plot_data()
+        self.fig_canvas.fig.canvas.draw()
 
 
 class FolderBrowser(QtGui.QMainWindow):
@@ -77,43 +110,27 @@ class FolderBrowser(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle(window_title)
 
-        sub_layout = QtGui.QGridLayout()
-
-        n_rows_canvas = 3
-        n_cols_canvas = 3
-        canvas = MyNewMplCanvas(fig)
-        MPL_widget = QtGui.QWidget()
-        sub_layout.addWidget(canvas, 1, 0, n_rows_canvas, n_cols_canvas)
-
         self.file_list = FileList(self.dir_path)
-        self.file_list.itemClicked.connect(canvas.load_and_plot_data)
-        canvas.load_and_plot_data(self.file_list.currentItem())
+        # As soon as file list is initialized we can load the sweep it has
+        # selected.
+        self.mpllayout = MplLayout(fig)
+        file_list_item = self.file_list.currentItem()
+        self.file_list.itemClicked.connect(self.delegate_new_sweep)
+        self.delegate_new_sweep(file_list_item)
 
-        comboBoxes = [None] * 3
-        for i in (0, 1, 2):
-            comboBoxes[i] = QtGui.QComboBox(self)
-            comboBoxes[i].addItems(canvas.col_names)
-            comboBoxes[i].setCurrentIndex(i)
-            if i==0:
-                comboBoxes[i].currentIndexChanged.connect(canvas.change_sel_col_num0)
-            elif i==1:
-                comboBoxes[i].currentIndexChanged.connect(canvas.change_sel_col_num1)
-            elif i==2:
-                comboBoxes[i].currentIndexChanged.connect(canvas.change_sel_col_num1)
-            sub_layout.addWidget(comboBoxes[i], n_rows_canvas+1, i, 1, 1)
-
-        self.navi_toolbar = NavigationToolbar(canvas, self)
-        sub_layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
-
-        MPL_widget.setLayout(sub_layout)
         self.dock_widget1 = QtGui.QDockWidget('Plot 1', self)
-        self.dock_widget1.setWidget(MPL_widget)
+        self.dock_widget1.setWidget(self.mpllayout)
         self.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.dock_widget1)
         self.dock_widget3 = QtGui.QDockWidget('Browser', self)
         self.dock_widget3.setWidget(self.file_list)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.dock_widget3)
 
         self.setCentralWidget(self.dock_widget1)
+        
+    def delegate_new_sweep(self, file_list_item):
+        sweep_path = file_list_item.data(QtCore.Qt.UserRole)
+        self.sweep = Sweep(sweep_path)
+        self.mpllayout.reset_and_plot(self.sweep)
 
 
 qApp = QtGui.QApplication(sys.argv)
