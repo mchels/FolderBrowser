@@ -69,13 +69,13 @@ class MyNewMplCanvas(FigureCanvas):
 
 
 class FolderBrowser(QtGui.QMainWindow):
-    def __init__(self, fig, dir_path):
+    def __init__(self, fig, dir_path, window_title='FolderBrowser'):
         self.fig = fig
         self.axes = fig.get_axes()
         self.dir_path = dir_path
         QtGui.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setWindowTitle("application main window")
+        self.setWindowTitle(window_title)
 
         sub_layout = QtGui.QGridLayout()
 
@@ -121,7 +121,6 @@ qApp = QtGui.QApplication(sys.argv)
 data_path = 'C:/Dropbox/PhD/sandbox_phd/load_in_jupyter/data'
 fig, _ = plt.subplots()
 aw = FolderBrowser(fig, data_path)
-aw.setWindowTitle('Some cool title for the window')
 aw.show()
 sys.exit(qApp.exec_())
 #qApp.exec_()
