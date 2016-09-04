@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import sys
 import os
 from matplotlib.backends import qt_compat
@@ -12,9 +11,8 @@ from FileListWidget import FileList
 sys.path.append('C:/git_repos')
 from data_loader.sweep import Sweep
 
-import numpy as np
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
-from matplotlib.backends.backend_qt4 import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
 import matplotlib.pyplot as plt
 
 
@@ -37,7 +35,7 @@ class MplLayout(QtGui.QWidget):
             self.comboBoxes[i].activated.connect(self.update_sel_cols)
             layout.addWidget(self.comboBoxes[i], n_rows_canvas+1, i, 1, 1)
         layout.addWidget(self.fig_canvas, 1, 0, n_rows_canvas, n_cols_canvas)
-        self.navi_toolbar = NavigationToolbar(self.fig_canvas, self)
+        self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
         layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
         self.setLayout(layout)
 
@@ -69,7 +67,6 @@ class MplLayout(QtGui.QWidget):
         if sweep is not None:
             self.sweep = sweep
         self.reset_comboboxes()
-        # TODO Clear figure at some point here.
         for i, col in enumerate(self.sel_col_names):
             if not col:
                 for new_col in self.sweep.data.dtype.names:
@@ -115,10 +112,9 @@ class FolderBrowser(QtGui.QMainWindow):
         self.setCentralWidget(self.dock_widgets[0])
         file_list_item = self.file_list.currentItem()
         self.delegate_new_sweep(file_list_item)
+        self.show()
 
-        
     def delegate_new_sweep(self, file_list_item):
-        # todo loop over mpl layouts
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
         for mpl_layout in self.mpl_layouts:
@@ -128,7 +124,6 @@ class FolderBrowser(QtGui.QMainWindow):
 n_figs = 2
 data_path = 'C:/Dropbox/PhD/sandbox_phd/load_in_jupyter/data'
 qApp = QtGui.QApplication(sys.argv)
-aw = FolderBrowser(n_figs, data_path)
-aw.show()
+brw = FolderBrowser(n_figs, data_path)
 sys.exit(qApp.exec_())
 #qApp.exec_()

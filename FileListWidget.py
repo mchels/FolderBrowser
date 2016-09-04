@@ -23,4 +23,3 @@ class FileList(QtGui.QListWidget):
                 with open(json_path) as json_file:
                     meta = json.load(json_file)
                 self.name_timestamp_dict[meta['name']] = dirpath
-
