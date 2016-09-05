@@ -1,5 +1,6 @@
 TODO
 ====
+* I think I have to make comboBoxes into a class of its own.
 * Call tight_layout when mpl_layouts are resized by user.
 * Add support for plotting 2D data.
 * Allow mpl_layouts to be arranged horizontally.
