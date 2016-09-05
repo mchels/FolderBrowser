@@ -15,3 +15,4 @@ TODO
 * Add dropdown for colormap.
 * Button for "Open Folder".
 * Radio button for live update.
+* The items in the file list are not sorted.
