@@ -1,6 +1,5 @@
 TODO
 ====
-*DONE I think I have to make comboBoxes into a class of its own.
 * Call tight_layout when mpl_layouts are resized by user.
 * Add support for plotting 2D data.
 * Allow mpl_layouts to be arranged horizontally.
@@ -15,4 +14,6 @@ TODO
 * Add dropdown for colormap.
 * Button for "Open Folder".
 * Radio button for live update.
-* The items in the file list are not sorted.
+
+*DONE I think I have to make comboBoxes into a class of its own.
+*DONE The items in the file list are not sorted. They are now.
