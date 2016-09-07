@@ -107,6 +107,7 @@ class MplLayout(QtGui.QWidget):
         try:
             self.image.set_data(data_for_imshow)
             self.image.set_extent(extent)
+            self.image.autoscale()
         except AttributeError as error:
             self.statusBar.showMessage('self.image does not exist')
             ax.cla()
@@ -118,7 +119,7 @@ class MplLayout(QtGui.QWidget):
                 origin='lower',
                 extent=extent,
             )
-            self.cbar = fig.colorbar(self.image)
+            self.cbar = fig.colorbar(mappable=self.image)
             self.cbar.set_label(self.sel_col_names[2])
         ax.autoscale_view(True, True, True)
         self.common_plot_update()
