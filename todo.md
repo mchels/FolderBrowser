@@ -2,8 +2,9 @@ TODO
 ====
 Need to have
 ------------
-* Allow mpl_layouts to be arranged horizontally.
-* Prepare FolderBrowser to be loaded from Jupyter notebook.
+* Prepare FolderBrowser to be loaded from Jupyter notebook. Figure out why the
+  Jupyter kernel crashes after instantiating a couple of FolderBrowsers, even
+  if it is %reset between instantiations.
 * Add pseudocolumns.
 
 
@@ -25,6 +26,9 @@ Nice to have
 
 Done
 ----
+*DONE Allow mpl_layouts to be arranged horizontally.
+*DONE Prevent duplicate figures to open when FolderBrowser is started from
+  Jupyter notebook.
 *DONE Add support for plotting 2D data.
     *DONE Enable control of x- and y-axis with the comboboxes. Right now only
       the z combobox has effect when plotting 2D.

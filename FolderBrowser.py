@@ -191,15 +191,15 @@ class FolderBrowser(QtGui.QMainWindow):
             dock_widget = QtGui.QDockWidget(widget_title, self)
             dock_widget.setWidget(mpl_layout)
             self.addDockWidget(QtCore.Qt.TopDockWidgetArea, dock_widget)
+            dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
             self.dock_widgets[i] = dock_widget
         dock_widget = QtGui.QDockWidget('Browser', self)
         dock_widget.setWidget(self.file_list)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
-        self.dock_widgets[-1] = dock_widget
-        # Set central widget to the first mpl_layout.
-        self.setCentralWidget(self.dock_widgets[0])
+        dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         file_list_item = self.file_list.currentItem()
         self.delegate_new_sweep(file_list_item)
+        self.setDockNestingEnabled(True)
         self.show()
 
     def delegate_new_sweep(self, file_list_item):
