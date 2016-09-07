@@ -22,6 +22,7 @@ Nice to have
 * Button for "Open Folder".
 * Radio button for live update.
 * Break up FolderBrowser.__init__ into more methods!
+* Migrate the rest of the data_loader project where sweep.py came from.
 
 
 Done

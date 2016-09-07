@@ -8,8 +8,7 @@ else:
     from PyQt4 import QtGui, QtCore
 
 from FileListWidget import FileList
-sys.path.append('C:/git_repos')
-from data_loader.sweep import Sweep
+from sweep import Sweep
 from customcomboboxes import CustomComboBoxes
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
