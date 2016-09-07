@@ -24,7 +24,9 @@ class MplLayout(QtGui.QWidget):
     """
     def __init__(self, statusBar=None):
         super(MplLayout, self).__init__()
+        plt.ioff()
         fig, _ = plt.subplots()
+        plt.ion()
         self.statusBar = statusBar
         self.fig_canvas = FigureCanvasQTAgg(fig)
         self.comboBoxes = CustomComboBoxes(3, self.update_sel_cols)
