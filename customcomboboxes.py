@@ -12,6 +12,8 @@ class CustomComboBoxes(object):
             raise RuntimeError('Only 1, 2, and 3 boxes are supported.')
         self.num_boxes = num_boxes
         self.boxes = [None] * num_boxes
+        self.connect_fct = connect_fct
+        self.first_run = True
         for i in range(num_boxes):
             self.boxes[i] = QtGui.QComboBox()
             self.boxes[i].activated.connect(connect_fct)
@@ -38,11 +40,21 @@ class CustomComboBoxes(object):
 
     def select_lowest_unoccupied(self, box):
         """
-        Sets the text on box to the lowest text in self.list_of_text_items 
-        which is not already occupied by another box.
+        Sets the text on box to the text with the lowest index in
+        box.list_of_text_items which is not already selected in another box in
+        self.boxes.
         """
         sel_texts = self.get_sel_texts()
         for i, text in enumerate(box.list_of_text_items):
             if text not in sel_texts:
                 box.setCurrentIndex(i)
                 return
+
+    def set_text_on_box(self, box_idx, text):
+        """
+        Potential infinite loop if connect_fct calls this function.
+        """
+        box = self.boxes[box_idx]
+        idx = box.findText(text)
+        box.setCurrentIndex(idx)
+        self.connect_fct()
