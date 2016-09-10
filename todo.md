@@ -13,6 +13,9 @@ Nice to have
 * Add dropdown for colormap.
 * Figure out what the arguments to autoscale_view do and why they mess up
   image plots.
+* Something is not working right when custom_tight_layout is used many times on
+  an MplLayout that does not change its size. Maybe invisible colorbars are
+  created?
 * Call tight_layout when mpl_layouts are resized by user.
 * Make mpl_layouts take up equal amounts of space at initialization.
 * Make hotkeys work.
@@ -23,10 +26,12 @@ Nice to have
 * Radio button for live update.
 * Break up FolderBrowser.__init__ into more methods!
 * Migrate the rest of the data_loader project where sweep.py came from.
+* Hotkeys.
 
 
 Done
 ----
+*DONE Label on colorbar never changes from its initial value.
 *DONE Allow mpl_layouts to be arranged horizontally.
 *DONE Prevent duplicate figures to open when FolderBrowser is started from
   Jupyter notebook.
