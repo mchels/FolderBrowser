@@ -120,20 +120,24 @@ class MplLayout(QtGui.QWidget):
         self.common_plot_update()
 
     def common_plot_update(self):
-        # Sometimes we'll get an error:
-        # ValueError: bottom cannot be >= top
-        # This is a confirmed bug when using tight_layout():
-        # https://github.com/matplotlib/matplotlib/issues/5456
         ax = self.fig_canvas.figure.get_axes()[0]
         ax.relim()
         ax.set_xlabel(self.label_names[0])
         ax.set_ylabel(self.label_names[1])
         ax.set_title(self.sweep.meta['name'])
+        self.custom_tight_layout()
+        self.fig_canvas.figure.canvas.draw()
+
+    def custom_tight_layout(self):
+        # Sometimes we'll get an error:
+        # ValueError: bottom cannot be >= top
+        # This is a confirmed bug when using tight_layout():
+        # https://github.com/matplotlib/matplotlib/issues/5456
         try:
             self.fig_canvas.figure.tight_layout()
         except ValueError:
             pass
-        self.fig_canvas.figure.canvas.draw()
+
 
     def load_data_for_plot(self, dim):
         plot_data = [None] * dim
