@@ -14,7 +14,7 @@ class FileList(QtGui.QListWidget):
             date_and_serial_num = os.path.split(sub_dir_path)[-1]
             item_name = date_and_serial_num + ' ' + name
             item = QtGui.QListWidgetItem(item_name, parent=self)
-            # QtCore.Qt.UserRole is simply the integer 32 and denotes the role 
+            # QtCore.Qt.UserRole is simply the integer 32 and denotes the role
             # of the data. That seems super weird.
             item.setData(QtCore.Qt.UserRole, sub_dir_path)
             self.addItem(item)
