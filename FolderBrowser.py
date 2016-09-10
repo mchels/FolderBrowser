@@ -13,6 +13,7 @@ from customcomboboxes import CustomComboBoxes
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -23,9 +24,8 @@ class MplLayout(QtGui.QWidget):
     """
     def __init__(self, statusBar=None):
         super(MplLayout, self).__init__()
-        plt.ioff()
-        fig, _ = plt.subplots()
-        plt.ion()
+        fig = Figure()
+        fig.add_subplot(1, 1, 1)
         self.statusBar = statusBar
         self.fig_canvas = FigureCanvasQTAgg(fig)
         self.comboBoxes = CustomComboBoxes(3, self.update_sel_cols)
