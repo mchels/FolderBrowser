@@ -202,6 +202,9 @@ class FolderBrowser(QtGui.QMainWindow):
         file_list_item = self.file_list.currentItem()
         self.delegate_new_sweep(file_list_item)
         self.setDockNestingEnabled(True)
+        ava_space = QtGui.QDesktopWidget().availableGeometry()
+        self.move(ava_space.x()+0.5*ava_space.width(), 0)
+        self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
         self.show()
 
     def delegate_new_sweep(self, file_list_item):
