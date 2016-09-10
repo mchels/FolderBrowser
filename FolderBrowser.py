@@ -135,7 +135,10 @@ class MplLayout(QtGui.QWidget):
         ax.set_xlabel(self.label_names[0])
         ax.set_ylabel(self.label_names[1])
         ax.set_title(self.sweep.meta['name'])
-        # self.fig_canvas.figure.tight_layout()
+        try:
+            self.fig_canvas.figure.tight_layout()
+        except ValueError:
+            pass
         self.fig_canvas.figure.canvas.draw()
 
     def load_data_for_plot(self, dim):
