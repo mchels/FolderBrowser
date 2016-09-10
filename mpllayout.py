@@ -124,6 +124,8 @@ class MplLayout(QtGui.QWidget):
         ax.relim()
         ax.set_xlabel(self.label_names[0])
         ax.set_ylabel(self.label_names[1])
+        if self.cbar is not None:
+            self.cbar.set_label(self.label_names[2])
         ax.set_title(self.sweep.meta['name'])
         self.custom_tight_layout()
         self.fig_canvas.figure.canvas.draw()
