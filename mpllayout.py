@@ -37,7 +37,7 @@ class MplLayout(QtGui.QWidget):
         self.sel_col_names = self.comboBoxes.get_sel_texts()
         self.cbar = None
         self.image = None
-        self.cmaps = ['Reds', 'Blues', 'RdBu_r']
+        self.cmaps = ['Reds', 'Blues_r', 'RdBu_r']
         # Set default colormap.
         self.cmap = 'Reds'
 
