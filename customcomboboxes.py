@@ -7,7 +7,7 @@ else:
 
 
 class CustomComboBoxes(object):
-    def __init__(self, num_boxes, connect_fct, cmap_func):
+    def __init__(self, num_boxes, connect_fct, cmap_func, lim_func):
         if num_boxes not in (1,2,3):
             raise RuntimeError('Only 1, 2, and 3 boxes are supported.')
         self.num_boxes = num_boxes
@@ -21,6 +21,11 @@ class CustomComboBoxes(object):
         cmap_sel.addItems(['Reds', 'Blues_r', 'RdBu_r'])
         cmap_sel.activated.connect(cmap_func)
         self.cmap_sel = cmap_sel
+        self.num_lim_boxes = 3
+        self.lim_boxes = [None] * self.num_lim_boxes
+        for i in range(self.num_lim_boxes):
+            self.lim_boxes[i] = QtGui.QLineEdit()
+            self.lim_boxes[i].editingFinished.connect(lim_func)
 
     def reset(self, array_of_text_items):
         assert len(array_of_text_items) == self.num_boxes
