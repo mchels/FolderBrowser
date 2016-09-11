@@ -140,6 +140,10 @@ class MplLayout(QtGui.QWidget):
         except ValueError:
             pass
 
+    def update_cmap(self, cmap):
+        if self.image is not None:
+            self.image.set_cmap(cmap)
+            self.fig_canvas.figure.canvas.draw()
 
     def load_data_for_plot(self, dim):
         plot_data = [None] * dim
