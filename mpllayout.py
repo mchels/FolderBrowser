@@ -37,6 +37,9 @@ class MplLayout(QtGui.QWidget):
         self.sel_col_names = self.comboBoxes.get_sel_texts()
         self.cbar = None
         self.image = None
+        self.cmaps = ['Reds', 'Blues', 'RdBu_r']
+        # Set default colormap.
+        self.cmap = 'Reds'
 
     def update_sel_cols(self, new_num=None):
         """
@@ -110,12 +113,11 @@ class MplLayout(QtGui.QWidget):
             self.image = ax.imshow(
                 data_for_imshow,
                 aspect='auto',
-                cmap='RdBu_r',
+                cmap=self.cmap,
                 interpolation='none',
                 origin='lower',
                 extent=extent,
             )
-            self.cmap = 'RdBu_r'
             self.cbar = fig.colorbar(mappable=self.image)
             self.cbar.set_label(self.sel_col_names[2])
         ax.autoscale_view(True, True, True)
@@ -145,7 +147,7 @@ class MplLayout(QtGui.QWidget):
     def update_cmap(self, cmap):
         if self.image is not None:
             if type(cmap) is int:
-                cmap = ['RdBu_r', 'Reds', 'Blues'][cmap]
+                cmap = self.cmaps[cmap]
             self.image.set_cmap(cmap)
             self.cmap = cmap
             self.fig_canvas.figure.canvas.draw()

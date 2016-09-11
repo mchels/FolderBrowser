@@ -18,7 +18,7 @@ class CustomComboBoxes(object):
             self.boxes[i] = QtGui.QComboBox()
             self.boxes[i].activated.connect(connect_fct)
         cmap_sel = QtGui.QComboBox()
-        cmap_sel.addItems(['RdBu_r', 'Reds', 'Blues'])
+        cmap_sel.addItems(['Reds', 'Blues', 'RdBu_r'])
         cmap_sel.activated.connect(cmap_func)
         self.cmap_sel = cmap_sel
 

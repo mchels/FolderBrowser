@@ -10,7 +10,6 @@ Need to have
 
 Nice to have
 ------------
-* Add dropdown for colormap.
 * Figure out what the arguments to autoscale_view do and why they mess up
   image plots.
 * Something is not working right when custom_tight_layout is used many times on
@@ -31,6 +30,7 @@ Nice to have
 
 Done
 ----
+*DONE Add dropdown for colormap.
 *DONE Label on colorbar never changes from its initial value.
 *DONE Allow mpl_layouts to be arranged horizontally.
 *DONE Prevent duplicate figures to open when FolderBrowser is started from
