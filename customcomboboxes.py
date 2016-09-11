@@ -7,7 +7,7 @@ else:
 
 
 class CustomComboBoxes(object):
-    def __init__(self, num_boxes, connect_fct):
+    def __init__(self, num_boxes, connect_fct, cmap_func):
         if num_boxes not in (1,2,3):
             raise RuntimeError('Only 1, 2, and 3 boxes are supported.')
         self.num_boxes = num_boxes
@@ -17,6 +17,10 @@ class CustomComboBoxes(object):
         for i in range(num_boxes):
             self.boxes[i] = QtGui.QComboBox()
             self.boxes[i].activated.connect(connect_fct)
+        cmap_sel = QtGui.QComboBox()
+        cmap_sel.addItems(['RdBu_r', 'Reds', 'Blues'])
+        cmap_sel.activated.connect(cmap_func)
+        self.cmap_sel = cmap_sel
 
     def reset(self, array_of_text_items):
         assert len(array_of_text_items) == self.num_boxes

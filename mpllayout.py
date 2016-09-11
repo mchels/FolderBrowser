@@ -22,13 +22,14 @@ class MplLayout(QtGui.QWidget):
         fig.add_subplot(1, 1, 1)
         self.statusBar = statusBar
         self.fig_canvas = FigureCanvasQTAgg(fig)
-        self.comboBoxes = CustomComboBoxes(3, self.update_sel_cols)
+        self.comboBoxes = CustomComboBoxes(3, self.update_sel_cols, self.update_cmap)
         self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
         layout = QtGui.QGridLayout()
         n_rows_canvas = 3
-        n_cols_canvas = 3
+        n_cols_canvas = 4
         for i, box in enumerate(self.comboBoxes.boxes):
             layout.addWidget(box, n_rows_canvas+1, i, 1, 1)
+        layout.addWidget(self.comboBoxes.cmap_sel, n_rows_canvas+1, 3, 1, 1)
         layout.addWidget(self.fig_canvas, 1, 0, n_rows_canvas, n_cols_canvas)
         layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
         self.setLayout(layout)
@@ -109,11 +110,12 @@ class MplLayout(QtGui.QWidget):
             self.image = ax.imshow(
                 data_for_imshow,
                 aspect='auto',
-                cmap='bwr',
+                cmap='RdBu_r',
                 interpolation='none',
                 origin='lower',
                 extent=extent,
             )
+            self.cmap = 'RdBu_r'
             self.cbar = fig.colorbar(mappable=self.image)
             self.cbar.set_label(self.sel_col_names[2])
         ax.autoscale_view(True, True, True)
@@ -142,7 +144,10 @@ class MplLayout(QtGui.QWidget):
 
     def update_cmap(self, cmap):
         if self.image is not None:
+            if type(cmap) is int:
+                cmap = ['RdBu_r', 'Reds', 'Blues'][cmap]
             self.image.set_cmap(cmap)
+            self.cmap = cmap
             self.fig_canvas.figure.canvas.draw()
 
     def load_data_for_plot(self, dim):
