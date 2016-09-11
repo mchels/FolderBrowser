@@ -2,10 +2,8 @@ TODO
 ====
 Need to have
 ------------
-* Prepare FolderBrowser to be loaded from Jupyter notebook. Figure out why the
-  Jupyter kernel crashes after instantiating a couple of FolderBrowsers, even
-  if it is %reset between instantiations.
 * Add pseudocolumns.
+* x, y, z limits.
 
 
 Nice to have
@@ -28,18 +26,29 @@ Nice to have
 * Hotkeys.
 
 
+Known Issues
+------------
+* Calling tight_layout() when the axis title is wider than the plot causes the
+  axis to shrink rather than fill the figure. This issue is a known bug which
+  may be fixed in the 2.0.1 version of Matplotlib:
+  https://github.com/matplotlib/matplotlib/issues/5456
+
+
 Done
 ----
-*DONE Add dropdown for colormap.
-*DONE Label on colorbar never changes from its initial value.
-*DONE Allow mpl_layouts to be arranged horizontally.
-*DONE Prevent duplicate figures to open when FolderBrowser is started from
+* Prepare FolderBrowser to be loaded from Jupyter notebook. Figure out why the
+  Jupyter kernel crashes after instantiating a couple of FolderBrowsers, even
+  if it is %reset between instantiations.
+* Add dropdown for colormap.
+* Label on colorbar never changes from its initial value.
+* Allow mpl_layouts to be arranged horizontally.
+* Prevent duplicate figures to open when FolderBrowser is started from
   Jupyter notebook.
-*DONE Add support for plotting 2D data.
-    *DONE Enable control of x- and y-axis with the comboboxes. Right now only
+* Add support for plotting 2D data.
+    * Enable control of x- and y-axis with the comboboxes. Right now only
       the z combobox has effect when plotting 2D.
-    *DONE Add colorbar.
-*DONE Add plot title, axis labels.
-*DONE Show message in statusbar that data is 1D and can't be plotted as image.
-*DONE I think I have to make comboBoxes into a class of its own.
-*DONE The items in the file list are not sorted. They are now.
+    * Add colorbar.
+* Add plot title, axis labels.
+* Show message in statusbar that data is 1D and can't be plotted as image.
+* I think I have to make comboBoxes into a class of its own.
+* The items in the file list are not sorted. They are now.

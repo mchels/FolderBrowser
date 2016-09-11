@@ -130,7 +130,7 @@ class MplLayout(QtGui.QWidget):
         ax.set_ylabel(self.label_names[1])
         if self.cbar is not None:
             self.cbar.set_label(self.label_names[2])
-        ax.set_title(self.sweep.meta['name'])
+        ax.set_title(self.sweep.meta['name'], fontsize=10)
         self.custom_tight_layout()
         self.fig_canvas.figure.canvas.draw()
 
