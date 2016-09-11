@@ -53,8 +53,7 @@ class FolderBrowser(QtGui.QMainWindow):
 
 if __name__=='__main__':
     n_figs = 2
-    data_path = 'C:/Dropbox/PhD/sandbox_phd/load_in_jupyter/data'
-    # data_path = 'C:/Dropbox/PhD/sandbox_phd/load_in_jupyter/data2D'
+    data_path = 'C:/Dropbox/PhD/sandbox_phd/FolderBrowser/data'
     qApp = QtGui.QApplication(sys.argv)
     brw = FolderBrowser(n_figs, data_path)
     sys.exit(qApp.exec_())

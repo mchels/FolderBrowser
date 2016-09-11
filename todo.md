@@ -32,6 +32,12 @@ Known Issues
   axis to shrink rather than fill the figure. This issue is a known bug which
   may be fixed in the 2.0.1 version of Matplotlib:
   https://github.com/matplotlib/matplotlib/issues/5456
+* RdBu_r colormap is not white at 0 when data is not symmetric about 0. Perhaps
+  use OffsetNorm: https://github.com/matplotlib/matplotlib/pull/3858
+* Data is sometimes plotted in the direction it is swept, rather than small ->
+  large numbers. Example: sample 3D data gR.
+* In a Jupyter notebook the magic %load_ext autoreload does not reload the
+  classes if they are changed after initialization of the notebook.
 
 
 Done
