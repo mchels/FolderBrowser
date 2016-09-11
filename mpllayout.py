@@ -142,7 +142,9 @@ class MplLayout(QtGui.QWidget):
         try:
             self.fig_canvas.figure.tight_layout()
         except ValueError:
-            pass
+            msg = ('Title is wider than figure.'
+                   'This causes undesired behavior and is a known bug.')
+            self.statusBar.showMessage(msg, 2000)
 
     def update_cmap(self, cmap):
         if self.image is not None:
