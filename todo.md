@@ -2,19 +2,13 @@ TODO
 ====
 Need to have
 ------------
-* Add pseudocolumns.
-* x, y, z limits.
 
 
 Nice to have
 ------------
 * Figure out what the arguments to autoscale_view do and why they mess up
   image plots.
-* Something is not working right when custom_tight_layout is used many times on
-  an MplLayout that does not change its size. Maybe invisible colorbars are
-  created?
 * Call tight_layout when mpl_layouts are resized by user.
-* Make mpl_layouts take up equal amounts of space at initialization.
 * Make hotkeys work.
 * Consider clearing figure before plotting. Then the Home key on the toolbar may work.
 * Consider subclassing FigureCanvas. MplLayout is rather large at the moment.
@@ -24,6 +18,7 @@ Nice to have
 * Break up FolderBrowser.__init__ into more methods!
 * Migrate the rest of the data_loader project where sweep.py came from.
 * Hotkeys.
+* Use clip=True in colormaps?
 
 
 Known Issues
@@ -34,14 +29,23 @@ Known Issues
   https://github.com/matplotlib/matplotlib/issues/5456
 * RdBu_r colormap is not white at 0 when data is not symmetric about 0. Perhaps
   use OffsetNorm: https://github.com/matplotlib/matplotlib/pull/3858
-* Data is sometimes plotted in the direction it is swept, rather than small ->
-  large numbers. Example: sample 3D data gR.
+  Update: RdBu_r is now centered around zero, but the colors saturate at both
+  positive and negative values even if the abs(max(negative values)) is much
+  smaller than abs(max(positive values)).
 * In a Jupyter notebook the magic %load_ext autoreload does not reload the
   classes if they are changed after initialization of the notebook.
 
 
-Done
-----
+Done/Fixed
+----------
+* Make mpl_layouts take up equal amounts of space at initialization.
+* Data is sometimes plotted in the direction it is swept, rather than small ->
+  large numbers. Example: sample 3D data gR.
+* Something is not working right when custom_tight_layout is used many times on
+  an MplLayout that does not change its size. Maybe invisible colorbars are
+  created?
+* Add pseudocolumns.
+* x, y, z limits.
 * Prepare FolderBrowser to be loaded from Jupyter notebook. Figure out why the
   Jupyter kernel crashes after instantiating a couple of FolderBrowsers, even
   if it is %reset between instantiations.
