@@ -11,7 +11,7 @@ from mpllayout import MplLayout
 
 
 class FolderBrowser(QtGui.QMainWindow):
-    def __init__(self, n_figs, dir_path, window_title='FolderBrowser'):
+    def __init__(self, n_figs, dir_path, name_func_dict, window_title='FolderBrowser'):
         self.dir_path = dir_path
         QtGui.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -20,6 +20,7 @@ class FolderBrowser(QtGui.QMainWindow):
         self.statusBar = QtGui.QStatusBar()
         self.setStatusBar(self.statusBar)
         self.statusBar.showMessage("Dad, I'm hungry. Hi Hungry, I'm dad.")
+        self.name_func_dict = name_func_dict
         self.mpl_layouts = [None] * n_figs
         for i in range(n_figs):
             self.mpl_layouts[i] = MplLayout(statusBar=self.statusBar)
@@ -47,14 +48,16 @@ class FolderBrowser(QtGui.QMainWindow):
     def delegate_new_sweep(self, file_list_item):
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
+        self.sweep.set_pdata(self.name_func_dict)
         for mpl_layout in self.mpl_layouts:
             mpl_layout.reset_and_plot(self.sweep)
 
 
 if __name__=='__main__':
+    from pcols import name_func_dict
     n_figs = 2
     data_path = 'C:/Dropbox/PhD/sandbox_phd/FolderBrowser/data'
     qApp = QtGui.QApplication(sys.argv)
-    brw = FolderBrowser(n_figs, data_path)
+    brw = FolderBrowser(n_figs, data_path, name_func_dict)
     sys.exit(qApp.exec_())
     #qApp.exec_()

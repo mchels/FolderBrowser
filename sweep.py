@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import os
+from pseudodata import PseudoData
 
 
 class Sweep(object):
@@ -40,6 +41,18 @@ class Sweep(object):
         (data, meta) = (self.data, self.meta)
         c1, c2 = data.dtype.names[:2]
         (self.data, self.meta) = reshape2d(data[c1], data[c2], data), meta
+
+    def set_pdata(self, name_func_dict=None):
+        if name_func_dict is None:
+            return
+        self.pdata = PseudoData(name_func_dict, self)
+        self.name_func_dict = name_func_dict
+
+    def get_label(self, col_name):
+        try:
+            return self.name_func_dict[col_name]['label']
+        except KeyError:
+            return col_name
 
 
 def load_dir(path, meta_only=False):

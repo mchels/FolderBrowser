@@ -51,7 +51,6 @@ class MplLayout(QtGui.QWidget):
         """
         self.prev_sel_col_names = self.sel_col_names
         self.sel_col_names = self.comboBoxes.get_sel_texts()
-        self.label_names = self.sel_col_names
         # Try to make 1D plot if '---' is selected in the third comboBox.
         self.plot_is_2D = self.sel_col_names[2] != self.none_str
         self.data_is_1D = self.sweep.dimension == 1
@@ -66,9 +65,11 @@ class MplLayout(QtGui.QWidget):
     def reset_and_plot(self, sweep=None):
         if sweep is not None:
             self.sweep = sweep
-        raw_cols = self.sweep.data.dtype.names
-        col3_names = raw_cols + (self.none_str,)
-        col_names = [raw_cols, raw_cols, col3_names]
+        raw_col_names = list(self.sweep.data.dtype.names)
+        pcol_names = list(self.sweep.pdata.get_names())
+        all_names = raw_col_names + pcol_names
+        col3_names = all_names + [self.none_str]
+        col_names = [all_names, all_names, col3_names]
         self.comboBoxes.reset(col_names)
         self.update_sel_cols()
 
@@ -104,7 +105,6 @@ class MplLayout(QtGui.QWidget):
         else:
             data_for_imshow = plot_data[2]
         extent = col0_lims + col1_lims
-        self.label_names = self.sel_col_names
         fig = self.fig_canvas.figure
         ax = fig.get_axes()[0]
         try:
@@ -123,7 +123,8 @@ class MplLayout(QtGui.QWidget):
                 extent=extent,
             )
             self.cbar = fig.colorbar(mappable=self.image)
-            self.cbar.set_label(self.sel_col_names[2])
+            label = self.sweep.get_label(self.sel_col_names[2])
+            self.cbar.set_label(label)
             self.clims = (np.min(data_for_imshow), np.max(data_for_imshow))
         ax.autoscale_view(True, True, True)
         self.common_plot_update()
@@ -131,10 +132,13 @@ class MplLayout(QtGui.QWidget):
     def common_plot_update(self):
         ax = self.fig_canvas.figure.get_axes()[0]
         ax.relim()
-        ax.set_xlabel(self.label_names[0])
-        ax.set_ylabel(self.label_names[1])
+        xlabel = self.sweep.get_label(self.sel_col_names[0])
+        ax.set_xlabel(xlabel)
+        ylabel = self.sweep.get_label(self.sel_col_names[1])
+        ax.set_ylabel(ylabel)
         if self.cbar is not None:
-            self.cbar.set_label(self.label_names[2])
+            label = self.sweep.get_label(self.sel_col_names[2])
+            self.cbar.set_label(label)
         ax.set_title(self.sweep.meta['name'], fontsize=10)
         self.custom_tight_layout()
         self.fig_canvas.figure.canvas.draw()
@@ -172,7 +176,6 @@ class MplLayout(QtGui.QWidget):
         if self.image is None:
             data_lims = ax.dataLim.get_points()
         elif self.image is not None:
-            # data_lims = ax.viewLim.get_points()
             tmp = self.image.get_extent()
             data_lims = np.array([[tmp[0], tmp[2]], [tmp[1], tmp[3]]])
         user_lims = np.transpose([self.lims[0], self.lims[1]])
@@ -207,7 +210,10 @@ class MplLayout(QtGui.QWidget):
     def load_data_for_plot(self, dim):
         plot_data = [None] * dim
         for i in range(dim):
-            plot_data[i] = self.sweep.data[self.sel_col_names[i]]
+            try:
+                plot_data[i] = self.sweep.data[self.sel_col_names[i]]
+            except ValueError:
+                plot_data[i] = self.sweep.pdata[self.sel_col_names[i]]
         return plot_data
 
 
