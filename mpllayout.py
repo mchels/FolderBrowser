@@ -131,7 +131,7 @@ class MplLayout(QtGui.QWidget):
             self.cbar = fig.colorbar(mappable=self.image)
             label = self.sweep.get_label(self.sel_col_names[2])
             self.cbar.set_label(label)
-            self.clims = (np.min(data_for_imshow), np.max(data_for_imshow))
+        self.clims = (np.min(data_for_imshow), np.max(data_for_imshow))
         ax.autoscale_view(True, True, True)
         self.common_plot_update()
 
