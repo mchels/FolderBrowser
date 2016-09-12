@@ -104,6 +104,12 @@ class MplLayout(QtGui.QWidget):
             data_for_imshow = np.transpose(plot_data[2])
         else:
             data_for_imshow = plot_data[2]
+        if col0_lims[0] > col0_lims[1]:
+            col0_lims.reverse()
+            data_for_imshow = np.fliplr(data_for_imshow)
+        if col1_lims[0] > col1_lims[1]:
+            col1_lims.reverse()
+            data_for_imshow = np.flipud(data_for_imshow)
         extent = col0_lims + col1_lims
         fig = self.fig_canvas.figure
         ax = fig.get_axes()[0]
