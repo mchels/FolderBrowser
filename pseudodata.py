@@ -13,7 +13,7 @@ class PseudoData(dict):
             self.__setitem__(key, pcol)
             return pcol
         else:
-            return super(dict, self).__get__(key)
+            return dict.__getitem__(self, key)
 
     def get_names(self):
         names = [k for k, v in self.name_func_dict.items() if 'func' in v]
