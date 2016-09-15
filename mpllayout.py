@@ -11,6 +11,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+import matplotlib.colors as mcolors
 
 
 class MplLayout(QtGui.QWidget):
@@ -43,9 +44,10 @@ class MplLayout(QtGui.QWidget):
         self.sel_col_names = self.comboBoxes.get_sel_texts()
         self.cbar = None
         self.image = None
-        self.cmaps = ['Reds', 'Blues_r', 'RdBu_r']
+        self.cmaps = ['Reds', 'Blues_r', 'symmetric']
         # Set default colormap.
         self.cmap = 'Reds'
+        self.cmap_name = 'Reds'
         self.lims = [None] * 3
 
     def copy_fig_to_clipboard(self):
@@ -120,12 +122,11 @@ class MplLayout(QtGui.QWidget):
         extent = col0_lims + col1_lims
         fig = self.fig_canvas.figure
         ax = fig.get_axes()[0]
+        self.clims = (np.min(data_for_imshow), np.max(data_for_imshow))
         try:
             self.image.set_data(data_for_imshow)
             self.image.set_extent(extent)
-            self.image.autoscale()
         except AttributeError as error:
-            self.statusBar.showMessage('self.image does not exist')
             ax.cla()
             self.image = ax.imshow(
                 data_for_imshow,
@@ -138,9 +139,52 @@ class MplLayout(QtGui.QWidget):
             self.cbar = fig.colorbar(mappable=self.image)
             label = self.sweep.get_label(self.sel_col_names[2])
             self.cbar.set_label(label)
-        self.clims = (np.min(data_for_imshow), np.max(data_for_imshow))
+        try:
+            self.image.autoscale()
+        except ValueError:
+            pass
         ax.autoscale_view(True, True, True)
         self.common_plot_update()
+
+    def update_cmap(self, cmap_name=None):
+        """
+        cmap_name: string corresponding to a built-in matplotlib colormap
+              OR 'symmetric' which is defined below.
+        """
+        if self.image is None:
+            return
+        if type(cmap_name) is int:
+            cmap_name = self.cmaps[cmap_name]
+        if cmap_name is None:
+            cmap_name = self.cmap_name
+        self.cmap_name = cmap_name
+        if cmap_name == 'symmetric':
+            z_lims = self.lims[2]
+            max_abs = np.max(np.abs(z_lims))
+            min_val = z_lims[0]
+            max_val = z_lims[1]
+            if min_val <= 0 <= max_val:
+                z_range = max_val - min_val
+                n_neg_points = int(abs(min_val)/z_range*100)
+                neg_low_limit = 0.5 - abs(min_val)/max_abs/2
+                neg_vals = np.linspace(neg_low_limit, 0.5, n_neg_points)
+                neg_colors = plt.cm.RdBu_r(neg_vals)
+                n_pos_points = int(max_val/z_range*100)
+                pos_high_limit = 0.5 + max_val/max_abs/2
+                pos_vals = np.linspace(0.5, pos_high_limit, n_pos_points)
+                pos_colors = plt.cm.RdBu_r(pos_vals)
+                colors = np.vstack((neg_colors, pos_colors))
+                cmap = mcolors.LinearSegmentedColormap.from_list('foo', colors)
+                self.cmap = cmap
+            elif 0 <= min_val <= max_val:
+                self.cmap = plt.get_cmap('Reds')
+            elif min_val <= max_val <= 0:
+                self.cmap = plt.get_cmap('Blues')
+        else:
+            self.cmap = plt.get_cmap(cmap_name)
+        self.image.set_cmap(self.cmap)
+        self.cbar.draw_all() # Necessary
+        self.fig_canvas.figure.canvas.draw()
 
     def common_plot_update(self):
         ax = self.fig_canvas.figure.get_axes()[0]
@@ -199,6 +243,8 @@ class MplLayout(QtGui.QWidget):
                     new_lims[i][j] = user_lims[i][j]
         ax.set_xlim(new_lims[:,0])
         ax.set_ylim(new_lims[:,1])
+        self.lims[0] = new_lims[:,0]
+        self.lims[1] = new_lims[:,1]
         ax.relim()
         if self.image is None:
             ax.autoscale_view(True, True, True)
@@ -208,17 +254,11 @@ class MplLayout(QtGui.QWidget):
             for i in (0,1):
                 if user_lims[i] is not None:
                     new_lims[i] = user_lims[i]
+            self.lims[2] = new_lims
             self.image.set_clim(new_lims)
+            self.update_cmap()
         self.custom_tight_layout()
         self.fig_canvas.figure.canvas.draw()
-
-    def update_cmap(self, cmap):
-        if self.image is not None:
-            if type(cmap) is int:
-                cmap = self.cmaps[cmap]
-            self.image.set_cmap(cmap)
-            self.cmap = cmap
-            self.fig_canvas.figure.canvas.draw()
 
     def load_data_for_plot(self, dim):
         plot_data = [None] * dim

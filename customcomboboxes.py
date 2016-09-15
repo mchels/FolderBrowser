@@ -19,7 +19,7 @@ class CustomComboBoxes(object):
             self.boxes[i].activated.connect(connect_fct)
             self.boxes[i].setMaxVisibleItems(80)
         cmap_sel = QtGui.QComboBox()
-        cmap_sel.addItems(['Reds', 'Blues_r', 'RdBu_r'])
+        cmap_sel.addItems(['Reds', 'Blues_r', 'symmetric'])
         cmap_sel.activated.connect(cmap_func)
         self.cmap_sel = cmap_sel
         self.num_lim_boxes = 3

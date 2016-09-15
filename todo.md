@@ -12,14 +12,19 @@ Nice to have
 * Make hotkeys work.
 * Consider clearing figure before plotting. Then the Home key on the toolbar may work.
 * Consider subclassing FigureCanvas. MplLayout is rather large at the moment.
-* Add button to copy figure.
 * Button for "Open Folder".
 * Radio button for live update.
 * Break up FolderBrowser.__init__ into more methods!
 * Migrate the rest of the data_loader project where sweep.py came from.
 * Hotkeys.
 * Use clip=True in colormaps?
-
+* Add separator in QCombobox.
+* Compare subtract function with matlab-qd to confirm that they're working as
+  intended.
+* Shrink the width on the column selector boxes. They expand anyway when
+  opened.
+* fig_canvas.figure.canvas.draw() -> fig_canvas.draw()
+* Allow pseudocolumns to fail silently.
 
 Known Issues
 ------------
@@ -27,17 +32,23 @@ Known Issues
   axis to shrink rather than fill the figure. This issue is a known bug which
   may be fixed in the 2.0.1 version of Matplotlib:
   https://github.com/matplotlib/matplotlib/issues/5456
-* RdBu_r colormap is not white at 0 when data is not symmetric about 0. Perhaps
-  use OffsetNorm: https://github.com/matplotlib/matplotlib/pull/3858
-  Update: RdBu_r is now centered around zero, but the colors saturate at both
-  positive and negative values even if the abs(max(negative values)) is much
-  smaller than abs(max(positive values)).
 * In a Jupyter notebook the magic %load_ext autoreload does not reload the
   classes if they are changed after initialization of the notebook.
 
 
 Done/Fixed
 ----------
+* Add button to copy figure.
+* RdBu_r colormap is not white at 0 when data is not symmetric about 0. Perhaps
+  use OffsetNorm: https://github.com/matplotlib/matplotlib/pull/3858
+  Update: RdBu_r is now centered around zero, but the colors saturate at both
+  positive and negative values even if the abs(max(negative values)) is much
+  smaller than abs(max(positive values)).
+* QComboBox pop-ups do not expand to fit their text. Look into this solution:
+  http://stackoverflow.com/questions/20554940/qcombobox-pop-up-expanding-and-qtwebkit/20909625#20909625
+  or here:
+  http://stackoverflow.com/questions/3151798/how-do-i-set-the-qcombobox-width-to-fit-the-largest-item
+* Sort QComboBoxes by insertion order.
 * Make mpl_layouts take up equal amounts of space at initialization.
 * Data is sometimes plotted in the direction it is swept, rather than small ->
   large numbers. Example: sample 3D data gR.
