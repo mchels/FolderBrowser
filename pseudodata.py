@@ -9,7 +9,7 @@ class PseudoData(dict):
             return dict.__getitem__(self, key)
         elif key in self.name_func_dict:
             func = self.name_func_dict[key]['func']
-            pcol = func(self.sweep.data, self.sweep.meta)
+            pcol = func(self.sweep.data, self.sweep.pdata, self.sweep.meta)
             self.__setitem__(key, pcol)
             return pcol
         else:
