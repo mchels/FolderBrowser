@@ -19,7 +19,6 @@ class FolderBrowser(QtGui.QMainWindow):
         self.file_list = FileList(self.dir_path)
         self.statusBar = QtGui.QStatusBar()
         self.setStatusBar(self.statusBar)
-        self.statusBar.showMessage("Dad, I'm hungry. Hi Hungry, I'm dad.")
         self.name_func_dict = name_func_dict
         self.mpl_layouts = [None] * n_figs
         for i in range(n_figs):
