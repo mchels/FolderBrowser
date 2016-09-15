@@ -19,18 +19,3 @@ class PseudoData(dict):
         names = [k for k, v in self.name_func_dict.items() if 'func' in v]
         names.sort()
         return names
-
-    def get_labels(self):
-        labels = [key['label'] for key in self.name_func_dict.keys()]
-        return labels
-
-
-# class PseudoFunction(object):
-    # def __init__(self, name, label, active):
-        # self.name = name
-        # self.label = label
-        # self.active = active
-
-    # def __call__(self):
-        # return 10
-
