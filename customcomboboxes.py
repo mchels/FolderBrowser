@@ -17,6 +17,7 @@ class CustomComboBoxes(object):
         for i in range(num_boxes):
             self.boxes[i] = QtGui.QComboBox()
             self.boxes[i].activated.connect(connect_fct)
+            self.boxes[i].setMaxVisibleItems(80)
         cmap_sel = QtGui.QComboBox()
         cmap_sel.addItems(['Reds', 'Blues_r', 'RdBu_r'])
         cmap_sel.activated.connect(cmap_func)
@@ -36,6 +37,8 @@ class CustomComboBoxes(object):
             box.addItems(array_of_text_items[i])
             idx = box.findText(prev_text)
             box.setCurrentIndex(idx)
+            min_width = len(max(box.list_of_text_items, key=len)) * 8
+            box.view().setMinimumWidth(min_width)
         # All indices must be set in the loop above before we can start
         # assigning lowest unoccupied texts. Otherwise we don't know which
         # texts are unoccupied.
