@@ -73,7 +73,7 @@ class MplLayout(QtGui.QWidget):
         if sweep is not None:
             self.sweep = sweep
         raw_col_names = list(self.sweep.data.dtype.names)
-        pcol_names = list(self.sweep.pdata.get_names())
+        pcol_names = self.sweep.pdata.get_names()
         all_names = raw_col_names + pcol_names
         col3_names = all_names + [self.none_str]
         col_names = [all_names, all_names, col3_names]
