@@ -17,7 +17,7 @@ class PseudoData(dict):
 
     def get_names(self):
         names = [k for k, v in self.name_func_dict.items() if 'func' in v]
-        # return self.name_func_dict.keys()
+        names.sort()
         return names
 
     def get_labels(self):
