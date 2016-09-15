@@ -184,7 +184,7 @@ class MplLayout(QtGui.QWidget):
             self.cmap = plt.get_cmap(cmap_name)
         self.image.set_cmap(self.cmap)
         self.cbar.draw_all() # Necessary
-        self.fig_canvas.figure.canvas.draw()
+        self.fig_canvas.draw()
 
     def common_plot_update(self):
         ax = self.fig_canvas.figure.get_axes()[0]
@@ -198,7 +198,7 @@ class MplLayout(QtGui.QWidget):
             self.cbar.set_label(label)
         ax.set_title(self.sweep.meta['name'], fontsize=10)
         self.custom_tight_layout()
-        self.fig_canvas.figure.canvas.draw()
+        self.fig_canvas.draw()
 
     def custom_tight_layout(self):
         # Sometimes we'll get an error:
@@ -258,7 +258,7 @@ class MplLayout(QtGui.QWidget):
             self.image.set_clim(new_lims)
             self.update_cmap()
         self.custom_tight_layout()
-        self.fig_canvas.figure.canvas.draw()
+        self.fig_canvas.draw()
 
     def load_data_for_plot(self, dim):
         plot_data = [None] * dim
