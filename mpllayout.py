@@ -27,12 +27,15 @@ class MplLayout(QtGui.QWidget):
         self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
         layout = QtGui.QGridLayout()
         n_rows_canvas = 3
-        n_cols_canvas = 7
+        n_cols_canvas = 8
         for i, box in enumerate(self.comboBoxes.boxes):
             layout.addWidget(box, n_rows_canvas+1, i, 1, 1)
         layout.addWidget(self.comboBoxes.cmap_sel, n_rows_canvas+1, 3, 1, 1)
         for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
             layout.addWidget(self.comboBoxes.lim_boxes[i], n_rows_canvas+1, i+4, 1, 1)
+        self.copy_button = QtGui.QPushButton('Copy', self)
+        self.copy_button.clicked.connect(self.copy_fig_to_clipboard)
+        layout.addWidget(self.copy_button, n_rows_canvas+1, i+5, 1, 1)
         layout.addWidget(self.fig_canvas, 1, 0, n_rows_canvas, n_cols_canvas)
         layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
         self.setLayout(layout)
@@ -44,6 +47,10 @@ class MplLayout(QtGui.QWidget):
         # Set default colormap.
         self.cmap = 'Reds'
         self.lims = [None] * 3
+
+    def copy_fig_to_clipboard(self):
+        image = QtGui.QPixmap.grabWidget(self.fig_canvas).toImage()
+        QtGui.QApplication.clipboard().setImage(image)
 
     def update_sel_cols(self, new_num=None):
         """
