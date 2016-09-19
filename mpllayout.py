@@ -44,6 +44,7 @@ class MplLayout(QtWidgets.QWidget):
         self.cmap = 'Reds'
         self.cmap_name = 'Reds'
         self.lims = [None] * 3
+        self.update_is_scheduled = False
 
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()
@@ -64,6 +65,10 @@ class MplLayout(QtWidgets.QWidget):
                 msg = "You can't do an image plot, since the data is only 1D."
                 self.statusBar.showMessage(msg, 2000)
             self.comboBoxes.set_text_on_box(2, self.none_str)
+        self.update_is_scheduled = True
+        self.set_data_for_plot()
+        self.set_labels()
+        self.update_lims()
         self.update_plot()
 
     def reset_and_plot(self, sweep=None):
@@ -86,58 +91,34 @@ class MplLayout(QtWidgets.QWidget):
             self.cbar.remove()
             self.cbar = None
             self.image = None
-        plot_data = self.load_data_for_plot(dim=2)
+        self.set_data_for_plot()
         for ax in self.fig_canvas.figure.get_axes():
             ax.cla()
-            ax.plot(plot_data[0], plot_data[1])
+            ax.plot(self.plot_data[0], self.plot_data[1])
             ax.autoscale_view(True, True, True)
         self.common_plot_update()
 
     def update_2D_plot(self):
-        plot_data = self.load_data_for_plot(dim=3)
-        col0_axis = arr_varies_monotonically_on_axis(plot_data[0])
-        col1_axis = arr_varies_monotonically_on_axis(plot_data[1])
-        if not set((col0_axis, col1_axis)) == set((0, 1)):
-            msg = 'Selected columns not valid for image plot. No action taken.'
-            self.sel_col_names = self.prev_sel_col_names
-            self.statusBar.showMessage(msg)
-            return
-        col0_lims = [plot_data[0][0,0], plot_data[0][-1,-1]]
-        col1_lims = [plot_data[1][0,0], plot_data[1][-1,-1]]
-        if col0_axis == 0:
-            data_for_imshow = np.transpose(plot_data[2])
-        else:
-            data_for_imshow = plot_data[2]
-        if col0_lims[0] > col0_lims[1]:
-            col0_lims.reverse()
-            data_for_imshow = np.fliplr(data_for_imshow)
-        if col1_lims[0] > col1_lims[1]:
-            col1_lims.reverse()
-            data_for_imshow = np.flipud(data_for_imshow)
-        extent = col0_lims + col1_lims
         fig = self.fig_canvas.figure
         ax = fig.get_axes()[0]
-        self.clims = (np.min(data_for_imshow), np.max(data_for_imshow))
         try:
-            self.image.set_data(data_for_imshow)
-            self.image.set_extent(extent)
+            self.image.set_data(self.data_for_imshow)
+            self.image.set_extent(self.extent)
         except AttributeError as error:
             ax.cla()
             self.image = ax.imshow(
-                data_for_imshow,
+                self.data_for_imshow,
                 aspect='auto',
                 cmap=self.cmap,
                 interpolation='none',
                 origin='lower',
-                extent=extent,
+                extent=self.extent,
             )
             self.cbar = fig.colorbar(mappable=self.image)
-            label = self.sweep.get_label(self.sel_col_names[2])
-            self.cbar.set_label(label)
-        try:
-            self.image.autoscale()
-        except ValueError:
-            pass
+        self.image.set_cmap(self.cmap)
+        self.cbar.set_label(self.labels[2])
+        self.image.set_clim(self.lims[2])
+        self.cbar.draw_all()
         ax.autoscale_view(True, True, True)
         self.common_plot_update()
 
@@ -177,23 +158,28 @@ class MplLayout(QtWidgets.QWidget):
                 self.cmap = plt.get_cmap('Blues')
         else:
             self.cmap = plt.get_cmap(cmap_name)
-        self.image.set_cmap(self.cmap)
-        self.cbar.draw_all() # Necessary
-        self.fig_canvas.draw()
+        if not self.update_is_scheduled:
+            self.update_plot()
 
     def common_plot_update(self):
+        self.update_is_scheduled = False
         ax = self.fig_canvas.figure.get_axes()[0]
         ax.relim()
-        xlabel = self.sweep.get_label(self.sel_col_names[0])
-        ax.set_xlabel(xlabel)
-        ylabel = self.sweep.get_label(self.sel_col_names[1])
-        ax.set_ylabel(ylabel)
-        if self.cbar is not None:
-            label = self.sweep.get_label(self.sel_col_names[2])
-            self.cbar.set_label(label)
+        ax.set_xlabel(self.labels[0])
+        ax.set_ylabel(self.labels[1])
+        ax.set_xlim(self.lims[0])
+        ax.set_ylim(self.lims[1])
         ax.set_title(self.sweep.meta['name'], fontsize=10)
         self.custom_tight_layout()
         self.fig_canvas.draw()
+
+    def set_labels(self):
+        self.labels = [None] * 3
+        for i in range(3):
+            col_name = self.sel_col_names[i]
+            if col_name == self.none_str:
+                continue
+            self.labels[i] = self.sweep.get_label(col_name)
 
     def custom_tight_layout(self):
         # Sometimes we'll get an error:
@@ -206,20 +192,6 @@ class MplLayout(QtWidgets.QWidget):
             msg = ('Title is wider than figure.'
                    'This causes undesired behavior and is a known bug.')
             self.statusBar.showMessage(msg, 2000)
-
-    def parse_lims(self, text):
-        lims = text.split(':')
-        if len(lims) != 2:
-            return (None, None)
-        lower_lim = self.conv_to_float_or_None(lims[0])
-        upper_lim = self.conv_to_float_or_None(lims[1])
-        return (lower_lim, upper_lim)
-
-    def conv_to_float_or_None(self, str):
-        try:
-            return float(str)
-        except ValueError:
-            return None
 
     def update_lims(self):
         ax = self.fig_canvas.figure.get_axes()[0]
@@ -236,33 +208,72 @@ class MplLayout(QtWidgets.QWidget):
             for j in (0,1):
                 if user_lims[i][j] is not None:
                     new_lims[i][j] = user_lims[i][j]
-        ax.set_xlim(new_lims[:,0])
-        ax.set_ylim(new_lims[:,1])
         self.lims[0] = new_lims[:,0]
         self.lims[1] = new_lims[:,1]
-        ax.relim()
-        if self.image is None:
-            ax.autoscale_view(True, True, True)
-        elif self.image is not None:
-            new_lims = copy.deepcopy(list(self.clims))
+        if self.plot_is_2D:
+            z_data_lims = [self.data_for_imshow.min(), self.data_for_imshow.max()]
+            new_lims = copy.deepcopy(z_data_lims)
             user_lims = self.lims[2]
             for i in (0,1):
                 if user_lims[i] is not None:
                     new_lims[i] = user_lims[i]
             self.lims[2] = new_lims
-            self.image.set_clim(new_lims)
             self.update_cmap()
-        self.custom_tight_layout()
-        self.fig_canvas.draw()
+        if not self.update_is_scheduled:
+            self.update_plot()
 
-    def load_data_for_plot(self, dim):
-        plot_data = [None] * dim
-        for i in range(dim):
+    def set_data_for_plot(self):
+        n_dims = 3
+        self.plot_data = [None] * n_dims
+        for i in range(n_dims):
+            col_name = self.sel_col_names[i]
+            if col_name == self.none_str:
+                continue
             try:
-                plot_data[i] = self.sweep.data[self.sel_col_names[i]]
+                self.plot_data[i] = self.sweep.data[col_name]
             except ValueError:
-                plot_data[i] = self.sweep.pdata[self.sel_col_names[i]]
-        return plot_data
+                self.plot_data[i] = self.sweep.pdata[col_name]
+        self.process_image_data()
+
+    def process_image_data(self):
+        if self.plot_data[2] is None:
+            return
+        col0_axis = arr_varies_monotonically_on_axis(self.plot_data[0])
+        col1_axis = arr_varies_monotonically_on_axis(self.plot_data[1])
+        if not set((col0_axis, col1_axis)) == set((0, 1)):
+            msg = 'Selected columns not valid for image plot. No action taken.'
+            self.sel_col_names = self.prev_sel_col_names
+            self.statusBar.showMessage(msg)
+            return
+        col0_lims = [self.plot_data[0][0,0], self.plot_data[0][-1,-1]]
+        col1_lims = [self.plot_data[1][0,0], self.plot_data[1][-1,-1]]
+        if col0_axis == 0:
+            data_for_imshow = np.transpose(self.plot_data[2])
+        else:
+            data_for_imshow = self.plot_data[2]
+        if col0_lims[0] > col0_lims[1]:
+            col0_lims.reverse()
+            data_for_imshow = np.fliplr(data_for_imshow)
+        if col1_lims[0] > col1_lims[1]:
+            col1_lims.reverse()
+            data_for_imshow = np.flipud(data_for_imshow)
+        self.data_for_imshow = data_for_imshow
+        self.extent = col0_lims + col1_lims
+
+    def parse_lims(self, text):
+        lims = text.split(':')
+        if len(lims) != 2:
+            return (None, None)
+        lower_lim = self.conv_to_float_or_None(lims[0])
+        upper_lim = self.conv_to_float_or_None(lims[1])
+        return (lower_lim, upper_lim)
+
+    @staticmethod
+    def conv_to_float_or_None(str):
+        try:
+            return float(str)
+        except ValueError:
+            return None
 
 
 def arr_varies_monotonically_on_axis(arr):
