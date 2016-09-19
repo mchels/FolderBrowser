@@ -1,12 +1,7 @@
-from matplotlib.backends import qt_compat
-use_pyside = qt_compat.QT_API == qt_compat.QT_API_PYSIDE
-if use_pyside:
-    from PySide import QtGui, QtCore
-else:
-    from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets
 from customcomboboxes import CustomComboBoxes
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
-from matplotlib.backends.backend_qt4 import NavigationToolbar2QT
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +9,7 @@ import copy
 import matplotlib.colors as mcolors
 
 
-class MplLayout(QtGui.QWidget):
+class MplLayout(QtWidgets.QWidget):
     """
     Contains canvas, toolbar and a customcomboboxes object.
     """
@@ -26,7 +21,7 @@ class MplLayout(QtGui.QWidget):
         self.fig_canvas = FigureCanvasQTAgg(fig)
         self.comboBoxes = CustomComboBoxes(3, self.update_sel_cols, self.update_cmap, self.update_lims)
         self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         n_rows_canvas = 3
         n_cols_canvas = 8
         for i, box in enumerate(self.comboBoxes.boxes):
@@ -34,7 +29,7 @@ class MplLayout(QtGui.QWidget):
         layout.addWidget(self.comboBoxes.cmap_sel, n_rows_canvas+1, 3, 1, 1)
         for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
             layout.addWidget(self.comboBoxes.lim_boxes[i], n_rows_canvas+1, i+4, 1, 1)
-        self.copy_button = QtGui.QPushButton('Copy', self)
+        self.copy_button = QtWidgets.QPushButton('Copy', self)
         self.copy_button.clicked.connect(self.copy_fig_to_clipboard)
         layout.addWidget(self.copy_button, n_rows_canvas+1, i+5, 1, 1)
         layout.addWidget(self.fig_canvas, 1, 0, n_rows_canvas, n_cols_canvas)
@@ -51,8 +46,8 @@ class MplLayout(QtGui.QWidget):
         self.lims = [None] * 3
 
     def copy_fig_to_clipboard(self):
-        image = QtGui.QPixmap.grabWidget(self.fig_canvas).toImage()
-        QtGui.QApplication.clipboard().setImage(image)
+        image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()
+        QtWidgets.QApplication.clipboard().setImage(image)
 
     def update_sel_cols(self, new_num=None):
         """

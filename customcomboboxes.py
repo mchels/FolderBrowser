@@ -1,9 +1,4 @@
-from matplotlib.backends import qt_compat
-use_pyside = qt_compat.QT_API == qt_compat.QT_API_PYSIDE
-if use_pyside:
-    from PySide import QtGui, QtCore
-else:
-    from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets
 
 
 class CustomComboBoxes(object):
@@ -15,17 +10,17 @@ class CustomComboBoxes(object):
         self.connect_fct = connect_fct
         self.first_run = True
         for i in range(num_boxes):
-            self.boxes[i] = QtGui.QComboBox()
+            self.boxes[i] = QtWidgets.QComboBox()
             self.boxes[i].activated.connect(connect_fct)
             self.boxes[i].setMaxVisibleItems(80)
-        cmap_sel = QtGui.QComboBox()
+        cmap_sel = QtWidgets.QComboBox()
         cmap_sel.addItems(['Reds', 'Blues_r', 'symmetric'])
         cmap_sel.activated.connect(cmap_func)
         self.cmap_sel = cmap_sel
         self.num_lim_boxes = 3
         self.lim_boxes = [None] * self.num_lim_boxes
         for i in range(self.num_lim_boxes):
-            self.lim_boxes[i] = QtGui.QLineEdit()
+            self.lim_boxes[i] = QtWidgets.QLineEdit()
             self.lim_boxes[i].editingFinished.connect(lim_func)
 
     def reset(self, array_of_text_items):

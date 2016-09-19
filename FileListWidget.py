@@ -1,8 +1,8 @@
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtCore, QtWidgets
 import os
 import json
 
-class FileList(QtGui.QListWidget):
+class FileList(QtWidgets.QListWidget):
     def __init__(self, main_dir_path):
         super(FileList, self).__init__()
         self.main_dir_path = main_dir_path
@@ -13,7 +13,7 @@ class FileList(QtGui.QListWidget):
         for name, sub_dir_path in self.item_dict.items():
             date_and_serial_num = os.path.split(sub_dir_path)[-1]
             item_name = date_and_serial_num + ' ' + name
-            item = QtGui.QListWidgetItem(item_name, parent=self)
+            item = QtWidgets.QListWidgetItem(item_name, parent=self)
             # QtCore.Qt.UserRole is simply the integer 32 and denotes the role
             # of the data. That seems super weird.
             item.setData(QtCore.Qt.UserRole, sub_dir_path)
