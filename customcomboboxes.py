@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QSizePolicy
 
 
 class CustomComboBoxes(object):
@@ -16,6 +17,10 @@ class CustomComboBoxes(object):
         cmap_sel = QtWidgets.QComboBox()
         cmap_sel.addItems(['Reds', 'Blues_r', 'symmetric'])
         cmap_sel.activated.connect(cmap_func)
+        policy = QSizePolicy.MinimumExpanding
+        cmap_sel.setSizePolicy(policy, policy)
+        cmap_sel.setMinimumWidth(40)
+
         self.cmap_sel = cmap_sel
         self.num_lim_boxes = 3
         self.lim_boxes = [None] * self.num_lim_boxes
