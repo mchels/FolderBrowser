@@ -97,7 +97,6 @@ class MplLayout(QtWidgets.QWidget):
             self.cbar.remove()
             self.cbar = None
             self.image = None
-        self.set_data_for_plot()
         for ax in self.fig_canvas.figure.get_axes():
             ax.cla()
             ax.plot(self.plot_data[0], self.plot_data[1])
@@ -242,7 +241,7 @@ class MplLayout(QtWidgets.QWidget):
         if not set((col0_axis, col1_axis)) == set((0, 1)):
             msg = 'Selected columns not valid for image plot. No action taken.'
             self.sel_col_names = self.prev_sel_col_names
-            self.statusBar.showMessage(msg)
+            self.statusBar.showMessage(msg, 1000)
             return
         col0_lims = [self.plot_data[0][0,0], self.plot_data[0][-1,-1]]
         col1_lims = [self.plot_data[1][0,0], self.plot_data[1][-1,-1]]
