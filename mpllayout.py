@@ -52,9 +52,16 @@ class MplLayout(QtWidgets.QWidget):
         self.lims = [None] * 3
         self.update_is_scheduled = False
 
-    def copy_fig_to_clipboard(self):
-        image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()
-        QtWidgets.QApplication.clipboard().setImage(image)
+    def reset_and_plot(self, sweep=None):
+        if sweep is not None:
+            self.sweep = sweep
+        raw_col_names = list(self.sweep.data.dtype.names)
+        pcol_names = self.sweep.pdata.get_names()
+        all_names = raw_col_names + pcol_names
+        col3_names = all_names + [self.none_str]
+        col_names = [all_names, all_names, col3_names]
+        self.comboBoxes.reset(col_names)
+        self.update_sel_cols()
 
     def update_sel_cols(self, new_num=None):
         """
@@ -77,55 +84,73 @@ class MplLayout(QtWidgets.QWidget):
         self.update_lims()
         self.update_plot()
 
-    def reset_and_plot(self, sweep=None):
-        if sweep is not None:
-            self.sweep = sweep
-        raw_col_names = list(self.sweep.data.dtype.names)
-        pcol_names = self.sweep.pdata.get_names()
-        all_names = raw_col_names + pcol_names
-        col3_names = all_names + [self.none_str]
-        col_names = [all_names, all_names, col3_names]
-        self.comboBoxes.reset(col_names)
-        self.update_sel_cols()
+    def set_data_for_plot(self):
+        n_dims = 3
+        self.plot_data = [None] * n_dims
+        for i in range(n_dims):
+            col_name = self.sel_col_names[i]
+            if col_name == self.none_str:
+                continue
+            try:
+                self.plot_data[i] = self.sweep.data[col_name]
+            except ValueError:
+                self.plot_data[i] = self.sweep.pdata[col_name]
+        self.set_data_for_imshow()
 
-    def update_plot(self):
-        if self.plot_is_2D: self.update_2D_plot()
-        else: self.update_1D_plot()
+    def set_data_for_imshow(self):
+        if self.plot_data[2] is None:
+            return
+        col0_axis = arr_varies_monotonically_on_axis(self.plot_data[0])
+        col1_axis = arr_varies_monotonically_on_axis(self.plot_data[1])
+        if not set((col0_axis, col1_axis)) == set((0, 1)):
+            msg = 'Selected columns not valid for image plot. No action taken.'
+            self.sel_col_names = self.prev_sel_col_names
+            self.statusBar.showMessage(msg, 1000)
+            return
+        col0_lims = [self.plot_data[0][0,0], self.plot_data[0][-1,-1]]
+        col1_lims = [self.plot_data[1][0,0], self.plot_data[1][-1,-1]]
+        if col0_axis == 0:
+            data_for_imshow = np.transpose(self.plot_data[2])
+        else:
+            data_for_imshow = self.plot_data[2]
+        if col0_lims[0] > col0_lims[1]:
+            col0_lims.reverse()
+            data_for_imshow = np.fliplr(data_for_imshow)
+        if col1_lims[0] > col1_lims[1]:
+            col1_lims.reverse()
+            data_for_imshow = np.flipud(data_for_imshow)
+        self.data_for_imshow = data_for_imshow
+        self.extent = col0_lims + col1_lims
+        
+    def set_labels(self):
+        self.labels = [None] * 3
+        for i in range(3):
+            col_name = self.sel_col_names[i]
+            if col_name == self.none_str:
+                continue
+            self.labels[i] = self.sweep.get_label(col_name)
 
-    def update_1D_plot(self):
-        if self.cbar is not None:
-            self.cbar.remove()
-            self.cbar = None
-            self.image = None
-        for ax in self.fig_canvas.figure.get_axes():
-            ax.cla()
-            ax.plot(self.plot_data[0], self.plot_data[1])
-            ax.autoscale_view(True, True, True)
-        self.common_plot_update()
-
-    def update_2D_plot(self):
-        fig = self.fig_canvas.figure
-        ax = fig.get_axes()[0]
-        try:
-            self.image.set_data(self.data_for_imshow)
-            self.image.set_extent(self.extent)
-        except AttributeError as error:
-            ax.cla()
-            self.image = ax.imshow(
-                self.data_for_imshow,
-                aspect='auto',
-                cmap=self.cmap,
-                interpolation='none',
-                origin='lower',
-                extent=self.extent,
-            )
-            self.cbar = fig.colorbar(mappable=self.image)
-        self.image.set_cmap(self.cmap)
-        self.cbar.set_label(self.labels[2])
-        self.image.set_clim(self.lims[2])
-        self.cbar.draw_all()
-        ax.autoscale_view(True, True, True)
-        self.common_plot_update()
+    def update_lims(self):
+        """
+        user_lims are limits set by user in the lim_boxes.
+        extent is data limits for both 1D and 2D plots.
+        """
+        user_lims = [None] * 3
+        ext = [None] * 3
+        for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
+            user_lims[i] = self.parse_lims(lim_box.text())
+        if self.plot_is_2D:
+            ext[0] = self.extent[0:2]
+            ext[1] = self.extent[2:4]
+            ext[2] = [self.data_for_imshow.min(), self.data_for_imshow.max()]
+        else:
+            ext[0] = [self.plot_data[0].min(), self.plot_data[0].max()]
+            ext[1] = [self.plot_data[1].min(), self.plot_data[1].max()]
+        for i in (0,1,2):
+            self.lims[i] = self.combine_lim_lists(user_lims[i], ext[i])
+        self.update_cmap()
+        if not self.update_is_scheduled:
+            self.update_plot()
 
     def update_cmap(self, cmap_name=None):
         """
@@ -166,6 +191,45 @@ class MplLayout(QtWidgets.QWidget):
         if not self.update_is_scheduled:
             self.update_plot()
 
+    def update_plot(self):
+        if self.plot_is_2D: self.update_2D_plot()
+        else: self.update_1D_plot()
+
+    def update_1D_plot(self):
+        if self.cbar is not None:
+            self.cbar.remove()
+            self.cbar = None
+            self.image = None
+        for ax in self.fig_canvas.figure.get_axes():
+            ax.cla()
+            ax.plot(self.plot_data[0], self.plot_data[1])
+            ax.autoscale_view(True, True, True)
+        self.common_plot_update()
+
+    def update_2D_plot(self):
+        fig = self.fig_canvas.figure
+        ax = fig.get_axes()[0]
+        try:
+            self.image.set_data(self.data_for_imshow)
+            self.image.set_extent(self.extent)
+        except AttributeError as error:
+            ax.cla()
+            self.image = ax.imshow(
+                self.data_for_imshow,
+                aspect='auto',
+                cmap=self.cmap,
+                interpolation='none',
+                origin='lower',
+                extent=self.extent,
+            )
+            self.cbar = fig.colorbar(mappable=self.image)
+        self.image.set_cmap(self.cmap)
+        self.cbar.set_label(self.labels[2])
+        self.image.set_clim(self.lims[2])
+        self.cbar.draw_all()
+        ax.autoscale_view(True, True, True)
+        self.common_plot_update()
+
     def common_plot_update(self):
         self.update_is_scheduled = False
         ax = self.fig_canvas.figure.get_axes()[0]
@@ -177,14 +241,6 @@ class MplLayout(QtWidgets.QWidget):
         ax.set_title(self.sweep.meta['name'], fontsize=10)
         self.custom_tight_layout()
         self.fig_canvas.draw()
-
-    def set_labels(self):
-        self.labels = [None] * 3
-        for i in range(3):
-            col_name = self.sel_col_names[i]
-            if col_name == self.none_str:
-                continue
-            self.labels[i] = self.sweep.get_label(col_name)
 
     def custom_tight_layout(self):
         # Sometimes we'll get an error:
@@ -198,65 +254,9 @@ class MplLayout(QtWidgets.QWidget):
                    'This causes undesired behavior and is a known bug.')
             self.statusBar.showMessage(msg, 2000)
 
-    def update_lims(self):
-        """
-        user_lims are limits set by user in the lim_boxes.
-        extent is data limits for both 1D and 2D plots.
-        """
-        user_lims = [None] * 3
-        ext = [None] * 3
-        for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
-            user_lims[i] = self.parse_lims(lim_box.text())
-        if self.plot_is_2D:
-            ext[0] = self.extent[0:2]
-            ext[1] = self.extent[2:4]
-            ext[2] = [self.data_for_imshow.min(), self.data_for_imshow.max()]
-        else:
-            ext[0] = [self.plot_data[0].min(), self.plot_data[0].max()]
-            ext[1] = [self.plot_data[1].min(), self.plot_data[1].max()]
-        for i in (0,1,2):
-            self.lims[i] = self.combine_lim_lists(user_lims[i], ext[i])
-        self.update_cmap()
-        if not self.update_is_scheduled:
-            self.update_plot()
-
-    def set_data_for_plot(self):
-        n_dims = 3
-        self.plot_data = [None] * n_dims
-        for i in range(n_dims):
-            col_name = self.sel_col_names[i]
-            if col_name == self.none_str:
-                continue
-            try:
-                self.plot_data[i] = self.sweep.data[col_name]
-            except ValueError:
-                self.plot_data[i] = self.sweep.pdata[col_name]
-        self.set_data_for_imshow()
-
-    def set_data_for_imshow(self):
-        if self.plot_data[2] is None:
-            return
-        col0_axis = arr_varies_monotonically_on_axis(self.plot_data[0])
-        col1_axis = arr_varies_monotonically_on_axis(self.plot_data[1])
-        if not set((col0_axis, col1_axis)) == set((0, 1)):
-            msg = 'Selected columns not valid for image plot. No action taken.'
-            self.sel_col_names = self.prev_sel_col_names
-            self.statusBar.showMessage(msg, 1000)
-            return
-        col0_lims = [self.plot_data[0][0,0], self.plot_data[0][-1,-1]]
-        col1_lims = [self.plot_data[1][0,0], self.plot_data[1][-1,-1]]
-        if col0_axis == 0:
-            data_for_imshow = np.transpose(self.plot_data[2])
-        else:
-            data_for_imshow = self.plot_data[2]
-        if col0_lims[0] > col0_lims[1]:
-            col0_lims.reverse()
-            data_for_imshow = np.fliplr(data_for_imshow)
-        if col1_lims[0] > col1_lims[1]:
-            col1_lims.reverse()
-            data_for_imshow = np.flipud(data_for_imshow)
-        self.data_for_imshow = data_for_imshow
-        self.extent = col0_lims + col1_lims
+    def copy_fig_to_clipboard(self):
+        image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()
+        QtWidgets.QApplication.clipboard().setImage(image)
 
     def parse_lims(self, text):
         lims = text.split(':')
