@@ -1,8 +1,9 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 from plotcontrols import PlotControls
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,9 +15,10 @@ class MplLayout(QtWidgets.QWidget):
     """
     Contains canvas, toolbar and a PlotControls object.
     """
-    def __init__(self, statusBar=None):
+    def __init__(self, statusBar=None, parent=None):
         super(MplLayout, self).__init__()
         self.statusBar = statusBar
+        self.parent = parent
         self.init_fig_and_canvas()
         self.cmap_names = ['Reds', 'Blues_r', 'symmetric']
         self.plotcontrols = PlotControls(self.update_sel_cols,
@@ -242,6 +244,16 @@ class MplLayout(QtWidgets.QWidget):
         self.fig_canvas = FigureCanvasQTAgg(fig)
         policy = QSizePolicy.Expanding
         self.fig_canvas.setSizePolicy(policy, policy)
+        self.fig_canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.fig_canvas.mpl_connect('key_press_event', self.on_key_press)
+        self.fig_canvas.mpl_connect('button_press_event', self.on_key_press)
+
+    def on_key_press(self, event):
+        self.parent.set_active_layout(self)
+        try:
+            key_press_handler(event, self.fig_canvas, self.navi_toolbar)
+        except:
+            pass
 
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()

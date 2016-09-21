@@ -44,7 +44,8 @@ class FolderBrowser(QMainWindow):
     def init_mpl_layouts(self):
         self.mpl_layouts = [None] * self.n_layouts
         for i in range(self.n_layouts):
-            self.mpl_layouts[i] = MplLayout(statusBar=self.statusBar)
+            self.mpl_layouts[i] = MplLayout(statusBar=self.statusBar,
+                                            parent=self)
         for i, mpl_layout in enumerate(self.mpl_layouts):
             title = 'Plot {}'.format(i)
             dock_widget = CustomDockWidget(title, self)
@@ -52,6 +53,7 @@ class FolderBrowser(QMainWindow):
             dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
             self.addDockWidget(QtCore.Qt.TopDockWidgetArea, dock_widget)
             self.dock_widgets.append(dock_widget)
+        self.set_active_layout(self.mpl_layouts[0])
 
     def init_file_list(self):
         self.file_list = FileList(self.dir_path)
@@ -61,6 +63,16 @@ class FolderBrowser(QMainWindow):
         dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
         self.dock_widgets.append(dock_widget)
+
+    def set_active_layout(self, layout):
+        try:
+            inactive_str = 'background-color: 10; border: none'
+            self.active_layout.navi_toolbar.setStyleSheet(inactive_str)
+        except AttributeError:
+            pass
+        active_str = 'background-color: lightblue; border: none'
+        layout.navi_toolbar.setStyleSheet(active_str)
+        self.active_layout = layout
 
 
 if __name__=='__main__':

@@ -9,18 +9,25 @@ Nice to have
 * Figure out what the arguments to autoscale_view do and why they mess up
   image plots.
 * Call tight_layout when mpl_layouts are resized by user.
-* Make hotkeys work.
 * Consider clearing figure before plotting. Then the Home key on the toolbar may work.
 * Consider subclassing FigureCanvas. MplLayout is rather large at the moment.
 * Button for "Open Folder".
 * Radio button for live update.
 * Migrate the rest of the data_loader project where sweep.py came from.
-* Hotkeys.
 * Use clip=True in colormaps?
 * Add separator in QCombobox.
 * Compare subtract function with matlab-qd to confirm that they're working as
   intended.
 * Allow pseudocolumns to fail silently.
+* Add comboboxes to apply function to data. Figure out where to put them first.
+* Set column comboboxes back to previous setting if new setting is invalid.
+* Add datestamp to title of plot.
+* Make a diagram that shows the order in which attributes are updated in
+  MplLayout
+* fig_canvas -> canvas
+* Set active layout in FolderBrowser when a widget in PlotControls is clicked.
+* Preserve interactive settings (e.g., grid) when updating plots.
+* Implement hotkeys on a level above the interactive MPL controls.
 
 Known Issues
 ------------
@@ -34,6 +41,7 @@ Known Issues
 
 Done/Fixed
 ----------
+* Highlight navigation bar on active qdockwidget.
 * Break up FolderBrowser.__init__ into more methods!
 * fig_canvas.figure.canvas.draw() -> fig_canvas.draw()
 * Shrink the width on the column selector boxes. They expand anyway when
