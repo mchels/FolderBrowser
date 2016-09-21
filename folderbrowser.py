@@ -2,7 +2,7 @@ import sys
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
-from FileListWidget import FileList
+from filelistwidget import FileList
 from sweep import Sweep
 from mpllayout import MplLayout
 
