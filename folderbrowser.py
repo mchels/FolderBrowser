@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMainWindow, QDockWidget, QDesktopWidget
 from filelistwidget import FileList
 from sweep import Sweep
 from mpllayout import MplLayout
+from customdockwidget import CustomDockWidget
 
 
 class FolderBrowser(QMainWindow):
@@ -16,6 +17,7 @@ class FolderBrowser(QMainWindow):
         self.dir_path = dir_path
         self.name_func_dict = name_func_dict
         self.setWindowTitle(window_title)
+        self.dock_widgets = []
         self.init_statusbar()
         self.init_mpl_layouts()
         self.init_file_list()
@@ -45,10 +47,11 @@ class FolderBrowser(QMainWindow):
             self.mpl_layouts[i] = MplLayout(statusBar=self.statusBar)
         for i, mpl_layout in enumerate(self.mpl_layouts):
             title = 'Plot {}'.format(i)
-            dock_widget = QDockWidget(title, self)
+            dock_widget = CustomDockWidget(title, self)
             dock_widget.setWidget(mpl_layout)
             dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
             self.addDockWidget(QtCore.Qt.TopDockWidgetArea, dock_widget)
+            self.dock_widgets.append(dock_widget)
 
     def init_file_list(self):
         self.file_list = FileList(self.dir_path)
@@ -57,6 +60,7 @@ class FolderBrowser(QMainWindow):
         dock_widget.setWidget(self.file_list)
         dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
+        self.dock_widgets.append(dock_widget)
 
 
 if __name__=='__main__':
