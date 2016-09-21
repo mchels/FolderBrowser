@@ -17,8 +17,9 @@ class CustomComboBoxes(object):
         cmap_sel = QtWidgets.QComboBox()
         cmap_sel.addItems(['Reds', 'Blues_r', 'symmetric'])
         cmap_sel.activated.connect(cmap_func)
-        policy = QSizePolicy.MinimumExpanding
-        cmap_sel.setSizePolicy(policy, policy)
+        policy_horiz = QSizePolicy.MinimumExpanding
+        policy_vert = QSizePolicy.Maximum
+        cmap_sel.setSizePolicy(policy_horiz, policy_vert)
         cmap_sel.setMinimumWidth(40)
 
         self.cmap_sel = cmap_sel

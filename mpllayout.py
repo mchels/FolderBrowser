@@ -26,8 +26,9 @@ class MplLayout(QtWidgets.QWidget):
         n_rows_canvas = 3
         n_cols_canvas = 8
         for i, box in enumerate(self.comboBoxes.boxes):
-            policy = QSizePolicy.MinimumExpanding
-            box.setSizePolicy(policy, policy)
+            policy_horiz = QSizePolicy.MinimumExpanding
+            policy_vert = QSizePolicy.Maximum
+            box.setSizePolicy(policy_horiz, policy_vert)
             box.setMinimumWidth(40)
             layout.addWidget(box, n_rows_canvas+1, i, 1, 1)
         layout.addWidget(self.comboBoxes.cmap_sel, n_rows_canvas+1, 3, 1, 1)
