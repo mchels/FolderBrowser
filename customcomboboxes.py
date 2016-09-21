@@ -3,16 +3,16 @@ from PyQt5.QtWidgets import QSizePolicy
 
 
 class CustomComboBoxes(object):
-    def __init__(self, num_boxes, connect_fct, cmap_func, lim_func):
+    def __init__(self, num_boxes, sel_col_func, cmap_func, lim_func):
         if num_boxes not in (1,2,3):
             raise RuntimeError('Only 1, 2, and 3 boxes are supported.')
         self.num_boxes = num_boxes
         self.boxes = [None] * num_boxes
-        self.connect_fct = connect_fct
+        self.sel_col_func = sel_col_func
         self.first_run = True
         for i in range(num_boxes):
             self.boxes[i] = QtWidgets.QComboBox()
-            self.boxes[i].activated.connect(connect_fct)
+            self.boxes[i].activated.connect(sel_col_func)
             self.boxes[i].setMaxVisibleItems(80)
         cmap_sel = QtWidgets.QComboBox()
         cmap_sel.addItems(['Reds', 'Blues_r', 'symmetric'])
@@ -65,9 +65,9 @@ class CustomComboBoxes(object):
 
     def set_text_on_box(self, box_idx, text):
         """
-        Potential infinite loop if connect_fct calls this function.
+        Potential infinite loop if sel_col_func calls this function.
         """
         box = self.boxes[box_idx]
         idx = box.findText(text)
         box.setCurrentIndex(idx)
-        self.connect_fct()
+        self.sel_col_func()
