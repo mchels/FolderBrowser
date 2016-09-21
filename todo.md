@@ -24,10 +24,12 @@ Nice to have
 * Add datestamp to title of plot.
 * Make a diagram that shows the order in which attributes are updated in
   MplLayout
-* fig_canvas -> canvas
 * Set active layout in FolderBrowser when a widget in PlotControls is clicked.
 * Preserve interactive settings (e.g., grid) when updating plots.
 * Implement hotkeys on a level above the interactive MPL controls.
+* Make toolbar narrower. In the long term consider getting rid of the icons
+  altogether, keeping only the numbers that indicate the current point.
+
 
 Known Issues
 ------------
@@ -41,6 +43,7 @@ Known Issues
 
 Done/Fixed
 ----------
+* fig_canvas -> canvas
 * Highlight navigation bar on active qdockwidget.
 * Break up FolderBrowser.__init__ into more methods!
 * fig_canvas.figure.canvas.draw() -> fig_canvas.draw()

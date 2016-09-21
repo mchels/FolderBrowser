@@ -26,11 +26,11 @@ class MplLayout(QtWidgets.QWidget):
                                        self.update_lims,
                                        self.copy_fig_to_clipboard,
                                        self.cmap_names)
-        self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
+        self.navi_toolbar = NavigationToolbar2QT(self.canvas, self)
         self.navi_toolbar.setStyleSheet('border: none')
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
-        layout.addWidget(self.fig_canvas)
+        layout.addWidget(self.canvas)
         layout.addWidget(self.plotcontrols)
         self.setLayout(layout)
         self.none_str = '---'
@@ -184,14 +184,14 @@ class MplLayout(QtWidgets.QWidget):
             self.image = None
         except AttributeError:
             pass
-        for ax in self.fig_canvas.figure.get_axes():
+        for ax in self.canvas.figure.get_axes():
             ax.cla()
             ax.plot(self.plot_data[0], self.plot_data[1])
             ax.autoscale_view(True, True, True)
         self.common_plot_update()
 
     def update_2D_plot(self):
-        fig = self.fig_canvas.figure
+        fig = self.canvas.figure
         ax = fig.get_axes()[0]
         try:
             self.image.set_data(self.data_for_imshow)
@@ -216,7 +216,7 @@ class MplLayout(QtWidgets.QWidget):
 
     def common_plot_update(self):
         self.update_is_scheduled = False
-        ax = self.fig_canvas.figure.get_axes()[0]
+        ax = self.canvas.figure.get_axes()[0]
         ax.relim()
         ax.set_xlabel(self.labels[0])
         ax.set_ylabel(self.labels[1])
@@ -224,7 +224,7 @@ class MplLayout(QtWidgets.QWidget):
         ax.set_ylim(self.lims[1])
         ax.set_title(self.sweep.meta['name'], fontsize=10)
         self.custom_tight_layout()
-        self.fig_canvas.draw()
+        self.canvas.draw()
 
     def custom_tight_layout(self):
         # Sometimes we'll get an error:
@@ -232,7 +232,7 @@ class MplLayout(QtWidgets.QWidget):
         # This is a confirmed bug when using tight_layout():
         # https://github.com/matplotlib/matplotlib/issues/5456
         try:
-            self.fig_canvas.figure.tight_layout()
+            self.canvas.figure.tight_layout()
         except ValueError:
             msg = ('Title is wider than figure.'
                    'This causes undesired behavior and is a known bug.')
@@ -241,22 +241,22 @@ class MplLayout(QtWidgets.QWidget):
     def init_fig_and_canvas(self):
         fig = Figure()
         fig.add_subplot(1, 1, 1)
-        self.fig_canvas = FigureCanvasQTAgg(fig)
+        self.canvas = FigureCanvasQTAgg(fig)
         policy = QSizePolicy.Expanding
-        self.fig_canvas.setSizePolicy(policy, policy)
-        self.fig_canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.fig_canvas.mpl_connect('key_press_event', self.on_key_press)
-        self.fig_canvas.mpl_connect('button_press_event', self.on_key_press)
+        self.canvas.setSizePolicy(policy, policy)
+        self.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.canvas.mpl_connect('key_press_event', self.on_key_press)
+        self.canvas.mpl_connect('button_press_event', self.on_key_press)
 
     def on_key_press(self, event):
         self.parent.set_active_layout(self)
         try:
-            key_press_handler(event, self.fig_canvas, self.navi_toolbar)
+            key_press_handler(event, self.canvas, self.navi_toolbar)
         except:
             pass
 
     def copy_fig_to_clipboard(self):
-        image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()
+        image = QtWidgets.QWidget.grab(self.canvas).toImage()
         QtWidgets.QApplication.clipboard().setImage(image)
 
     @staticmethod
