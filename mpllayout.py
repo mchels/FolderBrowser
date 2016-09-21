@@ -16,55 +16,49 @@ class MplLayout(QtWidgets.QWidget):
     """
     def __init__(self, statusBar=None):
         super(MplLayout, self).__init__()
-        fig = Figure()
-        fig.add_subplot(1, 1, 1)
         self.statusBar = statusBar
-        self.fig_canvas = FigureCanvasQTAgg(fig)
-        self.fig_canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.comboBoxes = PlotControls(self.update_sel_cols, self.update_cmap, self.update_lims, self.copy_fig_to_clipboard)
+        self.init_fig_and_canvas()
+        self.cmap_names = ['Reds', 'Blues_r', 'symmetric']
+        self.plotcontrols = PlotControls(self.update_sel_cols,
+                                       self.update_cmap,
+                                       self.update_lims,
+                                       self.copy_fig_to_clipboard,
+                                       self.cmap_names)
         self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
         layout.addWidget(self.fig_canvas)
-        layout.addWidget(self.comboBoxes)
+        layout.addWidget(self.plotcontrols)
         self.setLayout(layout)
         self.none_str = '---'
-        self.sel_col_names = self.comboBoxes.get_sel_texts()
+        self.sel_col_names = self.plotcontrols.get_sel_cols()
         self.cbar = None
-        self.image = None
-        self.cmaps = ['Reds', 'Blues_r', 'symmetric']
-        # Set default colormap.
-        self.cmap = 'Reds'
-        self.cmap_name = 'Reds'
+        self.cmap_name = self.cmap_names[0]
+        self.cmap = plt.get_cmap(self.cmap_name)
         self.lims = [None] * 3
         self.update_is_scheduled = False
 
-    def reset_and_plot(self, sweep=None):
-        if sweep is not None:
-            self.sweep = sweep
+    def reset_and_plot(self, sweep):
+        self.sweep = sweep
         raw_col_names = list(self.sweep.data.dtype.names)
         pcol_names = self.sweep.pdata.get_names()
         all_names = raw_col_names + pcol_names
         col3_names = all_names + [self.none_str]
         col_names = [all_names, all_names, col3_names]
-        self.comboBoxes.reset(col_names)
+        self.plotcontrols.reset_col_boxes(col_names)
         self.update_sel_cols()
 
     def update_sel_cols(self, new_num=None):
-        """
-        To maintain a consistent state we must update the plot at the end.
-        """
         self.prev_sel_col_names = self.sel_col_names
-        self.sel_col_names = self.comboBoxes.get_sel_texts()
+        self.sel_col_names = self.plotcontrols.get_sel_cols()
         # Try to make 1D plot if '---' is selected in the third comboBox.
         self.plot_is_2D = self.sel_col_names[2] != self.none_str
         self.data_is_1D = self.sweep.dimension == 1
         plot_is_invalid = self.plot_is_2D and self.data_is_1D
         if plot_is_invalid:
-            if self.statusBar is not None:
-                msg = "You can't do an image plot, since the data is only 1D."
-                self.statusBar.showMessage(msg, 2000)
-            self.comboBoxes.set_text_on_box(2, self.none_str)
+            msg = "You can't do an image plot, since the data is only 1D."
+            self.statusBar.showMessage(msg, 2000)
+            self.plotcontrols.set_text_on_box(2, self.none_str)
         self.update_is_scheduled = True
         self.set_data_for_plot()
         self.set_labels()
@@ -85,14 +79,14 @@ class MplLayout(QtWidgets.QWidget):
         self.set_data_for_imshow()
 
     def set_data_for_imshow(self):
-        if self.plot_data[2] is None:
+        if not self.plot_is_2D:
             return
         col0_axis = arr_varies_monotonically_on_axis(self.plot_data[0])
         col1_axis = arr_varies_monotonically_on_axis(self.plot_data[1])
         if not set((col0_axis, col1_axis)) == set((0, 1)):
             msg = 'Selected columns not valid for image plot. No action taken.'
             self.sel_col_names = self.prev_sel_col_names
-            self.statusBar.showMessage(msg, 1000)
+            self.statusBar.showMessage(msg, 2000)
             return
         col0_lims = [self.plot_data[0][0,0], self.plot_data[0][-1,-1]]
         col1_lims = [self.plot_data[1][0,0], self.plot_data[1][-1,-1]]
@@ -108,7 +102,7 @@ class MplLayout(QtWidgets.QWidget):
             data_for_imshow = np.flipud(data_for_imshow)
         self.data_for_imshow = data_for_imshow
         self.extent = col0_lims + col1_lims
-        
+
     def set_labels(self):
         self.labels = [None] * 3
         for i in range(3):
@@ -120,12 +114,10 @@ class MplLayout(QtWidgets.QWidget):
     def update_lims(self):
         """
         user_lims are limits set by user in the lim_boxes.
-        extent is data limits for both 1D and 2D plots.
+        For both 1D and 2D plots extent is data limits.
         """
-        user_lims = [None] * 3
         ext = [None] * 3
-        for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
-            user_lims[i] = self.parse_lims(lim_box.text())
+        user_lims = self.plotcontrols.get_lims()
         if self.plot_is_2D:
             ext[0] = self.extent[0:2]
             ext[1] = self.extent[2:4]
@@ -147,7 +139,7 @@ class MplLayout(QtWidgets.QWidget):
         if not self.plot_is_2D:
             return
         if type(cmap_name) is int:
-            cmap_name = self.cmaps[cmap_name]
+            cmap_name = self.cmap_names[cmap_name]
         if cmap_name is None:
             cmap_name = self.cmap_name
         self.cmap_name = cmap_name
@@ -183,10 +175,12 @@ class MplLayout(QtWidgets.QWidget):
         else: self.update_1D_plot()
 
     def update_1D_plot(self):
-        if self.cbar is not None:
+        try:
             self.cbar.remove()
             self.cbar = None
             self.image = None
+        except AttributeError:
+            pass
         for ax in self.fig_canvas.figure.get_axes():
             ax.cla()
             ax.plot(self.plot_data[0], self.plot_data[1])
@@ -211,8 +205,8 @@ class MplLayout(QtWidgets.QWidget):
             )
             self.cbar = fig.colorbar(mappable=self.image)
         self.image.set_cmap(self.cmap)
-        self.cbar.set_label(self.labels[2])
         self.image.set_clim(self.lims[2])
+        self.cbar.set_label(self.labels[2])
         self.cbar.draw_all()
         ax.autoscale_view(True, True, True)
         self.common_plot_update()
@@ -241,24 +235,16 @@ class MplLayout(QtWidgets.QWidget):
                    'This causes undesired behavior and is a known bug.')
             self.statusBar.showMessage(msg, 2000)
 
+    def init_fig_and_canvas(self):
+        fig = Figure()
+        fig.add_subplot(1, 1, 1)
+        self.fig_canvas = FigureCanvasQTAgg(fig)
+        policy = QSizePolicy.Expanding
+        self.fig_canvas.setSizePolicy(policy, policy)
+
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.fig_canvas).toImage()
         QtWidgets.QApplication.clipboard().setImage(image)
-
-    def parse_lims(self, text):
-        lims = text.split(':')
-        if len(lims) != 2:
-            return (None, None)
-        lower_lim = self.conv_to_float_or_None(lims[0])
-        upper_lim = self.conv_to_float_or_None(lims[1])
-        return (lower_lim, upper_lim)
-
-    @staticmethod
-    def conv_to_float_or_None(str):
-        try:
-            return float(str)
-        except ValueError:
-            return None
 
     @staticmethod
     def combine_lim_lists(list1, list2):

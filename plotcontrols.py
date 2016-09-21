@@ -2,7 +2,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 
 class PlotControls(QtWidgets.QWidget):
-    def __init__(self, sel_col_func, cmap_func, lim_func, copy_func):
+    def __init__(self, sel_col_func, cmap_func, lim_func, copy_func,
+                 cmap_names):
         super(PlotControls, self).__init__()
         self.layout = QtWidgets.QHBoxLayout()
         self.num_col_boxes = 3
@@ -11,13 +12,14 @@ class PlotControls(QtWidgets.QWidget):
         self.cmap_func = cmap_func
         self.lim_func = lim_func
         self.copy_func = copy_func
+        self.cmap_names = cmap_names
         self.init_col_sel_boxes()
         self.init_cmap_sel()
         self.init_lim_boxes()
         self.init_copy_button()
         self.setLayout(self.layout)
 
-    def reset(self, array_of_text_items):
+    def reset_col_boxes(self, array_of_text_items):
         assert len(array_of_text_items) == self.num_col_boxes
         for i, box in enumerate(self.col_boxes):
             box.list_of_text_items = array_of_text_items[i]
@@ -50,7 +52,7 @@ class PlotControls(QtWidgets.QWidget):
 
     def init_cmap_sel(self):
         cmap_sel = QtWidgets.QComboBox()
-        cmap_sel.addItems(['Reds', 'Blues_r', 'symmetric'])
+        cmap_sel.addItems(self.cmap_names)
         cmap_sel.activated.connect(self.cmap_func)
         policy_horiz = QSizePolicy.MinimumExpanding
         policy_vert = QSizePolicy.Maximum
@@ -74,9 +76,15 @@ class PlotControls(QtWidgets.QWidget):
         self.layout.addWidget(copy_button)
         self.copy_button = copy_button
 
-    def get_sel_texts(self):
+    def get_sel_cols(self):
         sel_texts = [box.currentText() for box in self.col_boxes]
         return sel_texts
+
+    def get_lims(self):
+        lims = [None] * self.num_lim_boxes
+        for i, lim_box in enumerate(self.lim_boxes):
+            lims[i] = self.parse_lims(lim_box.text())
+        return lims
 
     def select_lowest_unoccupied(self, box):
         """
@@ -84,7 +92,7 @@ class PlotControls(QtWidgets.QWidget):
         box.list_of_text_items which is not already selected in another box in
         self.col_boxes.
         """
-        sel_texts = self.get_sel_texts()
+        sel_texts = self.get_sel_cols()
         for i, text in enumerate(box.list_of_text_items):
             if text not in sel_texts:
                 box.setCurrentIndex(i)
@@ -98,3 +106,18 @@ class PlotControls(QtWidgets.QWidget):
         idx = box.findText(text)
         box.setCurrentIndex(idx)
         self.sel_col_func()
+
+    def parse_lims(self, text):
+        lims = text.split(':')
+        if len(lims) != 2:
+            return (None, None)
+        lower_lim = self.conv_to_float_or_None(lims[0])
+        upper_lim = self.conv_to_float_or_None(lims[1])
+        return (lower_lim, upper_lim)
+
+    @staticmethod
+    def conv_to_float_or_None(str):
+        try:
+            return float(str)
+        except ValueError:
+            return None
