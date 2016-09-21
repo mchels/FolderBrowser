@@ -133,7 +133,7 @@ class MplLayout(QtWidgets.QWidget):
         cmap_name: string corresponding to a built-in matplotlib colormap
               OR 'symmetric' which is defined below.
         """
-        if self.image is None:
+        if not self.plot_is_2D:
             return
         if type(cmap_name) is int:
             cmap_name = self.cmaps[cmap_name]
@@ -200,31 +200,24 @@ class MplLayout(QtWidgets.QWidget):
             self.statusBar.showMessage(msg, 2000)
 
     def update_lims(self):
-        ax = self.fig_canvas.figure.get_axes()[0]
+        """
+        user_lims are limits set by user in the lim_boxes.
+        extent is data limits for both 1D and 2D plots.
+        """
+        user_lims = [None] * 3
+        ext = [None] * 3
         for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
-            self.lims[i] = self.parse_lims(lim_box.text())
-        if self.image is None:
-            data_lims = ax.dataLim.get_points()
-        elif self.image is not None:
-            tmp = self.image.get_extent()
-            data_lims = np.array([[tmp[0], tmp[2]], [tmp[1], tmp[3]]])
-        user_lims = np.transpose([self.lims[0], self.lims[1]])
-        new_lims = data_lims
-        for i in (0,1):
-            for j in (0,1):
-                if user_lims[i][j] is not None:
-                    new_lims[i][j] = user_lims[i][j]
-        self.lims[0] = new_lims[:,0]
-        self.lims[1] = new_lims[:,1]
+            user_lims[i] = self.parse_lims(lim_box.text())
         if self.plot_is_2D:
-            z_data_lims = [self.data_for_imshow.min(), self.data_for_imshow.max()]
-            new_lims = copy.deepcopy(z_data_lims)
-            user_lims = self.lims[2]
-            for i in (0,1):
-                if user_lims[i] is not None:
-                    new_lims[i] = user_lims[i]
-            self.lims[2] = new_lims
-            self.update_cmap()
+            ext[0] = self.extent[0:2]
+            ext[1] = self.extent[2:4]
+            ext[2] = [self.data_for_imshow.min(), self.data_for_imshow.max()]
+        else:
+            ext[0] = [self.plot_data[0].min(), self.plot_data[0].max()]
+            ext[1] = [self.plot_data[1].min(), self.plot_data[1].max()]
+        for i in (0,1,2):
+            self.lims[i] = self.combine_lim_lists(user_lims[i], ext[i])
+        self.update_cmap()
         if not self.update_is_scheduled:
             self.update_plot()
 
@@ -239,9 +232,9 @@ class MplLayout(QtWidgets.QWidget):
                 self.plot_data[i] = self.sweep.data[col_name]
             except ValueError:
                 self.plot_data[i] = self.sweep.pdata[col_name]
-        self.process_image_data()
+        self.set_data_for_imshow()
 
-    def process_image_data(self):
+    def set_data_for_imshow(self):
         if self.plot_data[2] is None:
             return
         col0_axis = arr_varies_monotonically_on_axis(self.plot_data[0])
@@ -280,6 +273,19 @@ class MplLayout(QtWidgets.QWidget):
             return float(str)
         except ValueError:
             return None
+
+    @staticmethod
+    def combine_lim_lists(list1, list2):
+        if list1 is None or list2 is None:
+            return None
+        assert len(list1) == len(list2)
+        out_list = [None] * len(list1)
+        for i in range(len(list1)):
+            if list1[i] is None:
+                out_list[i] = list2[i]
+            else:
+                out_list[i] = list1[i]
+        return out_list
 
 
 def arr_varies_monotonically_on_axis(arr):
