@@ -2,51 +2,61 @@ import sys
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QDockWidget, QDesktopWidget
 from filelistwidget import FileList
 from sweep import Sweep
 from mpllayout import MplLayout
 
 
-class FolderBrowser(QtWidgets.QMainWindow):
-    def __init__(self, n_figs, dir_path, name_func_dict, window_title='FolderBrowser'):
+class FolderBrowser(QMainWindow):
+    def __init__(self, n_layouts, dir_path, name_func_dict,
+                 window_title='FolderBrowser'):
+        QMainWindow.__init__(self)
+        self.n_layouts = n_layouts
         self.dir_path = dir_path
-        QtWidgets.QMainWindow.__init__(self)
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setWindowTitle(window_title)
-        self.file_list = FileList(self.dir_path)
-        self.statusBar = QtWidgets.QStatusBar()
-        self.setStatusBar(self.statusBar)
         self.name_func_dict = name_func_dict
-        self.mpl_layouts = [None] * n_figs
-        for i in range(n_figs):
-            self.mpl_layouts[i] = MplLayout(statusBar=self.statusBar)
-        self.file_list.itemClicked.connect(self.delegate_new_sweep)
-        self.dock_widgets = [None] * (n_figs+1)
-        for i, mpl_layout in enumerate(self.mpl_layouts):
-            widget_title = 'Plot {}'.format(i)
-            dock_widget = QtWidgets.QDockWidget(widget_title, self)
-            dock_widget.setWidget(mpl_layout)
-            self.addDockWidget(QtCore.Qt.TopDockWidgetArea, dock_widget)
-            dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
-            self.dock_widgets[i] = dock_widget
-        dock_widget = QtWidgets.QDockWidget('Browser', self)
-        dock_widget.setWidget(self.file_list)
-        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
-        dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
-        file_list_item = self.file_list.currentItem()
-        self.delegate_new_sweep(file_list_item)
+        self.setWindowTitle(window_title)
+        self.init_statusbar()
+        self.init_mpl_layouts()
+        self.init_file_list()
         self.setDockNestingEnabled(True)
-        ava_space = QtWidgets.QDesktopWidget().availableGeometry()
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        ava_space = QDesktopWidget().availableGeometry()
         self.move(ava_space.x()+0.5*ava_space.width(), 0)
         self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
+        self.set_new_sweep()
         self.show()
 
-    def delegate_new_sweep(self, file_list_item):
+    def set_new_sweep(self):
+        file_list_item = self.file_list.currentItem()
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
         self.sweep.set_pdata(self.name_func_dict)
         for mpl_layout in self.mpl_layouts:
             mpl_layout.reset_and_plot(self.sweep)
+
+    def init_statusbar(self):
+        self.statusBar = QtWidgets.QStatusBar()
+        self.setStatusBar(self.statusBar)
+
+    def init_mpl_layouts(self):
+        self.mpl_layouts = [None] * self.n_layouts
+        for i in range(self.n_layouts):
+            self.mpl_layouts[i] = MplLayout(statusBar=self.statusBar)
+        for i, mpl_layout in enumerate(self.mpl_layouts):
+            title = 'Plot {}'.format(i)
+            dock_widget = QDockWidget(title, self)
+            dock_widget.setWidget(mpl_layout)
+            dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
+            self.addDockWidget(QtCore.Qt.TopDockWidgetArea, dock_widget)
+
+    def init_file_list(self):
+        self.file_list = FileList(self.dir_path)
+        self.file_list.itemClicked.connect(self.set_new_sweep)
+        dock_widget = QDockWidget('Browser', self)
+        dock_widget.setWidget(self.file_list)
+        dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
+        self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
 
 
 if __name__=='__main__':

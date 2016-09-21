@@ -14,16 +14,12 @@ Nice to have
 * Consider subclassing FigureCanvas. MplLayout is rather large at the moment.
 * Button for "Open Folder".
 * Radio button for live update.
-* Break up FolderBrowser.__init__ into more methods!
 * Migrate the rest of the data_loader project where sweep.py came from.
 * Hotkeys.
 * Use clip=True in colormaps?
 * Add separator in QCombobox.
 * Compare subtract function with matlab-qd to confirm that they're working as
   intended.
-* Shrink the width on the column selector boxes. They expand anyway when
-  opened.
-* fig_canvas.figure.canvas.draw() -> fig_canvas.draw()
 * Allow pseudocolumns to fail silently.
 
 Known Issues
@@ -38,6 +34,10 @@ Known Issues
 
 Done/Fixed
 ----------
+* Break up FolderBrowser.__init__ into more methods!
+* fig_canvas.figure.canvas.draw() -> fig_canvas.draw()
+* Shrink the width on the column selector boxes. They expand anyway when
+  opened.
 * Add button to copy figure.
 * RdBu_r colormap is not white at 0 when data is not symmetric about 0. Perhaps
   use OffsetNorm: https://github.com/matplotlib/matplotlib/pull/3858
