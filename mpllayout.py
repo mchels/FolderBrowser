@@ -25,6 +25,7 @@ class MplLayout(QtWidgets.QWidget):
                                        self.copy_fig_to_clipboard,
                                        self.cmap_names)
         self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
+        self.navi_toolbar.setStyleSheet('border: none')
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
         layout.addWidget(self.fig_canvas)
