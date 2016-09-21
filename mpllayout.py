@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
-from customcomboboxes import CustomComboBoxes
+from plotcontrols import PlotControls
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -12,7 +12,7 @@ import matplotlib.colors as mcolors
 
 class MplLayout(QtWidgets.QWidget):
     """
-    Contains canvas, toolbar and a customcomboboxes object.
+    Contains canvas, toolbar and a PlotControls object.
     """
     def __init__(self, statusBar=None):
         super(MplLayout, self).__init__()
@@ -20,26 +20,13 @@ class MplLayout(QtWidgets.QWidget):
         fig.add_subplot(1, 1, 1)
         self.statusBar = statusBar
         self.fig_canvas = FigureCanvasQTAgg(fig)
-        self.comboBoxes = CustomComboBoxes(3, self.update_sel_cols, self.update_cmap, self.update_lims)
+        self.fig_canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.comboBoxes = PlotControls(self.update_sel_cols, self.update_cmap, self.update_lims, self.copy_fig_to_clipboard)
         self.navi_toolbar = NavigationToolbar2QT(self.fig_canvas, self)
-        layout = QtWidgets.QGridLayout()
-        n_rows_canvas = 3
-        n_cols_canvas = 8
-        for i, box in enumerate(self.comboBoxes.boxes):
-            policy_horiz = QSizePolicy.MinimumExpanding
-            policy_vert = QSizePolicy.Maximum
-            box.setSizePolicy(policy_horiz, policy_vert)
-            box.setMinimumWidth(40)
-            layout.addWidget(box, n_rows_canvas+1, i, 1, 1)
-        layout.addWidget(self.comboBoxes.cmap_sel, n_rows_canvas+1, 3, 1, 1)
-        for i, lim_box in enumerate(self.comboBoxes.lim_boxes):
-            layout.addWidget(self.comboBoxes.lim_boxes[i], n_rows_canvas+1, i+4, 1, 1)
-        self.copy_button = QtWidgets.QPushButton('C', self)
-        self.copy_button.clicked.connect(self.copy_fig_to_clipboard)
-        self.copy_button.setFixedWidth(15)
-        layout.addWidget(self.copy_button, n_rows_canvas+1, i+5, 1, 1)
-        layout.addWidget(self.fig_canvas, 1, 0, n_rows_canvas, n_cols_canvas)
-        layout.addWidget(self.navi_toolbar, 0, 0, 1, n_cols_canvas)
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.navi_toolbar)
+        layout.addWidget(self.fig_canvas)
+        layout.addWidget(self.comboBoxes)
         self.setLayout(layout)
         self.none_str = '---'
         self.sel_col_names = self.comboBoxes.get_sel_texts()
