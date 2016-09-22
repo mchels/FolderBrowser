@@ -1,4 +1,5 @@
 import sys
+import os
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
@@ -32,7 +33,9 @@ class FolderBrowser(QMainWindow):
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
         self.sweep.set_pdata(self.name_func_dict)
+        title = self.compose_title(self.sweep, sweep_path)
         for mpl_layout in self.mpl_layouts:
+            mpl_layout.set_title(title)
             mpl_layout.reset_and_plot(self.sweep)
 
     def init_statusbar(self):
@@ -85,6 +88,12 @@ class FolderBrowser(QMainWindow):
         self.move(ava_space.x()+0.5*ava_space.width(), 0)
         self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
         self.set_new_sweep()
+
+    @staticmethod
+    def compose_title(sweep, sweep_path):
+        sweep_name = sweep.meta['name']
+        date_stamp = os.path.basename(sweep_path)
+        return date_stamp + '\n' + sweep_name
 
 
 if __name__=='__main__':

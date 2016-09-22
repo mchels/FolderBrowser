@@ -225,7 +225,7 @@ class MplLayout(QtWidgets.QWidget):
         ax.set_ylabel(self.labels[1])
         ax.set_xlim(self.lims[0])
         ax.set_ylim(self.lims[1])
-        ax.set_title(self.sweep.meta['name'], fontsize=10)
+        ax.set_title(self.title, fontsize=11)
         self.custom_tight_layout()
         self.canvas.draw()
 
@@ -256,6 +256,9 @@ class MplLayout(QtWidgets.QWidget):
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.canvas).toImage()
         QtWidgets.QApplication.clipboard().setImage(image)
+
+    def set_title(self, title):
+        self.title = title
 
     @staticmethod
     def combine_lim_lists(list1, list2):
