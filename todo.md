@@ -27,6 +27,11 @@ Nice to have
 * Preserve interactive settings (e.g., grid) when updating plots.
 * Implement hotkeys on a level above the interactive MPL controls.
 * Make all text selectable.
+* Make function to update FileListWidget or have it do so automatically.
+* Make class+hotkey to copy all figures in a combined canvas.
+* Make update_cmap in MplLayout into its own class.
+* Move arr_varies_monotonically_on_axis to the Sweep class.
+* Remove border right of colorbar in image plots.
 
 
 Known Issues
@@ -41,6 +46,8 @@ Known Issues
 
 Done/Fixed
 ----------
+* Call tight_layout after GUI window has opened. Currently the figure call
+  tight_layout before GUI has opened so it doesn't fill the canvas.
 * Allow pseudocolumns to fail silently.
 * Make toolbar narrower. In the long term consider getting rid of the icons
   altogether, keeping only the numbers that indicate the current point.

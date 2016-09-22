@@ -24,10 +24,6 @@ class FolderBrowser(QMainWindow):
         self.init_file_list()
         self.setDockNestingEnabled(True)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        ava_space = QDesktopWidget().availableGeometry()
-        self.move(ava_space.x()+0.5*ava_space.width(), 0)
-        self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
-        self.set_new_sweep()
         self.set_hotkeys()
         self.show()
 
@@ -84,6 +80,11 @@ class FolderBrowser(QMainWindow):
         self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+C'), self)
         self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
 
+    def showEvent(self, event):
+        ava_space = QDesktopWidget().availableGeometry()
+        self.move(ava_space.x()+0.5*ava_space.width(), 0)
+        self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
+        self.set_new_sweep()
 
 
 if __name__=='__main__':
