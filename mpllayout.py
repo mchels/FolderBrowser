@@ -242,7 +242,7 @@ class MplLayout(QtWidgets.QWidget):
             self.statusBar.showMessage(msg, 2000)
 
     def init_fig_and_canvas(self):
-        fig = Figure()
+        fig = Figure(facecolor='white')
         fig.add_subplot(1, 1, 1)
         self.canvas = FigureCanvasQTAgg(fig)
         policy = QSizePolicy.Expanding
