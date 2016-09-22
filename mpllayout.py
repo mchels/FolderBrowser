@@ -77,7 +77,13 @@ class MplLayout(QtWidgets.QWidget):
             try:
                 self.plot_data[i] = self.sweep.data[col_name]
             except ValueError:
-                self.plot_data[i] = self.sweep.pdata[col_name]
+                try:
+                    self.plot_data[i] = self.sweep.pdata[col_name]
+                except Exception as error:
+                    msg = ('Calculation of pseudocolumn failed. No plot action'
+                           ' taken.')
+                    self.statusBar.showMessage(msg, 2000)
+                    pass
         self.set_data_for_imshow()
 
     def set_data_for_imshow(self):

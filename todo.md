@@ -18,7 +18,6 @@ Nice to have
 * Add separator in QCombobox.
 * Compare subtract function with matlab-qd to confirm that they're working as
   intended.
-* Allow pseudocolumns to fail silently.
 * Add comboboxes to apply function to data. Figure out where to put them first.
 * Set column comboboxes back to previous setting if new setting is invalid.
 * Add datestamp to title of plot.
@@ -42,6 +41,7 @@ Known Issues
 
 Done/Fixed
 ----------
+* Allow pseudocolumns to fail silently.
 * Make toolbar narrower. In the long term consider getting rid of the icons
   altogether, keeping only the numbers that indicate the current point.
 * fig_canvas -> canvas
