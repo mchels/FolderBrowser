@@ -77,7 +77,10 @@ class FolderBrowser(QMainWindow):
 
     def copy_active_fig(self):
         self.active_layout.copy_fig_to_clipboard()
-        self.statusBar.showMessage('Active figure copied', 1000)
+        active_dock_widget = self.active_layout.parentWidget()
+        title = active_dock_widget.windowTitle()
+        msg = 'Figure in ' + title + ' copied to clipboard'
+        self.statusBar.showMessage(msg, 1000)
 
     def set_hotkeys(self):
         self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+C'), self)
