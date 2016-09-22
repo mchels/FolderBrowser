@@ -2,8 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 
 class PlotControls(QtWidgets.QWidget):
-    def __init__(self, sel_col_func, cmap_func, lim_func, copy_func,
-                 cmap_names):
+    def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names):
         super(PlotControls, self).__init__()
         self.layout = QtWidgets.QHBoxLayout()
         self.num_col_boxes = 3
@@ -11,12 +10,10 @@ class PlotControls(QtWidgets.QWidget):
         self.sel_col_func = sel_col_func
         self.cmap_func = cmap_func
         self.lim_func = lim_func
-        self.copy_func = copy_func
         self.cmap_names = cmap_names
         self.init_col_sel_boxes()
         self.init_cmap_sel()
         self.init_lim_boxes()
-        self.init_copy_button()
         self.setLayout(self.layout)
 
     def reset_col_boxes(self, array_of_text_items):
@@ -68,13 +65,6 @@ class PlotControls(QtWidgets.QWidget):
             lim_box.editingFinished.connect(self.lim_func)
             self.layout.addWidget(lim_box)
             self.lim_boxes[i] = lim_box
-
-    def init_copy_button(self):
-        copy_button = QtWidgets.QPushButton('C')
-        copy_button.clicked.connect(self.copy_func)
-        copy_button.setFixedWidth(15)
-        self.layout.addWidget(copy_button)
-        self.copy_button = copy_button
 
     def get_sel_cols(self):
         sel_texts = [box.currentText() for box in self.col_boxes]

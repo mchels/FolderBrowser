@@ -2,7 +2,8 @@ import sys
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QDockWidget, QDesktopWidget
+from PyQt5.QtWidgets import QMainWindow, QDockWidget, QDesktopWidget, QShortcut
+from PyQt5.QtGui import QKeySequence
 from filelistwidget import FileList
 from sweep import Sweep
 from mpllayout import MplLayout
@@ -27,6 +28,7 @@ class FolderBrowser(QMainWindow):
         self.move(ava_space.x()+0.5*ava_space.width(), 0)
         self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
         self.set_new_sweep()
+        self.set_hotkeys()
         self.show()
 
     def set_new_sweep(self):
@@ -73,6 +75,15 @@ class FolderBrowser(QMainWindow):
         active_str = 'background-color: lightblue; border: none'
         layout.navi_toolbar.setStyleSheet(active_str)
         self.active_layout = layout
+
+    def copy_active_fig(self):
+        self.active_layout.copy_fig_to_clipboard()
+        self.statusBar.showMessage('Active figure copied', 1000)
+
+    def set_hotkeys(self):
+        self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+C'), self)
+        self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
+
 
 
 if __name__=='__main__':

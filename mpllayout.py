@@ -7,7 +7,6 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
-import copy
 import matplotlib.colors as mcolors
 
 
@@ -24,7 +23,6 @@ class MplLayout(QtWidgets.QWidget):
         self.plotcontrols = PlotControls(self.update_sel_cols,
                                        self.update_cmap,
                                        self.update_lims,
-                                       self.copy_fig_to_clipboard,
                                        self.cmap_names)
         self.init_navi_toolbar()
         layout = QtWidgets.QVBoxLayout()
