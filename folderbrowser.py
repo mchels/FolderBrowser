@@ -1,5 +1,7 @@
 import sys
 import os
+import platform
+import subprocess
 import matplotlib
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtWidgets
@@ -37,6 +39,7 @@ class FolderBrowser(QMainWindow):
         for mpl_layout in self.mpl_layouts:
             mpl_layout.set_title(title)
             mpl_layout.reset_and_plot(self.sweep)
+        self.sweep_path = sweep_path
 
     def init_statusbar(self):
         self.statusBar = QtWidgets.QStatusBar()
@@ -75,6 +78,12 @@ class FolderBrowser(QMainWindow):
         layout.navi_toolbar.setStyleSheet(active_str)
         self.active_layout = layout
 
+    def set_hotkeys(self):
+        self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+c'), self)
+        self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
+        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+o'), self)
+        self.open_folder_hotkey.activated.connect(self.open_folder)
+
     def copy_active_fig(self):
         self.active_layout.copy_fig_to_clipboard()
         active_dock_widget = self.active_layout.parentWidget()
@@ -82,9 +91,14 @@ class FolderBrowser(QMainWindow):
         msg = 'Figure in ' + title + ' copied to clipboard'
         self.statusBar.showMessage(msg, 1000)
 
-    def set_hotkeys(self):
-        self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+C'), self)
-        self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
+    def open_folder(self):
+        if platform.system() != 'Windows':
+            err_msg = 'Open folder only implemented on Windows'
+            self.statusBar.showMessage(err_msg)
+            return
+        norm_path = os.path.normpath(self.sweep_path)
+        cmd = ['explorer', norm_path]
+        subprocess.Popen(cmd)
 
     def showEvent(self, event):
         ava_space = QDesktopWidget().availableGeometry()
