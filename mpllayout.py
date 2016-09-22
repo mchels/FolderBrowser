@@ -21,9 +21,9 @@ class MplLayout(QtWidgets.QWidget):
         self.init_fig_and_canvas()
         self.cmap_names = ['Reds', 'Blues_r', 'symmetric']
         self.plotcontrols = PlotControls(self.update_sel_cols,
-                                       self.update_cmap,
-                                       self.update_lims,
-                                       self.cmap_names)
+                                         self.update_cmap,
+                                         self.update_lims,
+                                         self.cmap_names)
         self.init_navi_toolbar()
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
