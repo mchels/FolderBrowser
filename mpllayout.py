@@ -247,21 +247,11 @@ class MplLayout(QtWidgets.QWidget):
         self.canvas = FigureCanvasQTAgg(fig)
         policy = QSizePolicy.Expanding
         self.canvas.setSizePolicy(policy, policy)
-        self.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.canvas.mpl_connect('key_press_event', self.on_key_press)
-        self.canvas.mpl_connect('button_press_event', self.on_key_press)
 
     def init_navi_toolbar(self):
         self.navi_toolbar = NavigationToolbar2QT(self.canvas, self)
         self.navi_toolbar.setStyleSheet('border: none')
         self.navi_toolbar.setMaximumHeight(20)
-
-    def on_key_press(self, event):
-        self.parent.set_active_layout(self)
-        try:
-            key_press_handler(event, self.canvas, self.navi_toolbar)
-        except:
-            pass
 
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.canvas).toImage()
