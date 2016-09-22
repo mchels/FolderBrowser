@@ -26,8 +26,7 @@ class MplLayout(QtWidgets.QWidget):
                                        self.update_lims,
                                        self.copy_fig_to_clipboard,
                                        self.cmap_names)
-        self.navi_toolbar = NavigationToolbar2QT(self.canvas, self)
-        self.navi_toolbar.setStyleSheet('border: none')
+        self.init_navi_toolbar()
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
         layout.addWidget(self.canvas)
@@ -247,6 +246,11 @@ class MplLayout(QtWidgets.QWidget):
         self.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.canvas.mpl_connect('key_press_event', self.on_key_press)
         self.canvas.mpl_connect('button_press_event', self.on_key_press)
+
+    def init_navi_toolbar(self):
+        self.navi_toolbar = NavigationToolbar2QT(self.canvas, self)
+        self.navi_toolbar.setStyleSheet('border: none')
+        self.navi_toolbar.setMaximumHeight(20)
 
     def on_key_press(self, event):
         self.parent.set_active_layout(self)

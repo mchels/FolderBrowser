@@ -27,8 +27,7 @@ Nice to have
 * Set active layout in FolderBrowser when a widget in PlotControls is clicked.
 * Preserve interactive settings (e.g., grid) when updating plots.
 * Implement hotkeys on a level above the interactive MPL controls.
-* Make toolbar narrower. In the long term consider getting rid of the icons
-  altogether, keeping only the numbers that indicate the current point.
+* Make all text selectable.
 
 
 Known Issues
@@ -43,6 +42,8 @@ Known Issues
 
 Done/Fixed
 ----------
+* Make toolbar narrower. In the long term consider getting rid of the icons
+  altogether, keeping only the numbers that indicate the current point.
 * fig_canvas -> canvas
 * Highlight navigation bar on active qdockwidget.
 * Break up FolderBrowser.__init__ into more methods!
