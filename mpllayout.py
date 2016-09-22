@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 from plotcontrols import PlotControls
+from handler3ddata import Handler3Ddata
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.backend_bases import key_press_handler
@@ -82,32 +83,14 @@ class MplLayout(QtWidgets.QWidget):
                            ' taken.')
                     self.statusBar.showMessage(msg, 2000)
                     pass
-        self.set_data_for_imshow()
-
-    def set_data_for_imshow(self):
-        if not self.plot_is_2D:
-            return
-        col0_axis = arr_varies_monotonically_on_axis(self.plot_data[0])
-        col1_axis = arr_varies_monotonically_on_axis(self.plot_data[1])
-        if not set((col0_axis, col1_axis)) == set((0, 1)):
-            msg = 'Selected columns not valid for image plot. No action taken.'
-            self.sel_col_names = self.prev_sel_col_names
-            self.statusBar.showMessage(msg, 2000)
-            return
-        col0_lims = [self.plot_data[0][0,0], self.plot_data[0][-1,-1]]
-        col1_lims = [self.plot_data[1][0,0], self.plot_data[1][-1,-1]]
-        if col0_axis == 0:
-            data_for_imshow = np.transpose(self.plot_data[2])
-        else:
-            data_for_imshow = self.plot_data[2]
-        if col0_lims[0] > col0_lims[1]:
-            col0_lims.reverse()
-            data_for_imshow = np.fliplr(data_for_imshow)
-        if col1_lims[0] > col1_lims[1]:
-            col1_lims.reverse()
-            data_for_imshow = np.flipud(data_for_imshow)
-        self.data_for_imshow = data_for_imshow
-        self.extent = col0_lims + col1_lims
+        if self.plot_is_2D:
+            self.handler3D = Handler3Ddata(self.plot_data[0],
+                                           self.plot_data[1],
+                                           self.plot_data[2])
+            data_for_imshow = self.handler3D.get_data()
+            if data_for_imshow is not None:
+                self.data_for_imshow = data_for_imshow
+                self.extent = self.handler3D.get_extent()
 
     def set_labels(self):
         self.labels = [None] * 3
@@ -125,9 +108,9 @@ class MplLayout(QtWidgets.QWidget):
         ext = [None] * 3
         user_lims = self.plotcontrols.get_lims()
         if self.plot_is_2D:
-            ext[0] = self.extent[0:2]
-            ext[1] = self.extent[2:4]
-            ext[2] = [self.data_for_imshow.min(), self.data_for_imshow.max()]
+            ext[0] = self.handler3D.get_x_extent()
+            ext[1] = self.handler3D.get_y_extent()
+            ext[2] = self.handler3D.get_z_extent()
         else:
             ext[0] = [self.plot_data[0].min(), self.plot_data[0].max()]
             ext[1] = [self.plot_data[1].min(), self.plot_data[1].max()]
@@ -272,28 +255,3 @@ class MplLayout(QtWidgets.QWidget):
             else:
                 out_list[i] = list1[i]
         return out_list
-
-
-def arr_varies_monotonically_on_axis(arr):
-    for axis in (0,1):
-        idx = [0,0]
-        idx[axis] = slice(None)
-        candidate = arr[idx]
-        arr_diff = np.diff(candidate)
-        # Check that there are non-zero elements in arr_diff.
-        # Otherwise arr is constant.
-        if not any(arr_diff):
-            continue
-        # Check that the elements are the same,
-        # i.e., the slope of arr is constant.
-        if not np.allclose(arr_diff, arr_diff[0]):
-            continue
-        # Check that arr consists solely of copies of candidate.
-        # First, insert an np.newaxis in candidate so you can subtract it
-        # from arr.
-        if axis == 0:
-            candidate = candidate[...,np.newaxis]
-        if not np.allclose(arr, candidate):
-            continue
-        return axis
-    return -1
