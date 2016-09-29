@@ -8,6 +8,7 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import nanmin, nanmax
 import matplotlib.colors as mcolors
 
 
@@ -83,6 +84,7 @@ class MplLayout(QtWidgets.QWidget):
                            ' taken.')
                     self.statusBar.showMessage(msg, 2000)
                     pass
+        self.large_to_nan()
         if self.plot_is_2D:
             self.handler3D = Handler3Ddata(self.plot_data[0],
                                            self.plot_data[1],
@@ -112,8 +114,8 @@ class MplLayout(QtWidgets.QWidget):
             ext[1] = self.handler3D.get_y_extent()
             ext[2] = self.handler3D.get_z_extent()
         else:
-            ext[0] = [self.plot_data[0].min(), self.plot_data[0].max()]
-            ext[1] = [self.plot_data[1].min(), self.plot_data[1].max()]
+            ext[0] = [nanmin(self.plot_data[0]), nanmax(self.plot_data[0])]
+            ext[1] = [nanmin(self.plot_data[1]), nanmax(self.plot_data[1])]
         for i in (0,1,2):
             self.lims[i] = self.combine_lim_lists(user_lims[i], ext[i])
         self.update_cmap()
@@ -158,6 +160,15 @@ class MplLayout(QtWidgets.QWidget):
             self.cmap = plt.get_cmap(cmap_name)
         if not self.update_is_scheduled:
             self.update_plot()
+
+    def large_to_nan(self):
+        for plot_data in self.plot_data:
+            if plot_data is not None:
+                # By default Numpy gives a RuntimeWarning when a nan is
+                # generated. We are explicitly generating nans here so we don't
+                # want to see the warning.
+                with np.errstate(invalid='ignore'):
+                    plot_data[np.abs(plot_data) > 1e25] = np.nan
 
     def update_plot(self):
         if self.plot_is_2D: self.update_2D_plot()

@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import nanmin, nanmax
 
 
 class Handler3Ddata(object):
@@ -41,7 +42,7 @@ class Handler3Ddata(object):
         self.data_for_imshow = data_for_imshow
         self.x_extent = col0_lims
         self.y_extent = col1_lims
-        self.z_extent = [data_for_imshow.min(), data_for_imshow.max()]
+        self.z_extent = [nanmin(data_for_imshow), nanmax(data_for_imshow)]
         self.extent = col0_lims + col1_lims
 
     def get_data(self):
