@@ -105,6 +105,9 @@ class FolderBrowser(QMainWindow):
         cmd = ['explorer', norm_path]
         subprocess.Popen(cmd)
 
+    def set_name_func_dict(self, name_func_dict):
+        self.name_func_dict = name_func_dict
+
     def showEvent(self, event):
         ava_space = QDesktopWidget().availableGeometry()
         self.move(ava_space.x()+0.5*ava_space.width(), 0)
