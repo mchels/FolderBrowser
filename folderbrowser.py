@@ -68,6 +68,9 @@ class FolderBrowser(QMainWindow):
         self.addDockWidget(QtCore.Qt.BottomDockWidgetArea, dock_widget)
         self.dock_widgets.append(dock_widget)
 
+    def reload_file_list(self):
+        self.file_list.reload_items()
+
     def set_active_layout(self, layout):
         try:
             inactive_str = 'background-color: 10; border: none'
@@ -83,6 +86,8 @@ class FolderBrowser(QMainWindow):
         self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
         self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+o'), self)
         self.open_folder_hotkey.activated.connect(self.open_folder)
+        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+r'), self)
+        self.open_folder_hotkey.activated.connect(self.reload_file_list)
 
     def copy_active_fig(self):
         self.active_layout.copy_fig_to_clipboard()
