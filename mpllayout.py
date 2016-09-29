@@ -34,6 +34,7 @@ class MplLayout(QtWidgets.QWidget):
         self.setLayout(layout)
         self.none_str = '---'
         self.sel_col_names = self.plotcontrols.get_sel_cols()
+        self.plot_data = [None] * 3
         self.cbar = None
         self.cmap_name = self.cmap_names[0]
         self.cmap = plt.get_cmap(self.cmap_name)
@@ -51,48 +52,52 @@ class MplLayout(QtWidgets.QWidget):
         self.update_sel_cols()
 
     def update_sel_cols(self, new_num=None):
-        self.prev_sel_col_names = self.sel_col_names
-        self.sel_col_names = self.plotcontrols.get_sel_cols()
+        self.new_col_names = self.plotcontrols.get_sel_cols()
         # Try to make 1D plot if '---' is selected in the third comboBox.
-        self.plot_is_2D = self.sel_col_names[2] != self.none_str
+        self.plot_is_2D = self.new_col_names[2] != self.none_str
         self.data_is_1D = self.sweep.dimension == 1
         plot_is_invalid = self.plot_is_2D and self.data_is_1D
         if plot_is_invalid:
             msg = "You can't do an image plot, since the data is only 1D."
             self.statusBar.showMessage(msg, 2000)
             self.plotcontrols.set_text_on_box(2, self.none_str)
-        self.update_is_scheduled = True
-        self.set_data_for_plot()
-        self.set_labels()
-        self.update_lims()
-        self.update_plot()
+        new_cols_are_valid = self.set_data_for_plot()
+        if new_cols_are_valid:
+            self.update_is_scheduled = True
+            self.set_labels()
+            self.update_lims()
+            self.update_plot()
 
     def set_data_for_plot(self):
         n_dims = 3
-        self.plot_data = [None] * n_dims
-        for i in range(n_dims):
-            col_name = self.sel_col_names[i]
+        new_plot_data = [None] * 3
+        for i, col_name in enumerate(self.new_col_names):
             if col_name == self.none_str:
                 continue
             try:
-                self.plot_data[i] = self.sweep.data[col_name]
+                new_plot_data[i] = self.sweep.data[col_name]
             except ValueError:
                 try:
-                    self.plot_data[i] = self.sweep.pdata[col_name]
+                    new_plot_data[i] = self.sweep.pdata[col_name]
                 except Exception as error:
                     msg = ('Calculation of pseudocolumn failed. No plot action'
                            ' taken.')
                     self.statusBar.showMessage(msg, 2000)
-                    pass
+                    return False
         self.large_to_nan()
         if self.plot_is_2D:
-            self.handler3D = Handler3Ddata(self.plot_data[0],
-                                           self.plot_data[1],
-                                           self.plot_data[2])
-            data_for_imshow = self.handler3D.get_data()
-            if data_for_imshow is not None:
-                self.data_for_imshow = data_for_imshow
+            self.handler3D = Handler3Ddata(*new_plot_data)
+            if self.handler3D.data_is_valid:
+                self.data_for_imshow = self.handler3D.get_data()
                 self.extent = self.handler3D.get_extent()
+            else:
+                msg = ('Selected x and y columns are not valid for image plot.'
+                       ' No plot action taken.')
+                self.statusBar.showMessage(msg, 2000)
+                return False
+        self.plot_data = new_plot_data
+        self.sel_col_names = self.new_col_names
+        return True
 
     def set_labels(self):
         self.labels = [None] * 3

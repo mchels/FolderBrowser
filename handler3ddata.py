@@ -11,6 +11,7 @@ class Handler3Ddata(object):
         self.x_extent = None
         self.y_extent = None
         self.z_extent = None
+        self.data_is_valid = True
         if z_data is None:
             self.set_invalid()
             return
@@ -52,6 +53,7 @@ class Handler3Ddata(object):
         return self.extent
 
     def set_invalid(self):
+        self.data_is_valid = False
         self.data_for_imshow = None
         self.extent = None
 
