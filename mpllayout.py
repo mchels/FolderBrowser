@@ -184,7 +184,6 @@ class MplLayout(QtWidgets.QWidget):
         for ax in self.canvas.figure.get_axes():
             ax.cla()
             ax.plot(self.plot_data[0], self.plot_data[1])
-            ax.autoscale_view(True, True, True)
         self.common_plot_update()
 
     def update_2D_plot(self):
@@ -208,12 +207,12 @@ class MplLayout(QtWidgets.QWidget):
         self.image.set_clim(self.lims[2])
         self.cbar.set_label(self.labels[2])
         self.cbar.draw_all()
-        ax.autoscale_view(True, True, True)
         self.common_plot_update()
 
     def common_plot_update(self):
         self.update_is_scheduled = False
         ax = self.canvas.figure.get_axes()[0]
+        ax.autoscale_view(True, True, True)
         ax.relim()
         ax.set_xlabel(self.labels[0])
         ax.set_ylabel(self.labels[1])
