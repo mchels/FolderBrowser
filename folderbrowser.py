@@ -93,6 +93,8 @@ class FolderBrowser(QMainWindow):
         self.open_folder_hotkey.activated.connect(self.reload_file_list)
         self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+t'), self)
         self.open_folder_hotkey.activated.connect(self.show_text_for_copying)
+        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+w'), self)
+        self.open_folder_hotkey.activated.connect(self.close)
 
     def copy_active_fig(self):
         self.active_layout.copy_fig_to_clipboard()
