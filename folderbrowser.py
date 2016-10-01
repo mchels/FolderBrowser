@@ -108,12 +108,6 @@ class FolderBrowser(QMainWindow):
     def set_name_func_dict(self, name_func_dict):
         self.name_func_dict = name_func_dict
 
-    def showEvent(self, event):
-        ava_space = QDesktopWidget().availableGeometry()
-        self.move(ava_space.x()+0.5*ava_space.width(), 0)
-        self.resize(ava_space.width()*0.49, ava_space.height()*0.96)
-        self.set_new_sweep()
-
     @staticmethod
     def compose_title(sweep, sweep_path):
         sweep_name = sweep.meta['name']
