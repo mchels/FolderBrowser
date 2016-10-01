@@ -40,6 +40,7 @@ class MplLayout(QtWidgets.QWidget):
         self.cmap = plt.get_cmap(self.cmap_name)
         self.lims = [None] * 3
         self.update_is_scheduled = False
+        self.scilimits = (-3,3)
 
     def reset_and_plot(self, sweep):
         self.sweep = sweep
@@ -199,6 +200,7 @@ class MplLayout(QtWidgets.QWidget):
                 extent=self.extent,
             )
             self.cbar = fig.colorbar(mappable=self.image)
+        self.cbar.formatter.set_powerlimits(self.scilimits)
         self.image.set_cmap(self.cmap)
         self.image.set_clim(self.lims[2])
         self.cbar.set_label(self.labels[2])
@@ -208,6 +210,8 @@ class MplLayout(QtWidgets.QWidget):
     def common_plot_update(self):
         self.update_is_scheduled = False
         ax = self.canvas.figure.get_axes()[0]
+        ax.ticklabel_format(style='sci', axis='both',
+                            scilimits=self.scilimits, useOffset=False)
         ax.autoscale_view(True, True, True)
         ax.relim()
         ax.set_xlabel(self.labels[0])
