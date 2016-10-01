@@ -86,7 +86,7 @@ class FolderBrowser(QMainWindow):
         self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
         self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+o'), self)
         self.open_folder_hotkey.activated.connect(self.open_folder)
-        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+r'), self)
+        self.open_folder_hotkey = QShortcut(QKeySequence('F5'), self)
         self.open_folder_hotkey.activated.connect(self.reload_file_list)
 
     def copy_active_fig(self):
