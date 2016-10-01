@@ -11,6 +11,7 @@ from filelistwidget import FileList
 from sweep import Sweep
 from mpllayout import MplLayout
 from customdockwidget import CustomDockWidget
+from textforcopying import TextForCopying
 
 
 class FolderBrowser(QMainWindow):
@@ -20,6 +21,8 @@ class FolderBrowser(QMainWindow):
         self.n_layouts = n_layouts
         self.dir_path = dir_path
         self.name_func_dict = name_func_dict
+        self.date_stamp = None
+        self.sweep_name = None
         self.setWindowTitle(window_title)
         self.dock_widgets = []
         self.init_statusbar()
@@ -88,6 +91,8 @@ class FolderBrowser(QMainWindow):
         self.open_folder_hotkey.activated.connect(self.open_folder)
         self.open_folder_hotkey = QShortcut(QKeySequence('F5'), self)
         self.open_folder_hotkey.activated.connect(self.reload_file_list)
+        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+t'), self)
+        self.open_folder_hotkey.activated.connect(self.show_text_for_copying)
 
     def copy_active_fig(self):
         self.active_layout.copy_fig_to_clipboard()
@@ -105,14 +110,26 @@ class FolderBrowser(QMainWindow):
         cmd = ['explorer', norm_path]
         subprocess.Popen(cmd)
 
+    def show_text_for_copying(self):
+        lay = self.active_layout
+        title = lay.title
+        date_stamp = self.date_stamp
+        name = self.sweep_name
+        xlabel = lay.labels[0]
+        ylabel = lay.labels[1]
+        zlabel = lay.labels[2]
+        diag = TextForCopying(title, date_stamp, name, xlabel, ylabel, zlabel)
+        diag.setWindowModality(QtCore.Qt.ApplicationModal)
+        diag.setModal(True)
+        diag.exec_()
+
     def set_name_func_dict(self, name_func_dict):
         self.name_func_dict = name_func_dict
 
-    @staticmethod
-    def compose_title(sweep, sweep_path):
-        sweep_name = sweep.meta['name']
-        date_stamp = os.path.basename(sweep_path)
-        return date_stamp + '\n' + sweep_name
+    def compose_title(self, sweep, sweep_path):
+        self.sweep_name = sweep.meta['name']
+        self.date_stamp = os.path.basename(sweep_path)
+        return self.date_stamp + '\n' + self.sweep_name
 
 
 if __name__=='__main__':

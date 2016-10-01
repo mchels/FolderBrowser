@@ -40,6 +40,8 @@ class MplLayout(QtWidgets.QWidget):
         self.cmap = plt.get_cmap(self.cmap_name)
         self.lims = [None] * 3
         self.update_is_scheduled = False
+        self.title = None
+        self.labels = [None] * 3
         self.scilimits = (-3,3)
 
     def reset_and_plot(self, sweep):
