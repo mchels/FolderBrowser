@@ -84,7 +84,7 @@ class MplLayout(QtWidgets.QWidget):
                            ' taken.')
                     self.statusBar.showMessage(msg, 2000)
                     return False
-        self.large_to_nan()
+            new_plot_data[i] = self.large_to_nan(new_plot_data[i])
         if self.plot_is_2D:
             self.handler3D = Handler3Ddata(*new_plot_data)
             if self.handler3D.data_is_valid:
@@ -165,15 +165,6 @@ class MplLayout(QtWidgets.QWidget):
             self.cmap = plt.get_cmap(cmap_name)
         if not self.update_is_scheduled:
             self.update_plot()
-
-    def large_to_nan(self):
-        for plot_data in self.plot_data:
-            if plot_data is not None:
-                # By default Numpy gives a RuntimeWarning when a nan is
-                # generated. We are explicitly generating nans here so we don't
-                # want to see the warning.
-                with np.errstate(invalid='ignore'):
-                    plot_data[np.abs(plot_data) > 1e25] = np.nan
 
     def update_plot(self):
         if self.plot_is_2D: self.update_2D_plot()
@@ -257,6 +248,17 @@ class MplLayout(QtWidgets.QWidget):
 
     def set_title(self, title):
         self.title = title
+
+    @staticmethod
+    def large_to_nan(arr):
+        num = 1e25
+        if arr is not None:
+            # By default Numpy gives a RuntimeWarning when a nan is
+            # generated. We are explicitly generating nans here so we don't
+            # want to see the warning.
+            with np.errstate(invalid='ignore'):
+                arr[np.abs(arr) > num] = np.nan
+        return arr
 
     @staticmethod
     def combine_lim_lists(list1, list2):
