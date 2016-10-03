@@ -24,13 +24,13 @@ class FileList(QtWidgets.QListWidget):
                 json_path = os.path.join(sub_dir_path, 'meta.json')
                 with open(json_path) as json_file:
                     meta = json.load(json_file)
-                self.item_dict[meta['name']] = sub_dir_path
+                date_and_serial_num = os.path.split(sub_dir_path)[-1]
+                item_text = date_and_serial_num + ' ' + meta['name']
+                self.item_dict[item_text] = sub_dir_path
 
     def set_items(self):
-        for name, sub_dir_path in self.item_dict.items():
-            date_and_serial_num = os.path.split(sub_dir_path)[-1]
-            item_name = date_and_serial_num + ' ' + name
-            item = QtWidgets.QListWidgetItem(item_name, parent=self)
+        for item_text, sub_dir_path in self.item_dict.items():
+            item = QtWidgets.QListWidgetItem(item_text, parent=self)
             # QtCore.Qt.UserRole is simply the integer 32 and denotes the role
             # of the data. That seems super weird.
             item.setData(QtCore.Qt.UserRole, sub_dir_path)
