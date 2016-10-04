@@ -14,6 +14,14 @@ from customdockwidget import CustomDockWidget
 from textforcopying import TextForCopying
 
 
+def show_loading(func):
+    def func_wrapper(self, *args, **kwargs):
+        self.statusBar.showMessage('Loading...')
+        func(self, *args, **kwargs)
+        self.statusBar.showMessage('')
+    return func_wrapper
+
+
 class FolderBrowser(QMainWindow):
     def __init__(self, n_layouts, dir_path, name_func_dict,
                  window_title='FolderBrowser'):
@@ -33,7 +41,8 @@ class FolderBrowser(QMainWindow):
         self.set_hotkeys()
         self.show()
 
-    def set_new_sweep(self):
+    @show_loading
+    def set_new_sweep(self, file_list_widget=None):
         file_list_item = self.file_list.currentItem()
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
