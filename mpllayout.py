@@ -17,7 +17,7 @@ class MplLayout(QtWidgets.QWidget):
     Contains canvas, toolbar and a PlotControls object.
     """
     def __init__(self, statusBar=None, parent=None):
-        super(MplLayout, self).__init__()
+        super().__init__()
         self.statusBar = statusBar
         self.parent = parent
         self.init_fig_and_canvas()

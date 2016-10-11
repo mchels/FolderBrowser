@@ -25,7 +25,7 @@ def show_loading(func):
 class FolderBrowser(QMainWindow):
     def __init__(self, n_layouts, dir_path, name_func_dict,
                  window_title='FolderBrowser'):
-        QMainWindow.__init__(self)
+        super().__init__()
         self.n_layouts = n_layouts
         self.dir_path = dir_path
         self.name_func_dict = name_func_dict

@@ -4,7 +4,7 @@ from PyQt5.QtGui import QKeySequence
 
 class TextForCopying(QDialog):
     def __init__(self, title, date_stamp, name, xlabel, ylabel, zlabel):
-        super(TextForCopying, self).__init__()
+        super().__init__()
         self.title = title
         self.date_stamp = date_stamp
         self.name = name

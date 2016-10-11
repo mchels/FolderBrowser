@@ -4,7 +4,7 @@ import json
 
 class FileList(QtWidgets.QListWidget):
     def __init__(self, main_dir_path):
-        super(FileList, self).__init__()
+        super().__init__()
         self.main_dir_path = main_dir_path
         self.setSortingEnabled(True)
         self.sortItems(order=QtCore.Qt.DescendingOrder)

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QDockWidget
 
 class CustomDockWidget(QDockWidget):
     def __init__(self, title, parent, *args, **kwargs):
-        QDockWidget.__init__(self, title)
+        super().__init__(title)
         self.parent = parent
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 

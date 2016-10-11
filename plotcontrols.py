@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QSizePolicy
 
 class PlotControls(QtWidgets.QWidget):
     def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names):
-        super(PlotControls, self).__init__()
+        super().__init__()
         self.layout = QtWidgets.QHBoxLayout()
         self.num_col_boxes = 3
         self.num_lim_boxes = 3
