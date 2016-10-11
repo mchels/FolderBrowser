@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 from plotcontrols import PlotControls
-from handler3ddata import Handler3Ddata
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.backend_bases import key_press_handler
@@ -10,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import nanmin, nanmax
 import matplotlib.colors as mcolors
+from datahandler import data_handler_factory
+from plothandler import plot_handler_factory
 
 
 class MplLayout(QtWidgets.QWidget):
@@ -43,6 +44,7 @@ class MplLayout(QtWidgets.QWidget):
         self.title = None
         self.labels = [None] * 3
         self.scilimits = (-3,3)
+        self.n_active_cols = None
 
     def reset_and_plot(self, sweep):
         self.sweep = sweep
@@ -55,59 +57,54 @@ class MplLayout(QtWidgets.QWidget):
         self.update_sel_cols()
 
     def update_sel_cols(self, new_num=None):
-        self.new_col_names = self.plotcontrols.get_sel_cols()
+        col_names = self.plotcontrols.get_sel_cols()
+        new_col_names = [n for n in col_names if n != self.none_str]
         # Try to make 1D plot if '---' is selected in the third comboBox.
-        self.plot_is_2D = self.new_col_names[2] != self.none_str
+        self.plot_is_2D = len(new_col_names) == 3
         self.data_is_1D = self.sweep.dimension == 1
         plot_is_invalid = self.plot_is_2D and self.data_is_1D
         if plot_is_invalid:
-            msg = "You can't do an image plot, since the data is only 1D."
+            msg = "You can't do a 2D plot, since the data is only 1D."
             self.statusBar.showMessage(msg, 2000)
             self.plotcontrols.set_text_on_box(2, self.none_str)
-        new_cols_are_valid = self.set_data_for_plot()
-        if new_cols_are_valid:
+            return
+        self.set_data_for_plot(new_col_names)
+        tmp = (self.plot_dim, self.data_h.n_data_arrs)
+        if tmp in ((1,2), (2,3)) and self.data_h.data_is_valid:
             self.update_is_scheduled = True
             self.set_labels()
             self.update_lims()
             self.update_plot()
+        else:
+            self.clear_axis(redraw=True)
 
-    def set_data_for_plot(self):
-        n_dims = 3
-        new_plot_data = [None] * 3
-        for i, col_name in enumerate(self.new_col_names):
-            if col_name == self.none_str:
-                continue
-            try:
-                new_plot_data[i] = self.sweep.data[col_name]
-            except ValueError:
+    def set_data_for_plot(self, new_col_names):
+        new_plot_data = [None] * len(new_col_names)
+        for i, col_name in enumerate(new_col_names):
+            sweep = self.sweep
+            raw_data_col_names = sweep.data.dtype.names
+            pdata_col_names = sweep.pdata.name_func_dict.keys()
+            if col_name in raw_data_col_names:
+                new_plot_data[i] = sweep.data[col_name]
+            elif col_name in pdata_col_names:
                 try:
-                    new_plot_data[i] = self.sweep.pdata[col_name]
+                    new_plot_data[i] = sweep.pdata[col_name]
                 except Exception as error:
-                    msg = ('Calculation of pseudocolumn failed. No plot action'
-                           ' taken.')
+                    msg = 'Calculation of pseudocolumn failed'
                     self.statusBar.showMessage(msg, 2000)
-                    return False
-            new_plot_data[i] = self.large_to_nan(new_plot_data[i])
-        if self.plot_is_2D:
-            self.handler3D = Handler3Ddata(*new_plot_data)
-            if self.handler3D.data_is_valid:
-                self.data_for_imshow = self.handler3D.get_data()
-                self.extent = self.handler3D.get_extent()
-            else:
-                msg = ('Selected x and y columns are not valid for image plot.'
-                       ' No plot action taken.')
-                self.statusBar.showMessage(msg, 2000)
-                return False
-        self.plot_data = new_plot_data
-        self.sel_col_names = self.new_col_names
-        return True
+        new_data_h = data_handler_factory(*new_plot_data)
+        self.sel_col_names = new_col_names
+        self.n_active_cols = len(new_col_names)
+        ax = self.canvas.figure.get_axes()[0]
+        plot_dim = self.n_active_cols - 1
+        self.plot_dim = plot_dim
+        self.plot_h = plot_handler_factory(ax, new_data_h, plot_dim=plot_dim)
+        self.data_h = new_data_h
 
     def set_labels(self):
-        self.labels = [None] * 3
-        for i in range(3):
+        self.labels = [None] * self.n_active_cols
+        for i, _ in enumerate(self.labels):
             col_name = self.sel_col_names[i]
-            if col_name == self.none_str:
-                continue
             self.labels[i] = self.sweep.get_label(col_name)
 
     def update_lims(self):
@@ -115,17 +112,12 @@ class MplLayout(QtWidgets.QWidget):
         user_lims are limits set by user in the lim_boxes.
         For both 1D and 2D plots extent is data limits.
         """
-        ext = [None] * 3
+        ext = [None] * self.n_active_cols
         user_lims = self.plotcontrols.get_lims()
-        if self.plot_is_2D:
-            ext[0] = self.handler3D.get_x_extent()
-            ext[1] = self.handler3D.get_y_extent()
-            ext[2] = self.handler3D.get_z_extent()
-        else:
-            ext[0] = [nanmin(self.plot_data[0]), nanmax(self.plot_data[0])]
-            ext[1] = [nanmin(self.plot_data[1]), nanmax(self.plot_data[1])]
-        for i in (0,1,2):
-            self.lims[i] = self.combine_lim_lists(user_lims[i], ext[i])
+        self.lims = [None] * self.n_active_cols
+        for i, lim in enumerate(self.lims):
+            ext = self.data_h.get_extent_of_data_dim(i)
+            self.lims[i] = self.combine_lim_lists(user_lims[i], ext)
         self.update_cmap()
         if not self.update_is_scheduled:
             self.update_plot()
@@ -170,38 +162,20 @@ class MplLayout(QtWidgets.QWidget):
             self.update_plot()
 
     def update_plot(self):
-        if self.plot_is_2D: self.update_2D_plot()
-        else: self.update_1D_plot()
+        if self.plot_is_2D: self._update_2D_plot()
+        else: self._update_1D_plot()
+        self.update_is_scheduled = False
 
-    def update_1D_plot(self):
-        try:
-            self.cbar.remove()
-            self.cbar = None
-            self.image = None
-        except AttributeError:
-            pass
-        for ax in self.canvas.figure.get_axes():
-            ax.cla()
-            ax.plot(self.plot_data[0], self.plot_data[1])
+    def _update_1D_plot(self):
+        self.clear_axis(redraw=False)
+        self.plot_h.plot()
         self.common_plot_update()
 
-    def update_2D_plot(self):
+    def _update_2D_plot(self):
         fig = self.canvas.figure
-        ax = fig.get_axes()[0]
-        try:
-            self.image.set_data(self.data_for_imshow)
-            self.image.set_extent(self.extent)
-        except AttributeError as error:
-            ax.cla()
-            self.image = ax.imshow(
-                self.data_for_imshow,
-                aspect='auto',
-                cmap=self.cmap,
-                interpolation='none',
-                origin='lower',
-                extent=self.extent,
-            )
-            self.cbar = fig.colorbar(mappable=self.image)
+        self.clear_axis(redraw=False)
+        self.image = self.plot_h.plot()
+        self.cbar = fig.colorbar(mappable=self.image)
         self.cbar.formatter.set_powerlimits(self.scilimits)
         self.image.set_cmap(self.cmap)
         self.image.set_clim(self.lims[2])
@@ -210,7 +184,6 @@ class MplLayout(QtWidgets.QWidget):
         self.common_plot_update()
 
     def common_plot_update(self):
-        self.update_is_scheduled = False
         ax = self.canvas.figure.get_axes()[0]
         ax.ticklabel_format(style='sci', axis='both',
                             scilimits=self.scilimits, useOffset=False)
@@ -223,6 +196,21 @@ class MplLayout(QtWidgets.QWidget):
         ax.set_title(self.title, fontsize=11)
         self.custom_tight_layout()
         self.canvas.draw()
+
+    def clear_axis(self, redraw=True):
+        try:
+            self.cbar.remove()
+            self.cbar = None
+            self.image = None
+        except AttributeError:
+            pass
+        for ax in self.canvas.figure.get_axes():
+            ax.cla()
+            ax.relim()
+            ax.autoscale()
+        if redraw:
+            self.custom_tight_layout()
+            self.canvas.draw()
 
     def custom_tight_layout(self):
         # Sometimes we'll get an error:
@@ -254,17 +242,6 @@ class MplLayout(QtWidgets.QWidget):
 
     def set_title(self, title):
         self.title = title
-
-    @staticmethod
-    def large_to_nan(arr):
-        num = 1e25
-        if arr is not None:
-            # By default Numpy gives a RuntimeWarning when a nan is
-            # generated. We are explicitly generating nans here so we don't
-            # want to see the warning.
-            with np.errstate(invalid='ignore'):
-                arr[np.abs(arr) > num] = np.nan
-        return arr
 
     @staticmethod
     def combine_lim_lists(list1, list2):
