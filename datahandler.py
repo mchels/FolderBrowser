@@ -113,6 +113,7 @@ class Transformed2DData(DataHandler):
         super().__init__(x, y)
         self.n_data_arrs = len(self.data)
         self.data_dim = 1
+        self.imshow_eligible = False
         self.set_data_validity()
         if not self.data_is_valid:
             return

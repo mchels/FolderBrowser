@@ -30,6 +30,7 @@ class Plot2DHandler(PlotHandler):
         self.def_cmap_str = 'viridis'
 
     def set_plot_type(self, plot_type):
+        assert plot_type in (None, 'imshow', 'pcolormesh')
         if not self.data_handler.data_is_valid:
             plot_type = None
         elif plot_type is not None:
@@ -46,6 +47,10 @@ class Plot2DHandler(PlotHandler):
         """
         if plot_type is None:
             plot_type = self.plot_type
+            if self.data_handler.imshow_eligible:
+                return self.plot_imshow()
+            else:
+                return self.plot_pcolormesh()
         if plot_type == 'imshow':
             return self.plot_imshow()
         elif plot_type == 'pcolormesh':

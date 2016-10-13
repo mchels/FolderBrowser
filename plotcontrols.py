@@ -2,7 +2,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 
 class PlotControls(QtWidgets.QWidget):
-    def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names):
+    def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names,
+                 plot_2D_type_func, plot_2D_types):
         super().__init__()
         self.layout = QtWidgets.QHBoxLayout()
         self.num_col_boxes = 3
@@ -11,8 +12,11 @@ class PlotControls(QtWidgets.QWidget):
         self.cmap_func = cmap_func
         self.lim_func = lim_func
         self.cmap_names = cmap_names
+        self.plot_2D_type_func = plot_2D_type_func
+        self.plot_2D_types = plot_2D_types
         self.init_col_sel_boxes()
         self.init_cmap_sel()
+        self.init_plot_2D_type_sel()
         self.init_lim_boxes()
         self.setLayout(self.layout)
 
@@ -58,6 +62,17 @@ class PlotControls(QtWidgets.QWidget):
         self.layout.addWidget(cmap_sel)
         self.cmap_sel = cmap_sel
 
+    def init_plot_2D_type_sel(self):
+        plot_2D_type_sel = QtWidgets.QComboBox()
+        plot_2D_type_sel.addItems(self.plot_2D_types)
+        plot_2D_type_sel.activated.connect(self.plot_2D_type_func)
+        policy_horiz = QSizePolicy.MinimumExpanding
+        policy_vert = QSizePolicy.Maximum
+        plot_2D_type_sel.setSizePolicy(policy_horiz, policy_vert)
+        plot_2D_type_sel.setMinimumWidth(40)
+        self.layout.addWidget(plot_2D_type_sel)
+        self.plot_2D_type_sel = plot_2D_type_sel
+
     def init_lim_boxes(self):
         self.lim_boxes = [None] * self.num_lim_boxes
         for i in range(self.num_lim_boxes):
@@ -69,6 +84,10 @@ class PlotControls(QtWidgets.QWidget):
     def get_sel_cols(self):
         sel_texts = [box.currentText() for box in self.col_boxes]
         return sel_texts
+
+    def get_sel_2D_type(self):
+        sel_str = self.plot_2D_type_sel.currentText()
+        return sel_str
 
     def get_lims(self):
         lims = [None] * self.num_lim_boxes

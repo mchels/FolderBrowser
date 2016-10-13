@@ -23,10 +23,13 @@ class MplLayout(QtWidgets.QWidget):
         self.parent = parent
         self.init_fig_and_canvas()
         self.cmap_names = ['Reds', 'Blues_r', 'symmetric']
+        self.plot_2D_types = ('Auto', 'imshow', 'pcolormesh')
         self.plotcontrols = PlotControls(self.update_sel_cols,
                                          self.update_cmap,
                                          self.update_lims,
-                                         self.cmap_names)
+                                         self.cmap_names,
+                                         self.set_plot_2D_type,
+                                         self.plot_2D_types)
         self.init_navi_toolbar()
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
@@ -45,6 +48,7 @@ class MplLayout(QtWidgets.QWidget):
         self.labels = [None] * 3
         self.scilimits = (-3,3)
         self.n_active_cols = None
+        self.plot_2D_type = None
 
     def reset_and_plot(self, sweep):
         self.sweep = sweep
@@ -173,8 +177,11 @@ class MplLayout(QtWidgets.QWidget):
 
     def _update_2D_plot(self):
         fig = self.canvas.figure
+        if self.plot_2D_type == 'imshow' and not self.data_h.imshow_eligible:
+            self.clear_axis(redraw=True)
+            return
         self.clear_axis(redraw=False)
-        self.image = self.plot_h.plot()
+        self.image = self.plot_h.plot(plot_type=self.plot_2D_type)
         self.cbar = fig.colorbar(mappable=self.image)
         self.cbar.formatter.set_powerlimits(self.scilimits)
         self.image.set_cmap(self.cmap)
@@ -239,6 +246,15 @@ class MplLayout(QtWidgets.QWidget):
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.canvas).toImage()
         QtWidgets.QApplication.clipboard().setImage(image)
+        
+    def set_plot_2D_type(self, new_type=None):
+        new_type = self.plotcontrols.get_sel_2D_type()
+        assert new_type in self.plot_2D_types
+        if new_type == 'Auto':
+            new_type = None
+        self.plot_2D_type = new_type
+        if not self.update_is_scheduled:
+            self.update_plot()
 
     def set_title(self, title):
         self.title = title
