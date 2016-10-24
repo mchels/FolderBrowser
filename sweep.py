@@ -60,21 +60,48 @@ class Sweep(object):
         except KeyError:
             return col_name
 
-    @staticmethod
-    def load_dir(path, meta_only=False):
+    @classmethod
+    def load_dir(cls, path, meta_only=False, use_pandas=None):
         with open(os.path.join(path, 'meta.json')) as f:
             meta = json.load(f)
         if meta_only:
             return meta
         columns = meta['columns']
-        dtype = [(x['name'], float) for x in columns]
-        with open(os.path.join(path, 'data.dat')) as f:
+        dat_path = os.path.join(path, 'data.dat')
+        if use_pandas is not False:
+            try:
+                data = cls.load_dir_pandas(dat_path, columns)
+                return (data, meta)
+            except ImportError as err:
+                # If the user has specifically requested to load data with
+                # pandas with use_pandas=True we show the ImportError.
+                # Otherwise we let it pass silently and load the data without
+                # pandas.
+                if use_pandas:
+                    raise err
+        data = cls.load_dir_no_pandas(dat_path, columns)
+        return (data, meta)
+
+    @staticmethod
+    def load_dir_pandas(dat_path, columns):
+        import pandas
+        names = [c['name'] for c in columns]
+        dtype = {c['name']: float for c in columns}
+        p_data = pandas.read_csv(dat_path, sep='\t', names=names, dtype=dtype,
+                                 header=None, index_col=False)
+        data = p_data.to_records(index=False)
+        return data
+
+    @staticmethod
+    def load_dir_no_pandas(dat_path, columns):
+        dtype = [(c['name'], float) for c in columns]
+        with open(dat_path) as f:
             def content():
                 for line in f:
                     if line.strip():
                         yield tuple(float(x) for x in line.split())
             data = np.fromiter(content(), dtype=dtype)
-        return (data, meta)
+        return data
 
     @staticmethod
     def reshape2d(column1, column2, column3):
