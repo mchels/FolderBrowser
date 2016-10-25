@@ -187,20 +187,25 @@ class Transformed3DData(DataHandler):
         Must run before
         - clip_tdata_to_nan
         """
-        tdata = np.copy(self.data)
+        lin_axes = [ax for ax in self.lin_axis_for_data if ax is not None]
+        if lin_axes == [0, 1]:
+            tdata = [arr.copy().T for arr in self.data]
+        else:
+            tdata = [arr.copy() for arr in self.data]
+        tdata_lin_axes = [1, 0]
         # Sort tdata along dimensions where the x and y arrays vary linearly.
         for i in (0, 1):
             arr = tdata[i]
             if not self.data_is_linear[i]:
                 continue
             if arr[0,0] > arr[-1,-1]:
-                lin_axis = self.lin_axis_for_data[i]
+                lin_axis = tdata_lin_axes[i]
                 # We can sort the array by simply reversing the elements
                 # because we know it is linearly increasing or decreasing
                 # monotonously from self.data_is_linear.
                 arr = self.reverse_axis(arr, lin_axis)
                 if self.n_data_arrs == 3:
-                    self.data[2] = self.reverse_axis(self.data[2], lin_axis)
+                    self.tdata[2] = self.reverse_axis(self.tdata[2], lin_axis)
         self.tdata = tdata
 
 
