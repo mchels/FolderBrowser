@@ -14,13 +14,13 @@ class Plot1DHandler(PlotHandler):
     def __init__(self, ax, data_handler):
         super().__init__(ax, data_handler)
 
-    def plot(self):
-        return self.plot_1D()
+    def plot(self, **kwargs):
+        return self.plot_1D(**kwargs)
 
-    def plot_1D(self):
+    def plot_1D(self, **kwargs):
         tdata = self.data_handler.tdata
         ax = self.ax
-        ax.plot(tdata[0], tdata[1])
+        ax.plot(tdata[0], tdata[1], **kwargs)
 
 
 class Plot2DHandler(PlotHandler):
@@ -41,22 +41,22 @@ class Plot2DHandler(PlotHandler):
             plot_type = 'pcolormesh'
         self.plot_type = plot_type
 
-    def plot(self, plot_type=None):
+    def plot(self, plot_type=None, **kwargs):
         """
         Depends on set_plot_type.
         """
         if plot_type is None:
             plot_type = self.plot_type
             if self.data_handler.imshow_eligible:
-                return self.plot_imshow()
+                return self.plot_imshow(**kwargs)
             else:
-                return self.plot_pcolormesh()
+                return self.plot_pcolormesh(**kwargs)
         if plot_type == 'imshow':
-            return self.plot_imshow()
+            return self.plot_imshow(**kwargs)
         elif plot_type == 'pcolormesh':
-            return self.plot_pcolormesh()
+            return self.plot_pcolormesh(**kwargs)
 
-    def plot_imshow(self, cmap=None):
+    def plot_imshow(self, cmap=None, **kwargs):
         if cmap is None:
             cmap = self.def_cmap_str
         ax = self.ax
@@ -68,15 +68,16 @@ class Plot2DHandler(PlotHandler):
             aspect='auto',
             extent=extent,
             cmap=cmap,
+            **kwargs,
         )
         return image
 
-    def plot_pcolormesh(self, cmap=None):
+    def plot_pcolormesh(self, cmap=None, **kwargs):
         if cmap is None:
             cmap = self.def_cmap_str
         ax = self.ax
         x, y, z = self.data_handler.tdata
-        plot_obj = ax.pcolormesh(x, y, z, cmap=cmap)
+        plot_obj = ax.pcolormesh(x, y, z, cmap=cmap, **kwargs)
         return plot_obj
 
 
