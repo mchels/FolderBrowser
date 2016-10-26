@@ -123,13 +123,10 @@ class FolderBrowser(QMainWindow):
 
     def show_text_for_copying(self):
         lay = self.active_layout
-        title = lay.title
+        title = lay.title.replace('\n', ' ')
         date_stamp = self.date_stamp
         name = self.sweep_name
-        xlabel = lay.labels[0]
-        ylabel = lay.labels[1]
-        zlabel = lay.labels[2]
-        diag = TextForCopying(title, date_stamp, name, xlabel, ylabel, zlabel)
+        diag = TextForCopying(title, date_stamp, name, *lay.labels)
         diag.setWindowModality(QtCore.Qt.ApplicationModal)
         diag.setModal(True)
         diag.exec_()

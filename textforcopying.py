@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QDialog, QLineEdit, QShortcut, QFormLayout, QLabel
 from PyQt5.QtGui import QKeySequence
 
 class TextForCopying(QDialog):
-    def __init__(self, title, date_stamp, name, xlabel, ylabel, zlabel):
+    def __init__(self, title, date_stamp, name, xlabel, ylabel, zlabel=None):
         super().__init__()
         self.title = title
         self.date_stamp = date_stamp
