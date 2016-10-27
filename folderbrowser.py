@@ -4,7 +4,7 @@ import platform
 import subprocess
 import matplotlib
 matplotlib.use('Qt5Agg')
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QDesktopWidget, QShortcut
 from PyQt5.QtGui import QKeySequence
 from filelistwidget import FileList
@@ -39,6 +39,7 @@ class FolderBrowser(QMainWindow):
         self.setDockNestingEnabled(True)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.set_hotkeys()
+        self.set_icon()
         self.show()
 
     @show_loading
@@ -138,6 +139,15 @@ class FolderBrowser(QMainWindow):
         self.sweep_name = sweep.meta['name']
         self.date_stamp = os.path.basename(sweep_path)
         return self.date_stamp + '\n' + self.sweep_name
+
+    def set_icon(self):
+        app_icon = QtGui.QIcon()
+        app_icon.addFile('icons/16x16.png', QtCore.QSize(16,16))
+        app_icon.addFile('icons/24x24.png', QtCore.QSize(24,24))
+        app_icon.addFile('icons/32x32.png', QtCore.QSize(32,32))
+        app_icon.addFile('icons/48x48.png', QtCore.QSize(48,48))
+        app_icon.addFile('/icons/256x256.png', QtCore.QSize(256,256))
+        self.setWindowIcon(app_icon)
 
 
 if __name__=='__main__':
