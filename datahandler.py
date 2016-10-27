@@ -46,14 +46,7 @@ class DataHandler(object):
         """
         assert dim in range(self.n_data_arrs)
         arr = self.tdata[dim]
-        if self.data_is_linear[dim] and dim != 2:
-            # Return first and last elements of array since we know it's
-            # sorted.
-            first = (0,) * arr.ndim
-            last = (-1,) * arr.ndim
-            return [arr[first], arr[last]]
-        else:
-            return [nanmin(arr), nanmax(arr)]
+        return [nanmin(arr), nanmax(arr)]
 
     @staticmethod
     def clip_to_nan(arr, clip_min, clip_max):
@@ -79,7 +72,7 @@ class DataHandler(object):
             return False
         # Check that the elements are the same,
         # i.e., the slope of arr is constant.
-        if not np.allclose(arr_diff, arr_diff[0]):
+        if not np.allclose(arr_diff, arr_diff[0], atol=1e-15):
             return False
         return True
 
