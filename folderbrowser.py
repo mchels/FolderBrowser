@@ -153,10 +153,8 @@ class FolderBrowser(QMainWindow):
 if __name__=='__main__':
     from pcols import name_func_dict
     n_figs = 2
-    data_path = 'C:/Dropbox/PhD/sandbox_phd/FolderBrowser/data'
-    # data_path = 'C:/Dropbox/z_QDev_Morten_Hels/sandbox_phd/FolderBrowser/data'
-    # data_path = 'D:/Qdev users/mchels/2016_08_09_cnt_gen5_FI/data/2016_08_09_initial'
+    cwd = os.getcwd()
+    data_path = os.path.join(cwd, 'data')
     qApp = QtWidgets.QApplication(sys.argv)
     brw = FolderBrowser(n_figs, data_path, name_func_dict)
     sys.exit(qApp.exec_())
-    #qApp.exec_()
