@@ -148,13 +148,3 @@ class FolderBrowser(QMainWindow):
             fpath = os.path.join(icons_dir, fname)
             app_icon.addFile(fpath, QtCore.QSize(size,size))
         self.setWindowIcon(app_icon)
-
-
-if __name__=='__main__':
-    from pcols import name_func_dict
-    n_figs = 2
-    cwd = os.getcwd()
-    data_path = os.path.join(cwd, 'data')
-    qApp = QtWidgets.QApplication(sys.argv)
-    brw = FolderBrowser(n_figs, data_path, name_func_dict)
-    sys.exit(qApp.exec_())
