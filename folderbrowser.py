@@ -142,11 +142,11 @@ class FolderBrowser(QMainWindow):
 
     def set_icon(self):
         app_icon = QtGui.QIcon()
-        app_icon.addFile('icons/16x16.png', QtCore.QSize(16,16))
-        app_icon.addFile('icons/24x24.png', QtCore.QSize(24,24))
-        app_icon.addFile('icons/32x32.png', QtCore.QSize(32,32))
-        app_icon.addFile('icons/48x48.png', QtCore.QSize(48,48))
-        app_icon.addFile('/icons/256x256.png', QtCore.QSize(256,256))
+        icons_dir = os.path.join(os.path.dirname(__file__), 'icons')
+        for size in (16, 24, 32, 48, 256):
+            fname = '{}x{}.png'.format(size, size)
+            fpath = os.path.join(icons_dir, fname)
+            app_icon.addFile(fpath, QtCore.QSize(size,size))
         self.setWindowIcon(app_icon)
 
 
