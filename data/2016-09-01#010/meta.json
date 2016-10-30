@@ -1,0 +1,899 @@
+{
+  "register": {
+    "channels": [
+      {
+        "default_name": "polar/r",
+        "registered_name": "Br",
+        "name": "Br",
+        "class": "qd.classes.Channel",
+        "instrument": "polar",
+        "meta": {},
+        "channel_id": "r"
+      },
+      {
+        "default_name": "polar/theta",
+        "registered_name": "Btheta",
+        "name": "Btheta",
+        "class": "qd.classes.Channel",
+        "instrument": "polar",
+        "meta": {},
+        "channel_id": "theta"
+      },
+      {
+        "default_name": "magnet/x",
+        "registered_name": "Bx",
+        "name": "Bx",
+        "class": "qd.classes.Channel",
+        "instrument": "magnet",
+        "meta": {},
+        "channel_id": "x"
+      },
+      {
+        "default_name": "magnet/z",
+        "registered_name": "Bz",
+        "name": "Bz",
+        "class": "qd.classes.Channel",
+        "instrument": "magnet",
+        "meta": {},
+        "channel_id": "z"
+      },
+      {
+        "default_name": "triton/MC",
+        "base_channel": "triton/MC",
+        "registered_name": "MC",
+        "name": "MC",
+        "class": "qd.comb.MemoizeChannel",
+        "memoize_time": 20,
+        "meta": {},
+        "channel_id": null
+      },
+      {
+        "default_name": "smua/v",
+        "registered_name": "backgate",
+        "name": "backgate",
+        "class": "qd.classes.Channel",
+        "instrument": "smua",
+        "meta": {},
+        "channel_id": "v"
+      },
+      {
+        "default_name": "johnny/in",
+        "registered_name": "dc_bias_left",
+        "name": "dc_bias_left",
+        "class": "qd.classes.Channel",
+        "instrument": "johnny",
+        "meta": {},
+        "channel_id": "in"
+      },
+      {
+        "default_name": "indiana/in",
+        "registered_name": "dc_bias_right",
+        "name": "dc_bias_right",
+        "class": "qd.classes.Channel",
+        "instrument": "indiana",
+        "meta": {},
+        "channel_id": "in"
+      },
+      {
+        "default_name": "lara/in",
+        "registered_name": "dc_curr_left",
+        "name": "dc_curr_left",
+        "class": "qd.classes.Channel",
+        "instrument": "lara",
+        "meta": {},
+        "channel_id": "in"
+      },
+      {
+        "default_name": "henry/in",
+        "registered_name": "dc_curr_right",
+        "name": "dc_curr_right",
+        "class": "qd.classes.Channel",
+        "instrument": "henry",
+        "meta": {},
+        "channel_id": "in"
+      },
+      {
+        "default_name": "dac/CH12",
+        "registered_name": "gL",
+        "name": "gL",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH12"
+      },
+      {
+        "default_name": "dac/CH14",
+        "registered_name": "gLfine",
+        "name": "gLfine",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH14"
+      },
+      {
+        "default_name": "dac/CH13",
+        "registered_name": "gR",
+        "name": "gR",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH13"
+      },
+      {
+        "default_name": "dac/CH15",
+        "registered_name": "gRfine",
+        "name": "gRfine",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH15"
+      },
+      {
+        "default_name": "lockin_bias_left/R",
+        "registered_name": "lockin_bias_left/R",
+        "name": "lockin_bias_left/R",
+        "class": "qd.classes.Channel",
+        "instrument": "lockin_bias_left",
+        "meta": {},
+        "channel_id": "R"
+      },
+      {
+        "default_name": "lockin_bias_right/R",
+        "registered_name": "lockin_bias_right/R",
+        "name": "lockin_bias_right/R",
+        "class": "qd.classes.Channel",
+        "instrument": "lockin_bias_right",
+        "meta": {},
+        "channel_id": "R"
+      },
+      {
+        "default_name": "lockin_curr_left/R",
+        "registered_name": "lockin_curr_left/R",
+        "name": "lockin_curr_left/R",
+        "class": "qd.classes.Channel",
+        "instrument": "lockin_curr_left",
+        "meta": {},
+        "channel_id": "R"
+      },
+      {
+        "default_name": "lockin_curr_right/R",
+        "registered_name": "lockin_curr_right/R",
+        "name": "lockin_curr_right/R",
+        "class": "qd.classes.Channel",
+        "instrument": "lockin_curr_right",
+        "meta": {},
+        "channel_id": "R"
+      },
+      {
+        "default_name": "mix/mL",
+        "registered_name": "mL",
+        "name": "mL",
+        "class": "qd.classes.Channel",
+        "instrument": "mix",
+        "meta": {},
+        "channel_id": "mL"
+      },
+      {
+        "default_name": "mix/mR",
+        "registered_name": "mR",
+        "name": "mR",
+        "class": "qd.classes.Channel",
+        "instrument": "mix",
+        "meta": {},
+        "channel_id": "mR"
+      },
+      {
+        "default_name": "dac/CH0",
+        "registered_name": "source",
+        "name": "source",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH0"
+      },
+      {
+        "default_name": "dac/CH9",
+        "registered_name": "source_left",
+        "name": "source_left",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH9"
+      },
+      {
+        "default_name": "dac/CH10",
+        "registered_name": "source_right",
+        "name": "source_right",
+        "class": "qd.classes.Channel",
+        "instrument": "dac",
+        "meta": {},
+        "channel_id": "CH10"
+      },
+      {
+        "default_name": "Time/time",
+        "registered_name": "time",
+        "name": "time",
+        "class": "qd.classes.Channel",
+        "instrument": "Time",
+        "meta": {},
+        "channel_id": "time"
+      },
+      {
+        "default_name": "triton/MC",
+        "registered_name": "triton/MC",
+        "name": "triton/MC",
+        "class": "qd.classes.Channel",
+        "instrument": "triton",
+        "meta": {},
+        "channel_id": "MC"
+      }
+    ],
+    "instruments": [
+      {
+        "limits": {
+          "CH13": [
+            -6,
+            6
+          ],
+          "CH12": [
+            -6,
+            6
+          ],
+          "CH11": [
+            -10,
+            10
+          ],
+          "CH10": [
+            -10,
+            10
+          ],
+          "CH17": [
+            -10,
+            10
+          ],
+          "CH16": [
+            -10,
+            10
+          ],
+          "CH15": [
+            -10,
+            10
+          ],
+          "CH9": [
+            -10,
+            10
+          ],
+          "CH14": [
+            -10,
+            10
+          ],
+          "CH7": [
+            -10,
+            10
+          ],
+          "CH8": [
+            -10,
+            10
+          ],
+          "CH19": [
+            -10,
+            10
+          ],
+          "CH5": [
+            -10,
+            10
+          ],
+          "CH18": [
+            -10,
+            10
+          ],
+          "CH6": [
+            -10,
+            10
+          ],
+          "CH4": [
+            -10,
+            10
+          ],
+          "CH3": [
+            -10,
+            10
+          ],
+          "CH2": [
+            -10,
+            10
+          ],
+          "CH1": [
+            -10,
+            10
+          ],
+          "CH0": [
+            -10,
+            10
+          ]
+        },
+        "model": "DecaDAC",
+        "registered_name": "dac",
+        "name": "dac",
+        "ranges": {
+          "CH13": [
+            -10,
+            10
+          ],
+          "CH12": [
+            -10,
+            10
+          ],
+          "CH11": [
+            -10,
+            10
+          ],
+          "CH10": [
+            -10,
+            10
+          ],
+          "CH17": [
+            -10,
+            10
+          ],
+          "CH16": [
+            -10,
+            10
+          ],
+          "CH15": [
+            -10,
+            10
+          ],
+          "CH9": [
+            -10,
+            10
+          ],
+          "CH14": [
+            -10,
+            10
+          ],
+          "CH7": [
+            -10,
+            10
+          ],
+          "CH8": [
+            -10,
+            10
+          ],
+          "CH19": [
+            -10,
+            10
+          ],
+          "CH5": [
+            -10,
+            10
+          ],
+          "CH18": [
+            -10,
+            10
+          ],
+          "CH6": [
+            -10,
+            10
+          ],
+          "CH4": [
+            -10,
+            10
+          ],
+          "CH3": [
+            -10,
+            10
+          ],
+          "CH2": [
+            -10,
+            10
+          ],
+          "CH1": [
+            -10,
+            10
+          ],
+          "CH0": [
+            -10,
+            10
+          ]
+        },
+        "channels": [
+          "CH0",
+          "CH1",
+          "CH2",
+          "CH3",
+          "CH4",
+          "CH5",
+          "CH6",
+          "CH7",
+          "CH8",
+          "CH9",
+          "CH10",
+          "CH11",
+          "CH12",
+          "CH13",
+          "CH14",
+          "CH15",
+          "CH16",
+          "CH17",
+          "CH18",
+          "CH19"
+        ],
+        "class": "qd.ins.DecaDAC2",
+        "current_values": {
+          "CH13": -3.999847409781033,
+          "CH12": 0.3599603265430691,
+          "CH11": 1.5259021896696368E-4,
+          "CH10": -0.005645838101777656,
+          "CH17": 1.5259021896696368E-4,
+          "CH16": 1.5259021896696368E-4,
+          "CH15": 1.5259021896696368E-4,
+          "CH9": 0.004425116350041947,
+          "CH14": 1.5259021896696368E-4,
+          "CH7": 1.5259021896696368E-4,
+          "CH8": 1.5259021896696368E-4,
+          "CH19": 1.5259021896696368E-4,
+          "CH5": 1.5259021896696368E-4,
+          "CH18": 1.5259021896696368E-4,
+          "CH6": 1.5259021896696368E-4,
+          "CH4": 1.5259021896696368E-4,
+          "CH3": -0.005035477225909801,
+          "CH2": 0.005035477225909801,
+          "CH1": 1.5259021896696368E-4,
+          "CH0": 1.5259021896696368E-4
+        },
+        "ramp_rates": {
+          "CH13": 0.5,
+          "CH12": 0.5,
+          "CH11": 0.1,
+          "CH10": 0.1,
+          "CH17": 0.1,
+          "CH16": 0.1,
+          "CH15": 50,
+          "CH9": 0.1,
+          "CH14": 50,
+          "CH7": 0.1,
+          "CH8": 0.1,
+          "CH19": 0.1,
+          "CH5": 0.1,
+          "CH18": 0.1,
+          "CH6": 0.1,
+          "CH4": 0.1,
+          "CH3": 0.1,
+          "CH2": 0.1,
+          "CH1": 0.1,
+          "CH0": 3
+        }
+      },
+      {
+        "model": "Agilent34401A",
+        "registered_name": "henry",
+        "name": "henry",
+        "config": {"NPLC": "+1.00000000E+01"},
+        "channels": ["in"],
+        "class": "qd.ins.AgilentDMM"
+      },
+      {
+        "model": "Agilent34401A",
+        "registered_name": "indiana",
+        "name": "indiana",
+        "config": {"NPLC": "+1.00000000E+01"},
+        "channels": ["in"],
+        "class": "qd.ins.AgilentDMM"
+      },
+      {
+        "model": "Agilent34401A",
+        "registered_name": "johnny",
+        "name": "johnny",
+        "config": {"NPLC": "+1.00000000E+01"},
+        "channels": ["in"],
+        "class": "qd.ins.AgilentDMM"
+      },
+      {
+        "model": "Agilent34401A",
+        "registered_name": "lara",
+        "name": "lara",
+        "config": {"NPLC": "+1.00000000E+01"},
+        "channels": ["in"],
+        "class": "qd.ins.AgilentDMM"
+      },
+      {
+        "model": "SR830",
+        "registered_name": "lockin_bias_left",
+        "name": "lockin_bias_left",
+        "config": {
+          "RMOD": "1",
+          "FMOD": "0",
+          "sensitivity": 0.002,
+          "SYNC": "1",
+          "IGND": "0",
+          "SLVL": "0.004",
+          "SENS": "18",
+          "OFSL": "3",
+          "timeconst": 0.1,
+          "ICPL": "0",
+          "PHAS": "-4.89",
+          "FREQ": "36.9968",
+          "ISRC": "0",
+          "ampl": "0.004",
+          "HARM": "1",
+          "OFLT": "8",
+          "RSLP": "1",
+          "ILIN": "0"
+        },
+        "channels": [
+          "X",
+          "Y",
+          "R",
+          "theta",
+          "freq",
+          "display1",
+          "display2",
+          "slvl",
+          "oflt",
+          "ampl",
+          "auxout1",
+          "auxout2",
+          "auxout3",
+          "auxout4"
+        ],
+        "class": "qd.ins.SR830LockIn"
+      },
+      {
+        "model": "5210",
+        "registered_name": "lockin_bias_right",
+        "name": "lockin_bias_right",
+        "config": {
+          "F2F": "0",
+          "sensitivity": 0.003,
+          "XDB": "1",
+          "SEN": "9",
+          "Y": "+00352",
+          "X": "+00094",
+          "TC": "4"
+        },
+        "channels": [
+          "X",
+          "Y",
+          "R",
+          "theta",
+          "fast_x"
+        ],
+        "class": "qd.ins.Model5210"
+      },
+      {
+        "model": "SR830",
+        "registered_name": "lockin_curr_left",
+        "name": "lockin_curr_left",
+        "config": {
+          "RMOD": "1",
+          "FMOD": "0",
+          "sensitivity": 0.002,
+          "SYNC": "1",
+          "IGND": "0",
+          "SLVL": "0.008",
+          "SENS": "18",
+          "OFSL": "3",
+          "timeconst": 0.1,
+          "ICPL": "0",
+          "PHAS": "-33.69",
+          "FREQ": "36.9997",
+          "ISRC": "0",
+          "ampl": "0.008",
+          "HARM": "1",
+          "OFLT": "8",
+          "RSLP": "1",
+          "ILIN": "0"
+        },
+        "channels": [
+          "X",
+          "Y",
+          "R",
+          "theta",
+          "freq",
+          "display1",
+          "display2",
+          "slvl",
+          "oflt",
+          "ampl",
+          "auxout1",
+          "auxout2",
+          "auxout3",
+          "auxout4"
+        ],
+        "class": "qd.ins.SR830LockIn"
+      },
+      {
+        "model": "SR830",
+        "registered_name": "lockin_curr_right",
+        "name": "lockin_curr_right",
+        "config": {
+          "RMOD": "1",
+          "FMOD": "1",
+          "sensitivity": 0.002,
+          "SYNC": "1",
+          "IGND": "0",
+          "SLVL": "0.05",
+          "SENS": "18",
+          "OFSL": "3",
+          "timeconst": 0.1,
+          "ICPL": "0",
+          "PHAS": "-31.97",
+          "FREQ": "37",
+          "ISRC": "0",
+          "ampl": "0.05",
+          "HARM": "1",
+          "OFLT": "8",
+          "RSLP": "1",
+          "ILIN": "0"
+        },
+        "channels": [
+          "X",
+          "Y",
+          "R",
+          "theta",
+          "freq",
+          "display1",
+          "display2",
+          "slvl",
+          "oflt",
+          "ampl",
+          "auxout1",
+          "auxout2",
+          "auxout3",
+          "auxout4"
+        ],
+        "class": "qd.ins.SR830LockIn"
+      },
+      {
+        "field": {
+          "z": 0,
+          "x": 0
+        },
+        "model": "OxfMagnet",
+        "sensitivity": 1.0E-4,
+        "registered_name": "magnet",
+        "name": "magnet",
+        "channels": [
+          "x",
+          "z"
+        ],
+        "class": "qd.ins.OxfMagnet"
+      },
+      {
+        "transform": [
+          [
+            1,
+            -0.09
+          ],
+          [
+            -0.11,
+            1
+          ]
+        ],
+        "model": "LinOutputMix",
+        "inverse": [
+          [
+            1.0099989900010105,
+            0.09089990910009083
+          ],
+          [
+            0.11109988890011119,
+            1.00999899000101
+          ]
+        ],
+        "registered_name": "mix",
+        "base_channels": [
+          "gL",
+          "gR"
+        ],
+        "name": "mix",
+        "channels": [
+          "mL",
+          "mR",
+          "_cache_mL",
+          "_cache_mR"
+        ],
+        "class": "qd.comb.LinOutputMix",
+        "cached_values": [
+          [0],
+          [-4]
+        ],
+        "transform_has_inverse": true
+      },
+      {
+        "model": "Polar",
+        "registered_name": "polar",
+        "base_channels": {
+          "y": "Bz",
+          "x": "Bx"
+        },
+        "name": "polar",
+        "channels": [
+          "r",
+          "theta"
+        ],
+        "class": "qd.comb.Polar",
+        "cached_values": {
+          "theta": 0,
+          "r": 0
+        }
+      },
+      {
+        "model": "Keithley 2600",
+        "registered_name": "smua",
+        "name": "smua",
+        "channels": [
+          "i",
+          "v",
+          "r"
+        ],
+        "class": "qd.ins.Keithley2600"
+      },
+      {
+        "model": "Keithley 2600",
+        "registered_name": "smub",
+        "name": "smub",
+        "channels": [
+          "i",
+          "v",
+          "r"
+        ],
+        "class": "qd.ins.Keithley2600"
+      },
+      {
+        "control": {
+          "tset": 15,
+          "rate": 0.1,
+          "range": 0.0316,
+          "channel": "T6",
+          "ramp": false,
+          "mode": false
+        },
+        "model": "Triton",
+        "registered_name": "triton",
+        "name": "triton",
+        "channels": [
+          "COOL",
+          "MC",
+          "PT2",
+          "STIL",
+          "cooling_water",
+          "TSET",
+          "RATE",
+          "RANGE"
+        ],
+        "class": "qd.ins.Triton",
+        "temperatures": {
+          "cooling_water": 19.3,
+          "STIL": 0.839949,
+          "COOL": 1.41834,
+          "PT2": 3.7637,
+          "MC": 0.0245103
+        }
+      },
+      {
+        "model": "Time",
+        "registered_name": "Time",
+        "name": "Time",
+        "channels": ["time"],
+        "class": "qd.ins.Time"
+      }
+    ]
+  },
+  "timestamp": "2016-09-01 11:16:03",
+  "name": "Duplicate test",
+  "setup": {
+    "channels": [
+      "backgate",
+      "gL",
+      "gLfine",
+      "gR",
+      "gRfine",
+      "dc_bias_left",
+      "dc_curr_left",
+      "dc_bias_right",
+      "dc_curr_right",
+      "Bx",
+      "Bz",
+      "Br",
+      "Btheta",
+      "source",
+      "source",
+      "source_left",
+      "source_left",
+      "source_right",
+      "source_right",
+      "mL",
+      "mR"
+    ],
+    "instruments": [
+      "lockin_bias_left",
+      "lockin_curr_left",
+      "lockin_bias_right",
+      "lockin_curr_right",
+      "indiana",
+      "henry",
+      "lara",
+      "johnny",
+      "dac",
+      "smua",
+      "smub",
+      "triton",
+      "magnet",
+      "polar",
+      "mix"
+    ],
+    "meta": {
+      "center": {
+        "source": "S1",
+        "bias": "S2"
+      },
+      "lock_sig_source": "lockin_curr_right",
+      "lock_sig_divider": 10000,
+      "config": "two-sided",
+      "left": {
+        "current_amp_type": "IF3602",
+        "sd_left0": 0.0045000000000000005,
+        "current": "L1",
+        "current_amp": 1.0E7,
+        "bias": "L2",
+        "bias_amp": 100
+      },
+      "gates": {
+        "gL": 0.3599603265430691,
+        "gRfine": 1.5259021896696368E-4,
+        "gLfine": 1.5259021896696368E-4,
+        "gR": -3.999847409781033
+      },
+      "right": {
+        "current_amp_type": "LSK389A",
+        "sd_right0": -0.0055000000000000005,
+        "current": "R1",
+        "current_amp": 1.0E7,
+        "bias": "R2",
+        "bias_amp": 100
+      },
+      "source_divider": 1000
+    }
+  },
+  "columns": [
+    {"name": "mR"},
+    {"name": "time"},
+    {"name": "dc_bias_left"},
+    {"name": "dc_curr_left"},
+    {"name": "lockin_bias_left/R"},
+    {"name": "lockin_curr_left/R"},
+    {"name": "dc_bias_right"},
+    {"name": "dc_curr_right"},
+    {"name": "lockin_bias_right/R"},
+    {"name": "lockin_curr_right/R"},
+    {"name": "MC"}
+  ],
+  "job": {
+    "to": 2,
+    "chan": "mR",
+    "job": {
+      "inputs": [
+        "time",
+        "dc_bias_left",
+        "dc_curr_left",
+        "lockin_bias_left/R",
+        "lockin_curr_left/R",
+        "dc_bias_right",
+        "dc_curr_right",
+        "lockin_bias_right/R",
+        "lockin_curr_right/R",
+        "MC"
+      ],
+      "type": "Inputs"
+    },
+    "repeats": 301,
+    "points": 301,
+    "from": -4,
+    "type": "Sweep"
+  },
+  "type": "Q",
+  "meta": {},
+  "version": "0.0.1"
+}
