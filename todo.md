@@ -3,12 +3,13 @@ TODO
 High Priority
 -------------
 * mplcursor.
-* Make setup.py file. You must do it in a way that allows you to uninstall the
-  package again!
 
 
 Medium Priority
 ---------------
+* Allow multiple functionalities when loading a data folder:
+  1) Load the specified path directly (keyword direct_load=True?).
+  2) List the subfolders and let the user pick one of them to load.
 * Specify path to names_func_dict file instead of supplying the dictionary
   itself. By doing this names_func_dict can be reloaded with a hotkey.
 * Make class+hotkey to copy all figures in a combined canvas.
@@ -36,6 +37,8 @@ Medium Priority
 
 Low Priority
 ------------
+* Make setup.py file. You must do it in a way that allows you to uninstall the
+  package again!
 * Decorators in separate file?
 * Let user specify path for Sweep class. This can make data not in the
   matlab-qd format compatible with the FolderBrowser.
@@ -74,6 +77,7 @@ Known Issues
 
 Done/Fixed
 ----------
+* Move repository to github.
 * Find icon for GUI.
 * Current in 2016-10-20#003 doesn't plot correctly.
 * Ctrl+t hotkey only works when one of the plots is 3D.

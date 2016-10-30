@@ -196,9 +196,9 @@ class Transformed3DData(DataHandler):
                 # We can sort the array by simply reversing the elements
                 # because we know it is linearly increasing or decreasing
                 # monotonously from self.data_is_linear.
-                arr = self.reverse_axis(arr, lin_axis)
+                tdata[i] = self.reverse_axis(arr, lin_axis)
                 if self.n_data_arrs == 3:
-                    self.tdata[2] = self.reverse_axis(self.tdata[2], lin_axis)
+                    tdata[2] = self.reverse_axis(tdata[2], lin_axis)
         self.tdata = tdata
 
 
