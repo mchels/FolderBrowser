@@ -12,6 +12,7 @@ from sweep import Sweep
 from mpllayout import MplLayout
 from customdockwidget import CustomDockWidget
 from textforcopying import TextForCopying
+import importlib.util
 
 
 def show_loading(func):
@@ -23,12 +24,13 @@ def show_loading(func):
 
 
 class FolderBrowser(QMainWindow):
-    def __init__(self, n_layouts, dir_path, name_func_dict,
+    def __init__(self, n_layouts, dir_path, pcols_path,
                  window_title='FolderBrowser'):
         super().__init__()
         self.n_layouts = n_layouts
         self.dir_path = dir_path
-        self.name_func_dict = name_func_dict
+        self.pcols_path = pcols_path
+        self.set_pcols()
         self.date_stamp = None
         self.sweep_name = None
         self.setWindowTitle(window_title)
@@ -47,7 +49,7 @@ class FolderBrowser(QMainWindow):
         file_list_item = self.file_list.currentItem()
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
-        self.sweep.set_pdata(self.name_func_dict)
+        self.sweep.set_pdata(self.pcols.name_func_dict)
         title = self.compose_title(self.sweep, sweep_path)
         for mpl_layout in self.mpl_layouts:
             mpl_layout.set_title(title)
@@ -95,16 +97,18 @@ class FolderBrowser(QMainWindow):
         self.active_layout = layout
 
     def set_hotkeys(self):
-        self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+c'), self)
-        self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
-        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+o'), self)
-        self.open_folder_hotkey.activated.connect(self.open_folder)
         self.open_folder_hotkey = QShortcut(QKeySequence('F5'), self)
         self.open_folder_hotkey.activated.connect(self.reload_file_list)
+        self.open_folder_hotkey = QShortcut(QKeySequence('F6'), self)
+        self.open_folder_hotkey.activated.connect(self.reload_pcols)
+        self.copy_fig_hotkey = QShortcut(QKeySequence('Ctrl+c'), self)
+        self.copy_fig_hotkey.activated.connect(self.copy_active_fig)
         self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+t'), self)
         self.open_folder_hotkey.activated.connect(self.show_text_for_copying)
         self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+w'), self)
         self.open_folder_hotkey.activated.connect(self.close)
+        self.open_folder_hotkey = QShortcut(QKeySequence('Ctrl+Shift+o'), self)
+        self.open_folder_hotkey.activated.connect(self.open_folder)
 
     def copy_active_fig(self):
         self.active_layout.copy_fig_to_clipboard()
@@ -132,9 +136,6 @@ class FolderBrowser(QMainWindow):
         diag.setModal(True)
         diag.exec_()
 
-    def set_name_func_dict(self, name_func_dict):
-        self.name_func_dict = name_func_dict
-
     def compose_title(self, sweep, sweep_path):
         self.sweep_name = sweep.meta['name']
         self.date_stamp = os.path.basename(sweep_path)
@@ -148,3 +149,13 @@ class FolderBrowser(QMainWindow):
             fpath = os.path.join(icons_dir, fname)
             app_icon.addFile(fpath, QtCore.QSize(size,size))
         self.setWindowIcon(app_icon)
+
+    def set_pcols(self):
+        spec = importlib.util.spec_from_file_location('', self.pcols_path)
+        pcols = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(pcols)
+        self.pcols = pcols
+
+    def reload_pcols(self):
+        self.set_pcols()
+        self.sweep.set_pdata(self.pcols.name_func_dict)

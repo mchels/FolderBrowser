@@ -10,8 +10,6 @@ Medium Priority
 * Allow multiple functionalities when loading a data folder:
   1) Load the specified path directly (keyword direct_load=True?).
   2) List the subfolders and let the user pick one of them to load.
-* Specify path to names_func_dict file instead of supplying the dictionary
-  itself. By doing this names_func_dict can be reloaded with a hotkey.
 * Make class+hotkey to copy all figures in a combined canvas.
   Add support for 2+1 layouts
 * Write tests for DataHandler and PlotHandler.
@@ -37,6 +35,7 @@ Medium Priority
 
 Low Priority
 ------------
+* Use relative imports? Use absolute path in template.py?
 * Make setup.py file. You must do it in a way that allows you to uninstall the
   package again!
 * Decorators in separate file?
@@ -77,6 +76,8 @@ Known Issues
 
 Done/Fixed
 ----------
+* Specify path to names_func_dict file instead of supplying the dictionary
+  itself. By doing this names_func_dict can be reloaded with a hotkey.
 * Move repository to github.
 * Find icon for GUI.
 * Current in 2016-10-20#003 doesn't plot correctly.
