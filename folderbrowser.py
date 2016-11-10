@@ -97,6 +97,8 @@ class FolderBrowser(QMainWindow):
         self.active_layout = layout
 
     def set_hotkeys(self):
+        self.open_folder_hotkey = QShortcut(QKeySequence('F2'), self)
+        self.open_folder_hotkey.activated.connect(self.code_to_clipboard)
         self.open_folder_hotkey = QShortcut(QKeySequence('F5'), self)
         self.open_folder_hotkey.activated.connect(self.reload_file_list)
         self.open_folder_hotkey = QShortcut(QKeySequence('F6'), self)
@@ -161,3 +163,56 @@ class FolderBrowser(QMainWindow):
     def reload_pcols(self):
         self.set_pcols()
         self.sweep.set_pdata(self.pcols.name_func_dict)
+
+    def code_to_clipboard(self):
+        if self.sweep_name is None:
+            return
+        own_path = os.path.dirname(os.path.realpath(__file__))
+        lay = self.active_layout
+        sel_col_names = lay.sel_col_names
+        try:
+            z_data_code = "sweep.get_data('{}')".format(sel_col_names[2])
+        except IndexError:
+            z_data_code = None
+        foo = {
+            'path_to_folderbrowser_dir': self.prep_path_for_template(own_path),
+            'pcols_path': self.prep_path_for_template(self.pcols_path),
+            'sweep_path': self.prep_path_for_template(self.sweep_path),
+            'x_name': self.pad_str(sel_col_names[0]),
+            'y_name': self.pad_str(sel_col_names[1]),
+            'z_data_code': z_data_code,
+            'plot_dim': lay.plot_dim,
+            'scilimits': lay.scilimits,
+            'xlabel': self.pad_str(lay.labels[0]),
+            'ylabel': self.pad_str(lay.labels[1]),
+            'xlim': lay.lims[0],
+            'ylim': lay.lims[1],
+        }
+        if lay.plot_is_2D:
+            template_name = 'plot_2D.py'
+            foo['plot_2D_type'] = self.pad_str(lay.plot_2D_type)
+            foo['cmap_name'] = self.pad_str(lay.cmap_name)
+            foo['zlim'] = lay.lims[2]
+            foo['zlabel'] = self.pad_str(lay.labels[2])
+        else:
+            template_name = 'plot_1D.py'
+        template_path = os.path.join(own_path, 'templates', template_name)
+        with open(template_path, 'r') as file:
+            tmpl_str = file.read()
+        out_str = tmpl_str.format(**foo)
+        QtWidgets.QApplication.clipboard().setText(out_str)
+        msg = 'Code for figure copied to clipboard.'
+        self.statusBar.showMessage(msg, 1000)
+
+    @classmethod
+    def prep_path_for_template(cls, path):
+        path_norm = os.path.normpath(path)
+        path_norm_fslash = path_norm.replace('\\', '/')
+        padded_path_norm_fslash = cls.pad_str(path_norm_fslash)
+        return padded_path_norm_fslash
+
+    @staticmethod
+    def pad_str(string):
+        if type(string) is not str:
+            return string
+        return "'{}'".format(string)

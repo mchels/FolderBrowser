@@ -35,7 +35,8 @@ Medium Priority
 
 Low Priority
 ------------
-* Use relative imports? Use absolute path in template.py?
+* Show path to data in Ctrl+T dialog.
+* Use relative imports?
 * Make setup.py file. You must do it in a way that allows you to uninstall the
   package again!
 * Decorators in separate file?
@@ -76,6 +77,7 @@ Known Issues
 
 Done/Fixed
 ----------
+* Use absolute path in template.py?
 * Specify path to names_func_dict file instead of supplying the dictionary
   itself. By doing this names_func_dict can be reloaded with a hotkey.
 * Move repository to github.
