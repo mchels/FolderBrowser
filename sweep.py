@@ -60,6 +60,16 @@ class Sweep(object):
         except KeyError:
             return col_name
 
+    def get_data(self, col_name):
+        try:
+            return self.data[col_name]
+        except ValueError:
+            pass
+        try:
+            return self.pdata[col_name]
+        except KeyError:
+            raise ValueError('{} not found in data or pdata'.format(col_name))
+
     @classmethod
     def load_dir(cls, path, meta_only=False, use_pandas=None):
         with open(os.path.join(path, 'meta.json')) as f:
