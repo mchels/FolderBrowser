@@ -17,7 +17,7 @@ class Plot1DHandler(PlotHandler):
     def plot(self, **kwargs):
         return self.plot_1D(**kwargs)
 
-    def plot_1D(self, **kwargs):
+    def plot_1D(self, plot_type=None, **kwargs):
         tdata = self.data_handler.tdata
         ax = self.ax
         ax.plot(tdata[0], tdata[1], **kwargs)
