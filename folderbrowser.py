@@ -127,6 +127,8 @@ class FolderBrowser(QMainWindow):
         subprocess.Popen(cmd)
 
     def show_text_for_copying(self):
+        if self.sweep_name is None:
+            return
         lay = self.active_layout
         title = lay.title.replace('\n', ' ')
         date_stamp = self.date_stamp
