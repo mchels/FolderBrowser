@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import nanmin, nanmax
-import matplotlib.colors as mcolors
+from custom_colormap import get_colormap
 from datahandler import data_handler_factory
 from plothandler import plot_handler_factory
 
@@ -138,30 +138,7 @@ class MplLayout(QtWidgets.QWidget):
         if cmap_name is None:
             cmap_name = self.cmap_name
         self.cmap_name = cmap_name
-        if cmap_name == 'symmetric':
-            z_lims = self.lims[2]
-            max_abs = np.max(np.abs(z_lims))
-            min_val = z_lims[0]
-            max_val = z_lims[1]
-            if min_val <= 0 <= max_val:
-                z_range = max_val - min_val
-                n_neg_points = int(abs(min_val)/z_range*100)
-                neg_low_limit = 0.5 - abs(min_val)/max_abs/2
-                neg_vals = np.linspace(neg_low_limit, 0.5, n_neg_points)
-                neg_colors = plt.cm.RdBu_r(neg_vals)
-                n_pos_points = int(max_val/z_range*100)
-                pos_high_limit = 0.5 + max_val/max_abs/2
-                pos_vals = np.linspace(0.5, pos_high_limit, n_pos_points)
-                pos_colors = plt.cm.RdBu_r(pos_vals)
-                colors = np.vstack((neg_colors, pos_colors))
-                cmap = mcolors.LinearSegmentedColormap.from_list('foo', colors)
-                self.cmap = cmap
-            elif 0 <= min_val <= max_val:
-                self.cmap = plt.get_cmap('Reds')
-            elif min_val <= max_val <= 0:
-                self.cmap = plt.get_cmap('Blues')
-        else:
-            self.cmap = plt.get_cmap(cmap_name)
+        self.cmap = get_colormap(cmap_name, self.lims[2])
         if not self.update_is_scheduled:
             self.update_plot()
 
