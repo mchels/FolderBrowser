@@ -30,3 +30,16 @@ Requirements
 Optional packages
 -----------------
 * Pandas (improves loading times by a factor 2-10x, tested with version 0.18.1)
+
+
+Hotkeys
+-------
+| Key           | Function      |
+| ------------- | ------------- |
+| F2            | Copy code for figure to clipboard |
+| F5            | Reload file list |
+| F6            | Reload pseodocolumn file |
+| Ctrl-c        | Copy figure as png |
+| Ctrl-t        | Show figure properties in dialog as copyable text |
+| Ctrl-w        | Close window |
+| Ctrl-shift-o  | Open folder containing data |
