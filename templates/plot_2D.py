@@ -5,8 +5,6 @@ from plothandler import plot_handler_factory
 from datahandler import data_handler_factory
 from custom_colormap import get_colormap
 from sweep import Sweep
-import matplotlib
-matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import importlib.util
 

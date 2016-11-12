@@ -2,8 +2,6 @@ import sys
 import os
 import platform
 import subprocess
-import matplotlib
-matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QDockWidget, QDesktopWidget, QShortcut
 from PyQt5.QtGui import QKeySequence
