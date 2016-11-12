@@ -30,6 +30,8 @@ class FolderBrowser(QMainWindow):
         self.n_layouts = n_layouts
         self.dir_path = dir_path
         self.pcols_path = pcols_path
+        self.assert_exists(dir_path)
+        self.assert_exists(pcols_path)
         self.set_pcols()
         self.date_stamp = None
         self.sweep_name = None
@@ -216,3 +218,8 @@ class FolderBrowser(QMainWindow):
         if type(string) is not str:
             return string
         return "'{}'".format(string)
+
+    @staticmethod
+    def assert_exists(path):
+        if not os.path.exists(path):
+            raise ValueError('Path {} does not exist'.format(path))
