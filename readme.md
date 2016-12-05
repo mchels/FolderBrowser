@@ -3,14 +3,14 @@ FolderBrowser
 
 Description
 -----------
-This project provides a GUI for visualizing data acquired with the [matlab-qd framework](https://github.com/qdev-dk/matlab-qd) by Anders Jellinggaard.
+This project provides a GUI for visualizing data acquired with the [matlab-qd](https://github.com/qdev-dk/matlab-qd) framework by Anders Jellinggaard.
 The gui itself is a Python implementation of the [gui from matlab-qd](https://github.com/qdev-dk/matlab-qd/tree/master/%2Bqd/%2Bgui).
 
 Installation
 ------------
 All packages used for FolderBrowser are included in the Anaconda distribution. Get it from [https://www.continuum.io/downloads](https://www.continuum.io/downloads) with a Python version >=3.5.
 
-If you already have Anaconda already installed (with a Python version >=3.5) but the packages are not up to date, simply run
+If you already have Anaconda installed (with a Python version >=3.5) but the packages are not up to date, simply run
 ```
 conda update anaconda
 ````
