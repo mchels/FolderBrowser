@@ -5,6 +5,7 @@ sys.path.append(path_to_folderbrowser_directory)
 from folderbrowser import FolderBrowser
 from PyQt5 import QtWidgets
 import numpy as np
+import matplotlib.pyplot as plt
 
 cwd = os.getcwd()
 n_figs = 2
