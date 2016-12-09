@@ -163,6 +163,8 @@ class FolderBrowser(QMainWindow):
     def reload_pcols(self):
         self.set_pcols()
         self.sweep.set_pdata(self.pcols.name_func_dict)
+        msg = 'pcols reloaded.'
+        self.statusBar.showMessage(msg, 1000)
 
     def code_to_clipboard(self):
         if self.sweep_name is None:
