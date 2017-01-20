@@ -22,7 +22,7 @@ def get_colormap(cmap_name, lims):
         elif 0 <= min_val <= max_val:
             cmap = plt.get_cmap('Reds')
         elif min_val <= max_val <= 0:
-            cmap = plt.get_cmap('Blues')
+            cmap = plt.get_cmap('Blues_r')
     else:
         cmap = plt.get_cmap(cmap_name)
     return cmap
