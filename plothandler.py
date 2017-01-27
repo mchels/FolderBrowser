@@ -62,14 +62,15 @@ class Plot2DHandler(PlotHandler):
         ax = self.ax
         x, y, z = self.data_handler.tdata
         extent = [x[0,0], x[-1,-1], y[0,0], y[-1,-1]]
-        image = ax.imshow(z,
-            origin='lower',
-            interpolation='none',
-            aspect='auto',
-            extent=extent,
-            cmap=cmap,
-            **kwargs,
-        )
+        imshow_kwargs = {
+            'origin': 'lower',
+            'interpolation': 'none',
+            'aspect': 'auto',
+            'extent': extent,
+            'cmap': cmap,
+        }
+        imshow_kwargs.update(kwargs)
+        image = ax.imshow(z, **imshow_kwargs)
         return image
 
     def plot_pcolormesh(self, cmap=None, **kwargs):
