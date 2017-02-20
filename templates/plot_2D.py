@@ -34,13 +34,13 @@ im = plot_h.plot(plot_type={plot_2D_type})
 
 # Colorbar
 # --------
-zlim = {zlim}
-cmap = get_colormap({cmap_name}, zlim)
 cbar = fig.colorbar(mappable=im)
 cbar.formatter.set_powerlimits({scilimits})
-im.set_cmap(cmap)
-im.set_clim(zlim)
 cbar.set_label({zlabel})
+zlim = {zlim}
+im.set_clim(zlim)
+cmap = get_colormap({cmap_name}, zlim)
+im.set_cmap(cmap)
 
 plt.tight_layout()
 
