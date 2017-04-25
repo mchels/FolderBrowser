@@ -61,6 +61,8 @@ class PlotControls(QtWidgets.QWidget):
         policy_vert = QSizePolicy.Maximum
         cmap_sel.setSizePolicy(policy_horiz, policy_vert)
         cmap_sel.setMinimumWidth(40)
+        min_width = len(max(self.cmap_names, key=len)) * 8
+        cmap_sel.view().setMinimumWidth(min_width)
         self.layout.addWidget(cmap_sel)
         self.cmap_sel = cmap_sel
 
@@ -72,20 +74,27 @@ class PlotControls(QtWidgets.QWidget):
         policy_vert = QSizePolicy.Maximum
         plot_2D_type_sel.setSizePolicy(policy_horiz, policy_vert)
         plot_2D_type_sel.setMinimumWidth(40)
+        min_width = len(max(self.plot_2D_types, key=len)) * 8
+        plot_2D_type_sel.view().setMinimumWidth(min_width)
         self.layout.addWidget(plot_2D_type_sel)
         self.plot_2D_type_sel = plot_2D_type_sel
 
     def init_lim_boxes(self):
         self.lim_boxes = [None] * self.num_lim_boxes
+        dim_names = ['x', 'y', 'z']
         for i in range(self.num_lim_boxes):
             lim_box = QtWidgets.QLineEdit()
             lim_box.editingFinished.connect(self.lim_func)
+            tooltip = ('Limit for {}. Use <number>:<number> where both numbers '
+                       'can be empty').format(dim_names[i])
+            lim_box.setToolTip(tooltip)
             self.layout.addWidget(lim_box)
             self.lim_boxes[i] = lim_box
 
     def init_aspect_box(self):
         aspect_box = QtWidgets.QLineEdit()
         aspect_box.editingFinished.connect(self.aspect_func)
+        aspect_box.setToolTip('Aspect ratio, use <number> or <number:number>')
         self.layout.addWidget(aspect_box)
         self.aspect_box = aspect_box
 
