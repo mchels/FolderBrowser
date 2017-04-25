@@ -29,7 +29,8 @@ class MplLayout(QtWidgets.QWidget):
                                          self.update_lims,
                                          self.cmap_names,
                                          self.set_plot_2D_type,
-                                         self.plot_2D_types)
+                                         self.plot_2D_types,
+                                         self.update_aspect)
         self.init_navi_toolbar()
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
@@ -43,6 +44,7 @@ class MplLayout(QtWidgets.QWidget):
         self.cmap_name = self.cmap_names[0]
         self.cmap = plt.get_cmap(self.cmap_name)
         self.lims = [None] * 3
+        self.aspect = 'auto'
         self.update_is_scheduled = False
         self.title = None
         self.labels = [None] * 3
@@ -142,6 +144,11 @@ class MplLayout(QtWidgets.QWidget):
         if not self.update_is_scheduled:
             self.update_plot()
 
+    def update_aspect(self):
+        self.aspect = self.plotcontrols.get_aspect()
+        if not self.update_is_scheduled:
+            self.update_plot()
+
     def update_plot(self):
         if self.plot_is_2D: self._update_2D_plot()
         else: self._update_1D_plot()
@@ -178,6 +185,7 @@ class MplLayout(QtWidgets.QWidget):
         ax.set_xlim(self.lims[0])
         ax.set_ylim(self.lims[1])
         ax.set_title(self.title, fontsize=11)
+        ax.set_aspect(self.aspect)
         self.custom_tight_layout()
         self.canvas.draw()
 

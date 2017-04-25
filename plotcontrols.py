@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QSizePolicy
 
 class PlotControls(QtWidgets.QWidget):
     def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names,
-                 plot_2D_type_func, plot_2D_types):
+                 plot_2D_type_func, plot_2D_types, aspect_func):
         super().__init__()
         self.layout = QtWidgets.QHBoxLayout()
         self.num_col_boxes = 3
@@ -14,10 +14,12 @@ class PlotControls(QtWidgets.QWidget):
         self.cmap_names = cmap_names
         self.plot_2D_type_func = plot_2D_type_func
         self.plot_2D_types = plot_2D_types
+        self.aspect_func = aspect_func
         self.init_col_sel_boxes()
         self.init_cmap_sel()
         self.init_plot_2D_type_sel()
         self.init_lim_boxes()
+        self.init_aspect_box()
         self.setLayout(self.layout)
 
     def reset_col_boxes(self, array_of_text_items):
@@ -81,6 +83,12 @@ class PlotControls(QtWidgets.QWidget):
             self.layout.addWidget(lim_box)
             self.lim_boxes[i] = lim_box
 
+    def init_aspect_box(self):
+        aspect_box = QtWidgets.QLineEdit()
+        aspect_box.editingFinished.connect(self.aspect_func)
+        self.layout.addWidget(aspect_box)
+        self.aspect_box = aspect_box
+
     def get_sel_cols(self):
         sel_texts = [box.currentText() for box in self.col_boxes]
         return sel_texts
@@ -94,6 +102,10 @@ class PlotControls(QtWidgets.QWidget):
         for i, lim_box in enumerate(self.lim_boxes):
             lims[i] = self.parse_lims(lim_box.text())
         return lims
+
+    def get_aspect(self):
+        text = self.aspect_box.text()
+        return self.parse_aspect(text)
 
     def select_lowest_unoccupied(self, box):
         """
@@ -123,6 +135,17 @@ class PlotControls(QtWidgets.QWidget):
         lower_lim = self.conv_to_float_or_None(lims[0])
         upper_lim = self.conv_to_float_or_None(lims[1])
         return (lower_lim, upper_lim)
+
+    def parse_aspect(self, text):
+        try: return float(text)
+        except ValueError: pass
+        parts = text.split(':')
+        try:
+            num = float(parts[0])
+            den = float(parts[1])
+        except (ValueError, IndexError):
+            return 'auto'
+        return num / den
 
     @staticmethod
     def conv_to_float_or_None(str):
