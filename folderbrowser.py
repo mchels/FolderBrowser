@@ -11,6 +11,7 @@ from mpllayout import MplLayout
 from customdockwidget import CustomDockWidget
 from textforcopying import TextForCopying
 import importlib.util
+import textwrap
 
 
 def show_loading(func):
@@ -50,8 +51,8 @@ class FolderBrowser(QMainWindow):
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
         self.sweep.set_pdata(self.pcols.name_func_dict)
-        title = self.compose_title(self.sweep, sweep_path)
         for mpl_layout in self.mpl_layouts:
+            title = self.compose_title(self.sweep, sweep_path, mpl_layout)
             mpl_layout.set_title(title)
             mpl_layout.reset_and_plot(self.sweep)
         self.sweep_path = sweep_path
@@ -140,10 +141,20 @@ class FolderBrowser(QMainWindow):
         diag.setModal(True)
         diag.exec_()
 
-    def compose_title(self, sweep, sweep_path):
+    def compose_title(self, sweep, sweep_path, mpl_layout):
         self.sweep_name = sweep.meta['name']
         self.date_stamp = os.path.basename(sweep_path)
-        return self.date_stamp + '\n' + self.sweep_name
+        # Do rudimentary word wrap. The wrapping functionality is not tested
+        # against changes in anything, e.g., font, font size, screen resolution.
+        fig = mpl_layout.canvas.figure
+        ax = fig.get_axes()[0]
+        ext_pixels = ax.get_window_extent()
+        ext_inches = ext_pixels.transformed(fig.dpi_scale_trans.inverted())
+        title_1line = self.date_stamp + ' - ' + self.sweep_name
+        magic_number = 10
+        letters_per_line = int(ext_inches.width * magic_number)
+        title_wrapped = '\n'.join(textwrap.wrap(title_1line, letters_per_line))
+        return title_wrapped
 
     def set_icon(self):
         app_icon = QtGui.QIcon()
