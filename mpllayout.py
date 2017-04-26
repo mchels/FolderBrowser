@@ -231,7 +231,7 @@ class MplLayout(QtWidgets.QWidget):
     def copy_fig_to_clipboard(self):
         image = QtWidgets.QWidget.grab(self.canvas).toImage()
         QtWidgets.QApplication.clipboard().setImage(image)
-        
+
     def set_plot_2D_type(self, new_type=None):
         new_type = self.plotcontrols.get_sel_2D_type()
         assert new_type in self.plot_2D_types
