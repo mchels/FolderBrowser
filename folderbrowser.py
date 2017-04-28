@@ -226,9 +226,9 @@ class FolderBrowser(QMainWindow):
 
     @staticmethod
     def pad_str(string):
-        if type(string) is not str:
-            return string
-        return "'{}'".format(string)
+        if isinstance(string, str):
+            return "'{}'".format(string)
+        return string
 
     @staticmethod
     def assert_exists(path):
