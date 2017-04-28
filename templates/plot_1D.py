@@ -31,6 +31,7 @@ ax.set_ylim({ylim})
 
 plot_h.plot()
 
+ax.set_aspect({aspect})
 plt.tight_layout()
 
 plt.show()

@@ -42,6 +42,7 @@ im.set_clim(zlim)
 cmap = get_colormap({cmap_name}, zlim)
 im.set_cmap(cmap)
 
+ax.set_aspect({aspect})
 plt.tight_layout()
 
 plt.show()

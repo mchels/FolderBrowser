@@ -200,6 +200,7 @@ class FolderBrowser(QMainWindow):
             'ylabel': self.pad_str(lay.labels[1]),
             'xlim': lay.lims[0],
             'ylim': lay.lims[1],
+            'aspect': self.pad_str(lay.aspect),
         }
         if lay.plot_is_2D:
             template_name = 'plot_2D.py'
