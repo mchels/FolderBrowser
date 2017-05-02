@@ -22,7 +22,8 @@ class MplLayout(QtWidgets.QWidget):
         self.statusBar = statusBar
         self.parent = parent
         self.init_fig_and_canvas()
-        self.cmap_names = ['Reds', 'Blues_r', 'symmetric', 'inferno', 'viridis', 'afmhot']
+        self.cmap_names = ['Reds', 'Blues_r', 'dark symmetric',
+                           'light symmetric', 'inferno', 'viridis', 'afmhot']
         self.plot_2D_types = ('Auto', 'imshow', 'pcolormesh')
         self.plotcontrols = PlotControls(self.update_sel_cols,
                                          self.update_cmap,
