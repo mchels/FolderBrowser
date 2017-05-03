@@ -5,7 +5,7 @@ import numpy as np
 def get_colormap(cmap_name, lims):
     if cmap_name in ('light symmetric', 'dark symmetric'):
         n_points = 256
-        if cmap_name == 'light symmetric':
+        if cmap_name in ('light symmetric', 'symmetric'):
             org_cmap = plt.get_cmap('RdBu_r')
             neg_cmap = get_part_of_cmap(org_cmap, 0.0, 0.5, n_points)
             pos_cmap = get_part_of_cmap(org_cmap, 0.5, 1.0, n_points)
