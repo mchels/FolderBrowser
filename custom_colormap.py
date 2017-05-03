@@ -3,7 +3,7 @@ import matplotlib.colors as mcolors
 import numpy as np
 
 def get_colormap(cmap_name, lims):
-    if cmap_name in ('light symmetric', 'dark symmetric'):
+    if cmap_name in ('light symmetric', 'dark symmetric', 'symmetric'):
         n_points = 256
         if cmap_name in ('light symmetric', 'symmetric'):
             org_cmap = plt.get_cmap('RdBu_r')
