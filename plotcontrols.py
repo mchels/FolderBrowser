@@ -2,6 +2,27 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QSizePolicy
 
 class PlotControls(QtWidgets.QWidget):
+    """
+    Control bar for controlling how plots are shown.
+
+    Parameters
+    ----------
+    sel_col_func : function
+        Callback function to call when changing selected columns.
+    cmap_func : function
+        Function for getting colormap from a string.
+    lim_func : function
+        Callback function to call when changing limits.
+    cmap_names : list
+        List of colormap names to show in the colormap dropdown menu.
+    plot_2D_type_func : function
+        Callback function to call when changing plot_2D_type (imshow or
+        pcolormesh).
+    plot_2D_types : list
+        List of plot_2D_type names.
+    aspect_func : function
+        Callback function to call when changing the aspect ratio.
+    """
     def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names,
                  plot_2D_type_func, plot_2D_types, aspect_func):
         super().__init__()
@@ -23,6 +44,9 @@ class PlotControls(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
     def reset_col_boxes(self, array_of_text_items):
+        """
+        Reset column selector boxes.
+        """
         assert len(array_of_text_items) == self.num_col_boxes
         for i, box in enumerate(self.col_boxes):
             box.list_of_text_items = array_of_text_items[i]
@@ -41,6 +65,9 @@ class PlotControls(QtWidgets.QWidget):
                 self.select_lowest_unoccupied(box)
 
     def init_col_sel_boxes(self):
+        """
+        Initialize column selector boxes.
+        """
         self.col_boxes = [None] * self.num_col_boxes
         for i in range(self.num_col_boxes):
             box = QtWidgets.QComboBox()
@@ -54,6 +81,9 @@ class PlotControls(QtWidgets.QWidget):
             self.col_boxes[i] = box
 
     def init_cmap_sel(self):
+        """
+        Initialize colormap selector.
+        """
         cmap_sel = QtWidgets.QComboBox()
         cmap_sel.addItems(self.cmap_names)
         cmap_sel.activated.connect(self.cmap_func)
