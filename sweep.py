@@ -38,15 +38,10 @@ class Sweep(object):
         (self.data, self.meta) = self.load_dir(self.path)
 
     def get2d(self):
-        """
-        data_1D is a numpy structured array of dimension 1. If the sweep
-        contains 2D data we must reshape data_1D according to the columns of
-        the channels that are swept.
-        """
-        (data_1D, meta) = (self.data, self.meta)
+        data_1D = self.data
         c1, c2 = data_1D.dtype.names[:2]
-        reshaped_data = self.reshape2d(data_1D[c1], data_1D[c2], data_1D)
-        (self.data, self.meta) = reshaped_data, meta
+        reshaped_data = self.reshape2d(data_1D[c1], data_1D)
+        self.data = reshaped_data
 
     def set_pdata(self, name_func_dict=None):
         if name_func_dict is None:
@@ -114,7 +109,7 @@ class Sweep(object):
         return data
 
     @staticmethod
-    def reshape2d(column1, column2, column3):
+    def reshape2d(column1, column2):
         different_from_first = (column1 != column1[0]).nonzero()[0]
         if len(different_from_first) == 0:
             raise RuntimeError('every value in column1 is identical')
@@ -124,10 +119,11 @@ class Sweep(object):
             raise RuntimeError('the first two value in column 1 are unequal')
         number_of_sweeps = len(column1) // sweep_length
         number_of_good_points = number_of_sweeps * sweep_length
-        return np.reshape(
-            column3[:number_of_good_points],
+        reshaped = np.reshape(
+            column2[:number_of_good_points],
             (number_of_sweeps, sweep_length)
         ).transpose()
+        return reshaped
 
     @staticmethod
     def get_dimension(meta):
