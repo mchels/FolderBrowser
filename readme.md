@@ -34,6 +34,17 @@ Optional packages
 * Pandas (improves loading times by a factor 2-10x, tested with version 0.18.1)
 
 
+Documentation
+-------------
+- **[User guide](user_guide.md)**
+- [DataHandler](datahandler.py)
+- [FolderBrowser](folderbrowser.py)
+- [MplLayout](mpllayout.py)
+- [PlotControls](plotcontrols.py)
+- [PlotHandler](plothandler.py)
+- [Sweep](sweep.py)
+
+
 Hotkeys
 -------
 | Key           | Function      |
@@ -54,3 +65,8 @@ Known Issues
 conda install python=3.5
 ````
 from the terminal.
+
+
+Contact
+-------
+Morten Canth Hels: <mortenhels@gmail.com>
