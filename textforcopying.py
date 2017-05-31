@@ -4,7 +4,7 @@ from PyQt5.QtGui import QKeySequence
 
 class TextForCopying(QDialog):
     """
-    This class opens a window which shows copyable information about the
+    This class defines a window which shows copyable information about the
     currently loaded sweep.
     """
     def __init__(self, title, date_stamp, name, xlabel, ylabel, zlabel=None):
