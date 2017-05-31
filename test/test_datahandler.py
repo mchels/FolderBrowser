@@ -7,7 +7,7 @@ from sweep import Sweep
 
 class DataHandlerTestCase(unittest.TestCase):
     def setUp(self):
-        path = 'C:/Dropbox/PhD/sandbox_phd/FolderBrowser/data/2016-09-19#015'
+        path = '../data/2016-09-19#015'
         self.sweep = Sweep(path)
         data = self.sweep.data
         x = data['mL']
