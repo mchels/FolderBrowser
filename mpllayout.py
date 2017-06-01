@@ -114,7 +114,7 @@ class MplLayout(QtWidgets.QWidget):
         new_data_h = data_handler_factory(*new_plot_data)
         self.sel_col_names = new_col_names
         self.n_active_cols = len(new_col_names)
-        ax = self.canvas.figure.get_axes()[0]
+        ax = self.canvas.figure.axes[0]
         plot_dim = self.n_active_cols - 1
         self.plot_dim = plot_dim
         self.plot_h = plot_handler_factory(ax, new_data_h, plot_dim=plot_dim)
@@ -188,7 +188,7 @@ class MplLayout(QtWidgets.QWidget):
         self.common_plot_update()
 
     def common_plot_update(self):
-        ax = self.canvas.figure.get_axes()[0]
+        ax = self.canvas.figure.axes[0]
         ax.ticklabel_format(style='sci', axis='both',
                             scilimits=self.scilimits, useOffset=False)
         ax.autoscale_view(True, True, True)
@@ -209,7 +209,7 @@ class MplLayout(QtWidgets.QWidget):
             self.image = None
         except AttributeError:
             pass
-        for ax in self.canvas.figure.get_axes():
+        for ax in self.canvas.figure.axes:
             ax.cla()
             ax.relim()
             ax.autoscale()

@@ -163,7 +163,7 @@ class FolderBrowser(QMainWindow):
         # Do rudimentary word wrap. The wrapping functionality is not tested
         # against changes in anything, e.g., font, font size, screen resolution.
         fig = mpl_layout.canvas.figure
-        ax = fig.get_axes()[0]
+        ax = fig.axes[0]
         ext_pixels = ax.get_window_extent()
         ext_inches = ext_pixels.transformed(fig.dpi_scale_trans.inverted())
         title_1line = self.date_stamp + ' - ' + self.sweep_name
