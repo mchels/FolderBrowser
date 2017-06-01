@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
+from sweep import Sweep
 import os
-import json
 
 class FileList(QtWidgets.QListWidget):
     """
@@ -23,13 +23,13 @@ class FileList(QtWidgets.QListWidget):
     def load_sweeps_in_dir(self):
         dir_walker = os.walk(self.main_dir_path, followlinks=False)
         for sub_dir_path, _, fnames in dir_walker:
-            if 'meta.json' in fnames:
-                json_path = os.path.join(sub_dir_path, 'meta.json')
-                with open(json_path) as json_file:
-                    meta = json.load(json_file)
-                date_and_serial_num = os.path.split(sub_dir_path)[-1]
-                item_text = date_and_serial_num + ' ' + meta['name']
-                self.item_dict[item_text] = sub_dir_path
+            try:
+                meta = Sweep.load_dir(sub_dir_path, meta_only=True)
+            except FileNotFoundError:
+                continue
+            date_and_serial_num = os.path.split(sub_dir_path)[-1]
+            item_text = date_and_serial_num + ' ' + meta['name']
+            self.item_dict[item_text] = sub_dir_path
 
     def set_items(self):
         for item_text, sub_dir_path in self.item_dict.items():
