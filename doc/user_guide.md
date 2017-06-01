@@ -11,7 +11,7 @@ only a "raw" column or both "raw" and pseudocolumns.
 
 Pseudocolumn
 --------------------------------------------------------------------------------
-A pseudocolumn is an array of data derived from a column, e.g., conductance in
+A pseudocolumn is an array of data derived from a raw column, e.g., conductance in
 units of e^2/h instead of Siemens. Pseudocolumns can be arbitrarily complex and
 may involve, e.g., differentiating or integral transforming multiple columns or
 other pseudocolumns. Pseudocolumns are calculated lazily in the FolderBrowser
@@ -34,7 +34,7 @@ name_func_dict = {
         'func': <pseudocolumn2 function>,
         'label': <pseudocolumn2 label>,
     },
-    <name of raw column (must match name in meta.json)>: {
+    <name of raw column (must match name of raw column in meta.json)>: {
         'label': <raw column label>,
     },
 }
@@ -43,15 +43,15 @@ The dictionary can also be used to add labels to raw data columns as shown in
 the last entry of the dictionary. The dictionary must have the name
 `name_func_dict`. All pseudocolumn functions must take `data`, `pdata`, and
 `meta` as its three first arguments. Note that this is just a visualization of
-the dictionary structure. Functions are more conveniently added to the
+the dictionary structure. Pseudocolumns are more conveniently added to the
 dictionary using
 ```python
 name_func_dict[name] = {'func': func, 'label': label}
 ```
 as shown below.
 
-When adding multiple similar functions to the dictionary it is convenient to use
-the `partial` function:
+When adding multiple similar functions to the dictionary it is also convenient
+to use the `partial` function:
 ```python
 def dc_conductance(data, pdata, meta, side):
     m = meta_for_side(meta, side)
@@ -69,7 +69,7 @@ for side in sides:
 In this example the `dc_conductance` function takes `side` as a parameter.
 Rather than hard-coding two functions with `side='left'` and `side='right'` we
 construct the left and right functions with `partial(dc_conductance, side=side)`
-where `side` can be both left and right. Basically, `partial` fixes the
+in a loop over `'left'` and `'right'`. Basically, `partial` fixes the
 specified parameter of the function.
 
 
@@ -126,12 +126,12 @@ Information about the Matplotlib toolbar can be found
 [here](https://matplotlib.org/users/navigation_toolbar.html)
 The Matplotlib toolbar of the currently active MplLayout is highlighted in blue.
 The figure in the active MplLayout can be copied either as a png file (hotkey
-Ctrl-C) or as Python code (hotkey F2). The copied Python code is generated from
-a template and is intended to be portable so that it can be run from anywhere on
-the computer it was generated on. This means that all paths in the code are
-hard-coded. Note that the figure title is not included in the Python code since
-the algorithm that determines the title line breaks is not reliable or robust
-against changes in resolution, font size, etc.
+Ctrl-C) or as Python script (hotkey F2). The copied Python script is generated
+from a template and is intended to be portable so that it can be run from
+anywhere on the computer it was generated on. This means that all paths in the
+copied script are hard-coded. Note that the figure title is not included in the
+Python script since the algorithm that determines the title line breaks is not
+reliable or robust against changes in resolution, font size, etc.
 
 The algorithm for updating the plot proceeds as follows:
 1. When a value is changed in the widgets in PlotControls a callback function
