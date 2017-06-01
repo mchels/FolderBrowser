@@ -69,6 +69,18 @@ Hotkeys
 
 Known Issues
 ------------
+### Plotting incomplete 2D data
+Incomplete 2D data consists of a number of complete data rows and one partially
+completed data row. FolderBrowser truncates the data arrays at load-time so that
+a partially completed row is removed. This behavior is different from the
+[matlab-qd gui](https://github.com/qdev-dk/matlab-qd/tree/master/%2Bqd/%2Bgui)
+where data is truncated at plot-time and only when making image plots. Thus, for
+image plots there is no observed difference for the user. For 2D data plotted as
+1D, however, a partially completed row is *not* plotted in FolderBrowser, but
+*is* plotted in the matlab-qd gui. This behavior can be changed by keeping both
+a 1D and a 2D version of the data in the Sweep class.
+
+### Python 3.6
 2017-03-31: Anaconda's Python 3.6 distribution may give an error
 `DLL load failed: The specified module could not be found.` In this case
 downgrade the distribution to Python 3.5 using
@@ -76,6 +88,9 @@ downgrade the distribution to Python 3.5 using
 conda install python=3.5
 ````
 from the terminal.
+
+### More
+See also the [TODO file](todo.md).
 
 
 Contact
