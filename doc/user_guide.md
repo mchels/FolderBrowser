@@ -76,7 +76,7 @@ specified parameter of the function.
 Sweep
 --------------------------------------------------------------------------------
 The Sweep class loads and stores data (as a structured Numpy array) and meta (as
-a dictionary) from a sweep. The Sweep class can also load a pseudocolumn file
+a dictionary) from a sweep. The `Sweep` class can also load a pseudocolumn file
 with `set_pdata` such that pseudocolumns can be accessed. To access data columns
 you can use either the data or pdata attribute or the method `get_data` which
 searches both data and pdata:
@@ -170,13 +170,14 @@ PlotControls
 The PlotControls bar at the bottom of the MplLayout contains
 - three drop-down menus for selecting the desired (pseudo-)column,
 - a drop-down menu for selecting the colormap,
-- a drop-down menu for selecting 2D plot type (`Auto`, `imshow` or `pcolormesh`),
+- a drop-down menu for selecting 2D plot type (`Auto`, `imshow` or
+  `pcolormesh`),
 - three text fields for selecting limits on the plot,
 - one text field for selecting the aspect ratio.
 
 These controls should be self-explanatory when used, except for 2D plot type.
-Matplotlib has multiple options for making an image plot (having x and y axes and
-using color to represent the height z). The fastest option is `imshow` which
+Matplotlib has multiple options for making an image plot (having x and y axes
+and using color to represent the height z). The fastest option is `imshow` which
 assumes that all pixels in the resulting image are equally spaced. For data that
 is not equally spaced another option is to use `pcolormesh` which plots only the
 (x, y, z) tuples present in the data. The rest of the plot is left white
@@ -185,3 +186,15 @@ indicating absence of data. Thus, `pcolormesh` outputs the same plots as
 option for 2D plot type uses `imshow` if possible and falls back on `pcolormesh`
 for non-equally spaced data. The user can also force either `imshow` or
 `pcolormesh` with the corresponding options.
+
+
+Extensibility
+--------------------------------------------------------------------------------
+It should be relatively straightforward to extend FolderBrowser to allow for
+data and meta information in different formats than the default one. To do this
+one would have to
+- rewrite the `Sweep` class,
+- rewrite the `item_text` definition in the `load_sweeps_in_dir` method in the
+  File List class.
+Possibly a few other rewrites could be required. One should not have to rewrite
+the `DataHandler` and `PlotHandler` classes.

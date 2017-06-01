@@ -33,7 +33,7 @@ directory.
 Requirements
 ------------
 * Python 3+ (tested with version 3.5)
-* Matplotlib (tested with version 1.5.3)
+* Matplotlib (tested with version 1.5.3, 2.0)
 * PyQt 5 (tested with version 5.6)
 * Numpy (tested with version 1.11)
 
