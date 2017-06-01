@@ -5,22 +5,29 @@ FolderBrowser
 
 Description
 -----------
-This project provides a GUI for visualizing data acquired with the [matlab-qd](https://github.com/qdev-dk/matlab-qd) framework by Anders Jellinggaard.
-The gui itself is a Python implementation of the [gui from matlab-qd](https://github.com/qdev-dk/matlab-qd/tree/master/%2Bqd/%2Bgui).
+This project provides a GUI for visualizing data acquired with the
+[matlab-qd](https://github.com/qdev-dk/matlab-qd) framework by Anders
+Jellinggaard. The gui itself is a Python implementation and expansion of the
+[gui from matlab-qd](https://github.com/qdev-dk/matlab-qd/tree/master/%2Bqd/%2Bgui).
 
 Installation
 ------------
 All packages used for FolderBrowser are included in the Anaconda distribution.
-Get it from [https://www.continuum.io/downloads](https://www.continuum.io/downloads) with the newest Python 3 version.
-Note that versions newer than Python 3.5 may cause issues, see section Known Issues.
+Get it from
+[https://www.continuum.io/downloads](https://www.continuum.io/downloads) with
+the newest Python 3 version.
+Note that versions newer than Python 3.5 may cause issues, see section Known
+Issues.
 
-If you already have Anaconda installed (with Python 3.5) but the packages are not up to date, simply run
+If you already have Anaconda installed (with Python 3.5) but the packages are
+not up to date, simply run
 ````
 conda update anaconda
 ````
 from the terminal to update the packages.
 
-When you have all packages installed run `example.py` in the `examples` directory.
+When you have all packages installed run `example.py` in the `examples`
+directory.
 
 
 Requirements
@@ -62,7 +69,9 @@ Hotkeys
 
 Known Issues
 ------------
-2017-03-31: Anaconda's Python 3.6 distribution may give an error "DLL load failed: The specified module could not be found." In this case downgrade the distribution to Python 3.5 using
+2017-03-31: Anaconda's Python 3.6 distribution may give an error
+`DLL load failed: The specified module could not be found.` In this case
+downgrade the distribution to Python 3.5 using
 ````
 conda install python=3.5
 ````
