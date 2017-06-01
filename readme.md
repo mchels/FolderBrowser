@@ -77,8 +77,9 @@ a partially completed row is removed. This behavior is different from the
 where data is truncated at plot-time and only when making image plots. Thus, for
 image plots there is no observed difference for the user. For 2D data plotted as
 1D, however, a partially completed row is *not* plotted in FolderBrowser, but
-*is* plotted in the matlab-qd gui. This behavior can be changed by keeping both
-a 1D and a 2D version of the data in the Sweep class.
+*is* plotted in the matlab-qd gui. This behavior can be changed by padding the
+reshaped data array with NaN, but this may break other things, like checking
+whether the data is linearly varying in DataHandler.
 
 ### Python 3.6
 2017-03-31: Anaconda's Python 3.6 distribution may give an error
