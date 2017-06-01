@@ -66,12 +66,13 @@ class FolderBrowser(QMainWindow):
         file_list_item = self.file_list.currentItem()
         sweep_path = file_list_item.data(QtCore.Qt.UserRole)
         self.sweep = Sweep(sweep_path)
-        self.sweep.set_pdata(self.pcols.name_func_dict)
-        for mpl_layout in self.mpl_layouts:
-            title = self.compose_title(self.sweep, sweep_path, mpl_layout)
-            mpl_layout.set_title(title)
-            mpl_layout.reset_and_plot(self.sweep)
         self.sweep_path = sweep_path
+        self.sweep.set_pdata(self.pcols.name_func_dict)
+        title = file_list_item.text()
+        for mpl_layout in self.mpl_layouts:
+            title_wrapped = self.wrap_title(title, mpl_layout)
+            mpl_layout.set_title(title_wrapped)
+            mpl_layout.reset_and_plot(self.sweep)
 
     def init_statusbar(self):
         self.statusBar = QtWidgets.QStatusBar()
@@ -157,21 +158,6 @@ class FolderBrowser(QMainWindow):
         diag.setModal(True)
         diag.exec_()
 
-    def compose_title(self, sweep, sweep_path, mpl_layout):
-        self.sweep_name = sweep.meta['name']
-        self.date_stamp = os.path.basename(sweep_path)
-        # Do rudimentary word wrap. The wrapping functionality is not tested
-        # against changes in anything, e.g., font, font size, screen resolution.
-        fig = mpl_layout.canvas.figure
-        ax = fig.axes[0]
-        ext_pixels = ax.get_window_extent()
-        ext_inches = ext_pixels.transformed(fig.dpi_scale_trans.inverted())
-        title_1line = self.date_stamp + ' - ' + self.sweep_name
-        magic_number = 10
-        letters_per_line = int(ext_inches.width * magic_number)
-        title_wrapped = '\n'.join(textwrap.wrap(title_1line, letters_per_line))
-        return title_wrapped
-
     def set_icon(self):
         app_icon = QtGui.QIcon()
         icons_dir = os.path.join(os.path.dirname(__file__), 'icons')
@@ -233,6 +219,21 @@ class FolderBrowser(QMainWindow):
         QtWidgets.QApplication.clipboard().setText(out_str)
         msg = 'Code for figure copied to clipboard.'
         self.statusBar.showMessage(msg, 1000)
+
+    @staticmethod
+    def wrap_title(title, mpl_layout):
+        """
+        The wrapping functionality is not tested against changes in anything,
+        e.g., font, font size, screen resolution.
+        """
+        fig = mpl_layout.canvas.figure
+        ax = fig.axes[0]
+        ext_pixels = ax.get_window_extent()
+        ext_inches = ext_pixels.transformed(fig.dpi_scale_trans.inverted())
+        magic_number = 10
+        letters_per_line = int(ext_inches.width * magic_number)
+        title_wrapped = '\n'.join(textwrap.wrap(title, letters_per_line))
+        return title_wrapped
 
     @classmethod
     def prep_path_for_template(cls, path):
