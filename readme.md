@@ -1,6 +1,8 @@
 FolderBrowser
 =============
 
+![Overview of the FolderBrowser window.](doc/overview.png)
+
 Description
 -----------
 This project provides a GUI for visualizing data acquired with the [matlab-qd](https://github.com/qdev-dk/matlab-qd) framework by Anders Jellinggaard.
@@ -36,7 +38,7 @@ Optional packages
 
 Documentation
 -------------
-- **[User guide](user_guide.md)**
+- **[User guide](doc/user_guide.md)**
 - [DataHandler](datahandler.py)
 - [FolderBrowser](folderbrowser.py)
 - [MplLayout](mpllayout.py)

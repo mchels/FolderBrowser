@@ -19,6 +19,60 @@ rather than when loading the sweep. That is, the pseudocolumn is not calculated
 until requested from the drop-down menus.
 
 
+Pseudocolumn file
+--------------------------------------------------------------------------------
+A pseudocolumn file specifies a set of functions which are used for calculating
+pseudocolumns. See the file [examples/pcols.py](../examples/pcols.py) for an
+example. The functions are kept in a dictionary with the structure
+```python
+name_func_dict = {
+    <name of pseudocolumn1>: {
+        'func': <pseudocolumn1 function>,
+        'label': <pseudocolumn1 label>,
+    },
+    <name of pseudocolumn2>: {
+        'func': <pseudocolumn2 function>,
+        'label': <pseudocolumn2 label>,
+    },
+    <name of raw column (must match name in meta.json)>: {
+        'label': <raw column label>,
+    },
+}
+```
+The dictionary can also be used to add labels to raw data columns as shown in
+the last entry of the dictionary. The dictionary must have the name
+`name_func_dict`. All pseudocolumn functions must take `data`, `pdata`, and
+`meta` as its three first arguments. Note that this is just a visualization of
+the dictionary structure. Functions are more conveniently added to the
+dictionary using
+```python
+name_func_dict[name] = {'func': func, 'label': label}
+```
+as shown below.
+
+When adding multiple similar functions to the dictionary it is convenient to use
+the `partial` function:
+```python
+def dc_conductance(data, pdata, meta, side):
+    m = meta_for_side(meta, side)
+    curr = data[underscore('dc_curr', side)] / m['current_amp']
+    bias = data[underscore('dc_bias', side)] / m['bias_amp']
+    return curr / bias / esquared_over_h
+
+sides = ('left', 'right')
+for side in sides:
+    name = underscore(dc_conductance.__name__, side)
+    func = partial(dc_conductance, side=side) # <------------ using partial here
+    label = (side + ' DC conductance I/V (e^2/h)').lstrip(' ')
+    name_func_dict[name] = {'func': func, 'label': label}
+```
+In this example the `dc_conductance` function takes `side` as a parameter.
+Rather than hard-coding two functions with `side='left'` and `side='right'` we
+construct the left and right functions with `partial(dc_conductance, side=side)`
+where `side` can be both left and right. Basically, `partial` fixes the
+specified parameter of the function.
+
+
 Sweep
 --------------------------------------------------------------------------------
 The Sweep class loads and stores data (as a structured Numpy array) and meta (as
@@ -54,9 +108,11 @@ all other GUI elements are widgets.
 
 Main window
 --------------------------------------------------------------------------------
-The FolderBrowser window contains a number of MplLayouts and a FileList to
-contain the sweep names. The MplLayouts and the FileList are "dockable" meaning
-they can be detached from the main window and moved around.
+The FolderBrowser window contains a number of MplLayouts, a FileList to
+contain the sweep names and a status bar to show messages. The MplLayouts and
+the FileList are "dockable" meaning they can be detached from the main window
+and moved around. The elements of the main window are described below
+![Overview of the a FolderBrowser window](overview_annotated.png)
 
 
 MplLayout (Matplotlib Layout)
@@ -89,7 +145,7 @@ The algorithm for updating the plot proceeds as follows:
 The figure in an MplLayout can be edited manually from a Jupyter notebook.
 First, we get the MplLayout instance (for the first layout with index 0) using
 the code from
-[examples/notebook_example.ipynb](examples/notebook_example.ipynb):
+[examples/notebook_example.ipynb](../examples/notebook_example.ipynb):
 ```python
 layout_idx = 0
 layout = brw.mpl_layouts[layout_idx]
@@ -114,60 +170,18 @@ PlotControls
 The PlotControls bar at the bottom of the MplLayout contains
 - three drop-down menus for selecting the desired (pseudo-)column,
 - a drop-down menu for selecting the colormap,
-- a drop-down menu for selecting 2D plot type (Auto, imshow or pcolormesh),
+- a drop-down menu for selecting 2D plot type (`Auto`, `imshow` or `pcolormesh`),
 - three text fields for selecting limits on the plot,
 - one text field for selecting the aspect ratio.
 
-
-Pseudocolumn file
---------------------------------------------------------------------------------
-A pseudocolumn file specifies a set of functions which are used for calculating
-pseudocolumns. See the file [examples/pcols.py](examples/pcols.py) for an
-example. The functions are kept in a dictionary with the structure
-```python
-name_func_dict = {
-    <name of pseudocolumn1>: {
-        'func': <pseudocolumn1 function>,
-        'label': <pseudocolumn1 label>,
-    },
-    <name of pseudocolumn2>: {
-        'func': <pseudocolumn2 function>,
-        'label': <pseudocolumn2 label>,
-    },
-    <name of raw column (must match name in meta.json)>: {
-        'label': <raw column label>,
-    },
-}
-```
-The dictionary can also be used to add labels to raw data columns as shown in
-the last entry of the dictionary. The dictionary must have the name
-`name_func_dict`. All pseudocolumn function must take `data`, `pdata`, and
-`meta` as its three first arguments. Note that this is just a visualization of
-the dictionary structure. Functions are more conveniently added to the
-dictionary using
-```python
-name_func_dict[name] = {'func': func, 'label': label}
-```
-as shown below.
-
-When adding multiple similar functions to the dictionary it is convenient to use
-the `partial` function:
-```python
-def dc_conductance(data, pdata, meta, side):
-    m = meta_for_side(meta, side)
-    curr = data[underscore('dc_curr', side)] / m['current_amp']
-    bias = data[underscore('dc_bias', side)] / m['bias_amp']
-    return curr / bias / esquared_over_h
-
-sides = ('left', 'right')
-for side in sides:
-    name = underscore(dc_conductance.__name__, side)
-    func = partial(dc_conductance, side=side) # <------------ using partial here
-    label = (side + ' DC conductance I/V (e^2/h)').lstrip(' ')
-    name_func_dict[name] = {'func': func, 'label': label}
-```
-In this example the `dc_conductance` function takes `side` as a parameter.
-Rather than hard-coding two functions with `side='left'` and `side='right'` we
-construct the left and right functions with `partial(dc_conductance, side=side)`
-where `side` can be both left and right. Basically, `partial` fixes the
-specified parameter of the function.
+These controls should be self-explanatory when used, except for 2D plot type.
+Matplotlib has multiple options for making an image plot (having x and y axes and
+using color to represent the height z). The fastest option is `imshow` which
+assumes that all pixels in the resulting image are equally spaced. For data that
+is not equally spaced another option is to use `pcolormesh` which plots only the
+(x, y, z) tuples present in the data. The rest of the plot is left white
+indicating absence of data. Thus, `pcolormesh` outputs the same plots as
+`imshow` for equally spaced data, but it is somewhat slower (5-10x). The `Auto`
+option for 2D plot type uses `imshow` if possible and falls back on `pcolormesh`
+for non-equally spaced data. The user can also force either `imshow` or
+`pcolormesh` with the corresponding options.
