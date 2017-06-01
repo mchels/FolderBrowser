@@ -37,13 +37,9 @@ class MplLayout(QtWidgets.QWidget):
         self.cmap_names = ['Reds', 'Blues_r', 'dark symmetric',
                            'light symmetric', 'inferno', 'viridis', 'afmhot']
         self.plot_2D_types = ('Auto', 'imshow', 'pcolormesh')
-        self.plotcontrols = PlotControls(self.update_sel_cols,
-                                         self.update_cmap,
-                                         self.update_lims,
-                                         self.cmap_names,
-                                         self.set_plot_2D_type,
-                                         self.plot_2D_types,
-                                         self.update_aspect)
+        self.plotcontrols = PlotControls(self.cmap_names, self.plot_2D_types)
+        self.set_callback_functions()
+
         self.init_navi_toolbar()
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.navi_toolbar)
@@ -86,6 +82,7 @@ class MplLayout(QtWidgets.QWidget):
             msg = "You can't do a 2D plot, since the data is only 1D."
             self.statusBar.showMessage(msg, 2000)
             self.plotcontrols.set_text_on_box(2, self.none_str)
+            self.update_sel_cols()
             return
         self.set_data_for_plot(new_col_names)
         tmp = (self.plot_dim, self.data_h.n_data_arrs)
@@ -228,6 +225,16 @@ class MplLayout(QtWidgets.QWidget):
             msg = ('Title is wider than figure.'
                    'This causes undesired behavior and is a known bug.')
             self.statusBar.showMessage(msg, 2000)
+
+    def set_callback_functions(self):
+        pt = self.plotcontrols
+        for box in pt.col_boxes:
+            box.activated.connect(self.update_sel_cols)
+        for box in pt.lim_boxes:
+            box.editingFinished.connect(self.update_lims)
+        pt.cmap_sel.activated.connect(self.update_cmap)
+        pt.plot_2D_type_sel.activated.connect(self.set_plot_2D_type)
+        pt.aspect_box.editingFinished.connect(self.update_aspect)
 
     def init_fig_and_canvas(self):
         fig = Figure(facecolor='white')

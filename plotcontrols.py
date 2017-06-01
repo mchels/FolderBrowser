@@ -7,35 +7,18 @@ class PlotControls(QtWidgets.QWidget):
 
     Parameters
     ----------
-    sel_col_func : function
-        Callback function to call when changing selected columns.
-    cmap_func : function
-        Function for getting colormap from a string.
-    lim_func : function
-        Callback function to call when changing limits.
     cmap_names : list
         List of colormap names to show in the colormap dropdown menu.
-    plot_2D_type_func : function
-        Callback function to call when changing plot_2D_type (imshow or
-        pcolormesh).
     plot_2D_types : list
         List of plot_2D_type names.
-    aspect_func : function
-        Callback function to call when changing the aspect ratio.
     """
-    def __init__(self, sel_col_func, cmap_func, lim_func, cmap_names,
-                 plot_2D_type_func, plot_2D_types, aspect_func):
+    def __init__(self, cmap_names, plot_2D_types):
         super().__init__()
         self.layout = QtWidgets.QHBoxLayout()
         self.num_col_boxes = 3
         self.num_lim_boxes = 3
-        self.sel_col_func = sel_col_func
-        self.cmap_func = cmap_func
-        self.lim_func = lim_func
         self.cmap_names = cmap_names
-        self.plot_2D_type_func = plot_2D_type_func
         self.plot_2D_types = plot_2D_types
-        self.aspect_func = aspect_func
         self.init_col_sel_boxes()
         self.init_cmap_sel()
         self.init_plot_2D_type_sel()
@@ -71,7 +54,6 @@ class PlotControls(QtWidgets.QWidget):
         self.col_boxes = [None] * self.num_col_boxes
         for i in range(self.num_col_boxes):
             box = QtWidgets.QComboBox()
-            box.activated.connect(self.sel_col_func)
             box.setMaxVisibleItems(80)
             policy_horiz = QSizePolicy.MinimumExpanding
             policy_vert = QSizePolicy.Maximum
@@ -86,7 +68,6 @@ class PlotControls(QtWidgets.QWidget):
         """
         cmap_sel = QtWidgets.QComboBox()
         cmap_sel.addItems(self.cmap_names)
-        cmap_sel.activated.connect(self.cmap_func)
         policy_horiz = QSizePolicy.MinimumExpanding
         policy_vert = QSizePolicy.Maximum
         cmap_sel.setSizePolicy(policy_horiz, policy_vert)
@@ -99,7 +80,6 @@ class PlotControls(QtWidgets.QWidget):
     def init_plot_2D_type_sel(self):
         plot_2D_type_sel = QtWidgets.QComboBox()
         plot_2D_type_sel.addItems(self.plot_2D_types)
-        plot_2D_type_sel.activated.connect(self.plot_2D_type_func)
         policy_horiz = QSizePolicy.MinimumExpanding
         policy_vert = QSizePolicy.Maximum
         plot_2D_type_sel.setSizePolicy(policy_horiz, policy_vert)
@@ -114,7 +94,6 @@ class PlotControls(QtWidgets.QWidget):
         dim_names = ['x', 'y', 'z']
         for i in range(self.num_lim_boxes):
             lim_box = QtWidgets.QLineEdit()
-            lim_box.editingFinished.connect(self.lim_func)
             tooltip = ('Limit for {}. Use <number>:<number> where both numbers '
                        'can be empty').format(dim_names[i])
             lim_box.setToolTip(tooltip)
@@ -123,7 +102,6 @@ class PlotControls(QtWidgets.QWidget):
 
     def init_aspect_box(self):
         aspect_box = QtWidgets.QLineEdit()
-        aspect_box.editingFinished.connect(self.aspect_func)
         aspect_box.setToolTip('Aspect ratio, use <number> or <number:number>')
         self.layout.addWidget(aspect_box)
         self.aspect_box = aspect_box
@@ -165,7 +143,6 @@ class PlotControls(QtWidgets.QWidget):
         box = self.col_boxes[box_idx]
         idx = box.findText(text)
         box.setCurrentIndex(idx)
-        self.sel_col_func()
 
     def parse_lims(self, text):
         lims = text.split(':')
