@@ -6,6 +6,8 @@ from pseudodata import PseudoData
 
 class Sweep(object):
     """
+    This class loads and stores data and meta from a sweep.
+
     Parameters
     ----------
     path : str
@@ -44,6 +46,10 @@ class Sweep(object):
         self.data = reshaped_data
 
     def set_pdata(self, name_func_dict=None):
+        """
+        Sets a dictionary which maps a name to a function and a label to use for
+        calculating pseudocolumns.
+        """
         if name_func_dict is None:
             return
         self.pdata = PseudoData(name_func_dict, self)

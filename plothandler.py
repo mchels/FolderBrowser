@@ -2,8 +2,29 @@ from numpy import nanmin, nanmax
 
 class PlotHandler(object):
     """
-    Based on the type of data given in data_handler
-    1. Plots on ax a 1D or 2D plot.
+    The PlotHandler class handles setting up plots of dimension plot_dim on axes
+    ax given data from data_handler.
+
+    Plot1DHandler plots one-dimensional plots, that is curves. One-dimensional
+    plots correspond to two-dimensional data (since such data has two arrays:
+    x and y).
+    Plot2DHandler plots two-dimensional plots, that is, colorplots.
+    Two-dimensional plots can be made only with three-dimensional data (since
+    such data has three arrays: x, y and z).
+
+    PlotHandler respects the imshow_eligible attribute from the DataHandler
+    class. It will try to do the plot using the faster imshow. It falls back on
+    pcolormesh if the data is not imshow_eligible.
+
+    Parameters
+    ----------
+    ax : Matplotlib Axes instance
+        Axes to plot on.
+    data_handler : DataHandler instance
+        Data to plot.
+    plot_dim : integer
+        For data with dimension 1 the plot_dim must be 1. For data with
+        dimension 2 plot_dim can be either 1 or 2.
     """
     def __init__(self, ax, data_handler):
         self.ax = ax

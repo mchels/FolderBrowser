@@ -3,6 +3,10 @@ from PyQt5.QtWidgets import QDialog, QLineEdit, QShortcut, QFormLayout, QLabel
 from PyQt5.QtGui import QKeySequence
 
 class TextForCopying(QDialog):
+    """
+    This class defines a window which shows copyable information about the
+    currently loaded sweep.
+    """
     def __init__(self, title, date_stamp, name, xlabel, ylabel, zlabel=None):
         super().__init__()
         self.title = title

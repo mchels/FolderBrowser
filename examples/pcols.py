@@ -7,10 +7,10 @@ name_func_dict = {
     'MC': {'label': 'Mixing chamber temperature (K)'},
 }
 
-def parent_f(data, pdata, meta):
-    return data['MC'] * 10
+def MC_mK(data, pdata, meta):
+    return data['MC'] * 1000
 
-name = 'MC*10'
-func = partial(parent_f)
-label = 'MC temperature in unhelpful units'
+name = MC_mK.__name__
+func = partial(MC_mK)
+label = 'Mixing chamber temperature (mK)'
 name_func_dict[name] = {'func': func, 'label': label}

@@ -15,7 +15,19 @@ from plothandler import plot_handler_factory
 
 class MplLayout(QtWidgets.QWidget):
     """
-    Contains canvas, toolbar and a PlotControls object.
+    This class is responsible for drawing the plots.
+
+    Parameters
+    ----------
+    statusBar : QtWidgets.QStatusBar instance
+        statusBar of the parent FolderBrowser instance.
+    parent : QtWidgets.QMainWindow instance
+        The parent FolderBrowser instance.
+
+    The starting point for this class was the Matplotlib example file
+    embedding_in_qt5.py
+    from
+    https://matplotlib.org/examples/user_interfaces/embedding_in_qt5.html
     """
     def __init__(self, statusBar=None, parent=None):
         super().__init__()

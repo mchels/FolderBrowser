@@ -4,12 +4,47 @@ from numpy import nanmin, nanmax
 
 class DataHandler(object):
     """
-    -DONE Verify input.
-    -DONE Determine whether data is 1D or 2D.
-    -DONE Set very large or small values to nan.
-    -DONE Investigate whether data are linspaces.
-    -DONE Sort and flip data that is linspace.
-    -DONE Determine whether data is suitable for imshow. imshow_eligible
+    The purpose of the DataHandler class is to generate normalized (transformed)
+    arrays of the input data. The input data is either two-dimensional
+    (comprising arrays x and y) or three-dimensional (comprising arrays x, y
+    and z).
+
+    Parameters
+    ----------
+    x, y, z : numpy arrays
+        Transformed2DData takes only x and y, while Transformed3Ddata takes all
+        three. For Transformed2DData x and y must be one-dimensional, that is
+        x.ndim == y.ndim == 1
+        For Transformed3Ddata x, y and z must be two-dimensional.
+
+    Attributes
+    ----------
+    data : list
+        Contains the original input arrays at indices 0, 1, and
+        (for 3D data) 2.
+    tdata : list
+        Contains the transformed data arrays at indices 0, 1, and
+        (for 3D data) 2.
+
+    The transformed data (tdata) has the following properties:
+    - The tdata arrays are verified to have the same shape.
+    - Values in the tdata arrays larger or smaller than clip_min and clip_max
+      are set to np.nan.
+    - The tdata arrays are sorted according to the order in array x for 2D data
+      and arrays x and y for 3D data. Typically this just means reversing the
+      arrays along an axis if the sweep was made from positive toward negative
+      values.
+    - 3D tdata arrays are checked for eligibility for Matplotlib's imshow
+      command. Eligibility requires
+        1) that the x and y arrays vary linearly along exactly one axis,
+        2) that the axes found in 1) are not the same for the two arrays,
+        3) that the values along the axis where the x and y arrays do not vary
+           linearly are constant.
+        These points basically mean that the x and y arrays must resemble planes
+        which has zero slope along one axis.
+    If the tdata is not eligible for imshow (that is, imshow_eligible == False)
+    the data can still be plotted with Matplotlib's pcolormesh, which is,
+    however, slower than imshow.
     """
     def __init__(self, x, y):
         self.clip_min = -1e25

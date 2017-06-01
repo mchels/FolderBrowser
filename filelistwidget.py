@@ -3,6 +3,9 @@ import os
 import json
 
 class FileList(QtWidgets.QListWidget):
+    """
+    Contains a list of sweeps to plot.
+    """
     def __init__(self, main_dir_path):
         super().__init__()
         self.main_dir_path = main_dir_path

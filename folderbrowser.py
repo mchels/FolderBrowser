@@ -23,6 +23,22 @@ def show_loading(func):
 
 
 class FolderBrowser(QMainWindow):
+    """
+    This class is the main window.
+
+    Parameters
+    ----------
+    n_layouts : integer
+        Number of desired MplLayouts. Cannot be changed after the window has
+        loaded.
+    dir_path : string
+        Fully qualified path to the directory containing data folders.
+    pcols_path : string
+        Fully qualified path to the .py file containing functions to calculate
+        pseudocolumns.
+    window_title : string
+        Title of the window.
+    """
     def __init__(self, n_layouts, dir_path, pcols_path,
                  window_title='FolderBrowser'):
         super().__init__()
