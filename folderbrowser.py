@@ -95,6 +95,7 @@ class FolderBrowser(QMainWindow):
     def init_file_list(self):
         self.file_list = FileList(self.dir_path)
         self.file_list.itemClicked.connect(self.set_new_sweep)
+        self.file_list.itemActivated.connect(self.set_new_sweep)
         dock_widget = QDockWidget('Browser', self)
         dock_widget.setWidget(self.file_list)
         dock_widget.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)

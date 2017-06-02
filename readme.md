@@ -65,6 +65,7 @@ Hotkeys
 | Ctrl-t        | Show figure properties in dialog as copyable text |
 | Ctrl-w        | Close window |
 | Ctrl-shift-o  | Open folder containing data |
+| Enter         | Select sweep in the FileList |
 
 
 Known Issues
