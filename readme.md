@@ -83,9 +83,14 @@ reshaped data array with NaN, but this may break other things, like checking
 whether the data is linearly varying in DataHandler.
 
 ### Python 3.6
-2017-03-31: Anaconda's Python 3.6 distribution may give an error
-`DLL load failed: The specified module could not be found.` In this case
-downgrade the distribution to Python 3.5 using
+This issue appears to be fixed with Python 3.6.1 in Anaconda 4.4.0. See
+[https://stackoverflow.com/questions/43264773/pil-dll-load-failed-specified-procedure-could-not-be-found](https://stackoverflow.com/questions/43264773/pil-dll-load-failed-specified-procedure-could-not-be-found)
+for reference. Original issue text follows below.
+
+2017-03-31: Anaconda's Python 3.6 distribution may give an error when starting
+FolderBrowser:
+`DLL load failed: The specified module could not be found.`
+In this case downgrade the distribution to Python 3.5 using
 ````
 conda install python=3.5
 ````
