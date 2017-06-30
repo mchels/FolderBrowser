@@ -142,7 +142,7 @@ class FolderBrowser(QMainWindow):
 
     def open_folder(self):
         if platform.system() != 'Windows':
-            err_msg = 'Open folder only implemented on Windows'
+            err_msg = '"Open folder" hotkey only implemented on Windows'
             self.statusBar.showMessage(err_msg)
             return
         norm_path = os.path.normpath(self.sweep_path)
