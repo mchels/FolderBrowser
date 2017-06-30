@@ -10,6 +10,12 @@ This project provides a GUI for visualizing data acquired with the
 Jellinggaard. The gui itself is a Python implementation and expansion of the
 [gui from matlab-qd](https://github.com/qdev-dk/matlab-qd/tree/master/%2Bqd/%2Bgui).
 
+
+Features
+--------
+Copy-paste the active figure:
+![Copy a figure with Ctrl-C](doc/copy_figure.gif)
+
 Installation
 ------------
 All packages used for FolderBrowser are included in the Anaconda distribution.
