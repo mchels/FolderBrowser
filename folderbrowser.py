@@ -104,6 +104,8 @@ class FolderBrowser(QMainWindow):
 
     def reload_file_list(self):
         self.file_list.reload_items()
+        msg = 'File list reloaded.'
+        self.statusBar.showMessage(msg, 1000)
 
     def set_active_layout(self, layout):
         try:
