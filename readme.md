@@ -16,8 +16,6 @@ All packages used for FolderBrowser are included in the Anaconda distribution.
 Get it from
 [https://www.continuum.io/downloads](https://www.continuum.io/downloads) with
 the newest Python 3 version.
-Note that versions newer than Python 3.5 may cause issues, see section Known
-Issues.
 
 If you already have Anaconda installed (with Python 3.5) but the packages are
 not up to date, simply run
