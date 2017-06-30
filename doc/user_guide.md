@@ -192,9 +192,6 @@ Extensibility
 --------------------------------------------------------------------------------
 It should be relatively straightforward to extend FolderBrowser to allow for
 data and meta information in different formats than the default one. To do this
-one would have to
-- rewrite the `Sweep` class,
-- rewrite the `item_text` definition in the `load_sweeps_in_dir` method in the
-  File List class.
-Possibly a few other rewrites could be required. One should not have to rewrite
-the `DataHandler` and `PlotHandler` classes.
+one would have to rewrite the `Sweep` class. Possibly a few other rewrites could
+be required. One should NOT have to rewrite the `DataHandler` and `PlotHandler`
+classes.

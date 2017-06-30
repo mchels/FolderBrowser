@@ -48,12 +48,13 @@ class FolderBrowser(QMainWindow):
         self.assert_exists(dir_path)
         self.assert_exists(pcols_path)
         self.set_pcols()
-        self.date_stamp = None
         self.sweep_name = None
+        self.sweep = None
         self.setWindowTitle(window_title)
         self.dock_widgets = []
         self.init_statusbar()
         self.init_mpl_layouts()
+        self.load_sweeps_in_dir()
         self.init_file_list()
         self.setDockNestingEnabled(True)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -64,15 +65,16 @@ class FolderBrowser(QMainWindow):
     @show_loading
     def set_new_sweep(self, file_list_widget=None):
         file_list_item = self.file_list.currentItem()
-        sweep_path = file_list_item.data(QtCore.Qt.UserRole)
+        sweep_name = file_list_item.text()
+        sweep_path = self.sweep_dict[sweep_name]['path']
         self.sweep = Sweep(sweep_path)
         self.sweep_path = sweep_path
         self.sweep.set_pdata(self.pcols.name_func_dict)
-        title = file_list_item.text()
         for mpl_layout in self.mpl_layouts:
-            title_wrapped = self.wrap_title(title, mpl_layout)
+            title_wrapped = self.wrap_title(sweep_name, mpl_layout)
             mpl_layout.set_title(title_wrapped)
             mpl_layout.reset_and_plot(self.sweep)
+        self.sweep_name = sweep_name
 
     def init_statusbar(self):
         self.statusBar = QtWidgets.QStatusBar()
@@ -92,8 +94,23 @@ class FolderBrowser(QMainWindow):
             self.dock_widgets.append(dock_widget)
         self.set_active_layout(self.mpl_layouts[0])
 
+    def load_sweeps_in_dir(self):
+        self.sweep_dict = {}
+        dir_walker = os.walk(self.dir_path, followlinks=False)
+        for sub_dir_path, _, fnames in dir_walker:
+            try:
+                meta = Sweep.load_dir(sub_dir_path, meta_only=True)
+            except FileNotFoundError:
+                continue
+            time_stamp = os.path.split(sub_dir_path)[-1]
+            sweep_name = time_stamp + ' ' + meta['name']
+            self.sweep_dict[sweep_name] = {}
+            self.sweep_dict[sweep_name]['path'] = sub_dir_path
+            self.sweep_dict[sweep_name]['time_stamp'] = time_stamp
+
     def init_file_list(self):
-        self.file_list = FileList(self.dir_path)
+        names = self.sweep_dict.keys()
+        self.file_list = FileList(names)
         self.file_list.itemClicked.connect(self.set_new_sweep)
         self.file_list.itemActivated.connect(self.set_new_sweep)
         dock_widget = QDockWidget('Browser', self)
@@ -150,13 +167,15 @@ class FolderBrowser(QMainWindow):
         subprocess.Popen(cmd)
 
     def show_text_for_copying(self):
-        if self.sweep_name is None:
+        if self.sweep is None:
+            msg = 'No sweep selected. Select a sweep to show its information.'
+            self.statusBar.showMessage(msg, 3000)
             return
         lay = self.active_layout
-        title = lay.title.replace('\n', ' ')
-        date_stamp = self.date_stamp
-        name = self.sweep_name
-        diag = TextForCopying(title, date_stamp, name, *lay.labels)
+        title = self.sweep_name
+        time_stamp = self.sweep_dict[self.sweep_name]['time_stamp']
+        name = lay.title
+        diag = TextForCopying(title, time_stamp, name, *lay.labels)
         diag.setWindowModality(QtCore.Qt.ApplicationModal)
         diag.setModal(True)
         diag.exec_()
