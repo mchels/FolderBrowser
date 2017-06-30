@@ -183,7 +183,9 @@ class FolderBrowser(QMainWindow):
         self.statusBar.showMessage(msg, 1000)
 
     def code_to_clipboard(self):
-        if self.sweep_name is None:
+        if self.sweep is None:
+            msg = 'No sweep selected. Select a sweep to copy its code.'
+            self.statusBar.showMessage(msg, 3000)
             return
         own_path = os.path.dirname(os.path.realpath(__file__))
         lay = self.active_layout
