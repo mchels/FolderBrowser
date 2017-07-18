@@ -13,8 +13,11 @@ Jellinggaard. The gui itself is a Python implementation and expansion of the
 
 Features
 --------
-Copy-paste the active figure:
+Copy-paste the active figure with `Ctrl-C`:
 ![Copy a figure with Ctrl-C](doc/copy_figure.gif)
+
+Generate code for figure with `F2`:
+![Generate code for figure](doc/generate_code_for_figure.gif)
 
 Installation
 ------------
