@@ -19,6 +19,12 @@ Copy-paste the active figure with `Ctrl-C`:
 Generate code for figure with `F2`:
 ![Generate code for figure](doc/generate_code_for_figure.gif)
 
+Modify figure with Matplotlib commands (note that these are captured with `Ctrl-C`, but not with `F2`):
+![Modify figure with Matplotlib commands](doc/modify_figure.gif)
+
+Resize and dock to your heart's content:
+![Resize and dock](doc/resize_dock.gif)
+
 Installation
 ------------
 All packages used for FolderBrowser are included in the Anaconda distribution.
