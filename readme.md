@@ -13,6 +13,12 @@ Jellinggaard. The gui itself is a Python implementation and expansion of the
 
 Features
 --------
+Explore data with standard Matplotlib controls:
+![Use standard Matplotlib controls](doc/matplotlib_controls.gif)
+
+or with custom controls for, e.g., colormap, limits, aspect ratio:
+![Explore data with custom controls](doc/custom_controls.gif)
+
 Copy-paste the active figure with `Ctrl-C`:
 ![Copy a figure with Ctrl-C](doc/copy_figure.gif)
 
