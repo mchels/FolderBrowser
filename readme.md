@@ -1,8 +1,6 @@
 FolderBrowser
 =============
 
-![Overview of the FolderBrowser window.](doc/overview.png)
-
 Description
 -----------
 This project provides a GUI for visualizing data acquired with the
