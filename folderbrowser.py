@@ -120,6 +120,9 @@ class FolderBrowser(QMainWindow):
         self.dock_widgets.append(dock_widget)
 
     def reload_file_list(self):
+        self.load_sweeps_in_dir()
+        names = self.sweep_dict.keys()
+        self.file_list.names = names
         self.file_list.reload_items()
         msg = 'File list reloaded.'
         self.statusBar.showMessage(msg, 1000)
